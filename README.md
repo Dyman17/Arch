@@ -27,7 +27,7 @@ _заполнить_
 |------|----------|
 | Tech Lead | [@Dyman17](https://github.com/Dyman17) |
 | Backend | _заполнить_ |
-| Frontend | _заполнить_ |
+| Frontend | [@yernurge](https://github.com/yernurge) |
 
 ## 📚 Документация
 
