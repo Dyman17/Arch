@@ -26,7 +26,7 @@ _заполнить_
 | Роль | Участник |
 |------|----------|
 | Tech Lead | [@Dyman17](https://github.com/Dyman17) |
-| Backend | _заполнить_ |
+| Backend | [@RKydyrali](https://github.com/RKydyrali) |
 | Frontend | [@yernurge](https://github.com/yernurge) |
 
 ## 📚 Документация
