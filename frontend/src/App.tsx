@@ -1,11 +1,5 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import {
-  Volume2,
-  Sparkles,
-  RotateCcw,
-  Hand,
-  HelpCircle,
-  Camera,
   UserCheck,
   UserX,
 } from 'lucide-react';
@@ -16,11 +10,11 @@ import type {
   RouteResponse,
   SceneResponse,
   QrResponse,
+  KioskPage,
 } from './types';
 import {
   fetchConfig,
   fetchPlaces,
-  fetchPlaceById,
   fetchRoute,
   fetchScene,
   fetchQr,
@@ -30,12 +24,22 @@ import {
 import { speakText, stopSpeaking } from './utils/tts';
 import { useVoiceListener } from './hooks/useVoiceListener';
 import { useCameraPresence } from './hooks/useCameraPresence';
-import { KioskMap } from './components/KioskMap';
-import { PlaceEditorialDrawer } from './components/PlaceEditorialDrawer';
-import { AtlasStrip } from './components/AtlasStrip';
-import { TarihSkyModal } from './components/TarihSkyModal';
-import { QrModal } from './components/QrModal';
-import { SleepScreen } from './components/SleepScreen';
+
+// The 14 Dedicated Presentation Pages
+import { PageSleep } from './components/pages/PageSleep';
+import { PageGreeting } from './components/pages/PageGreeting';
+import { PageListening } from './components/pages/PageListening';
+import { PageThinking } from './components/pages/PageThinking';
+import { PagePlace } from './components/pages/PagePlace';
+import { PageRoute } from './components/pages/PageRoute';
+import { PageHistory } from './components/pages/PageHistory';
+import { PageQr } from './components/pages/PageQr';
+import { PageVariants } from './components/pages/PageVariants';
+import { PageNearby } from './components/pages/PageNearby';
+import { PageHelp } from './components/pages/PageHelp';
+import { PageFarewell } from './components/pages/PageFarewell';
+import { PageError } from './components/pages/PageError';
+import { PageGestures } from './components/pages/PageGestures';
 
 export const App: React.FC = () => {
   // Config & Session
@@ -43,26 +47,21 @@ export const App: React.FC = () => {
   const [sessionId, setSessionId] = useState<string>(() => 'sess-' + Math.random().toString(36).substring(2, 10));
   const [lang, setLang] = useState<string>('kk'); // Default to Kazakh
 
-  // App States
-  const [isAsleep, setIsAsleep] = useState<boolean>(true);
+  // 14-Page State Machine
+  const [currentPage, setCurrentPage] = useState<KioskPage>('sleep');
+
+  // Presentation Storyboard Bar Toggle
+  const [showStoryboard] = useState<boolean>(true);
+
+  // Data Store
   const [places, setPlaces] = useState<Place[]>([]);
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
   const [route, setRoute] = useState<RouteResponse | null>(null);
   const [scene, setScene] = useState<SceneResponse | null>(null);
   const [qrData, setQrData] = useState<QrResponse | null>(null);
-  const [activeCategory, setActiveCategory] = useState<string>('all');
 
-  // Modals & Triggers
-  const [showTarihSky, setShowTarihSky] = useState<boolean>(false);
-  const [showQr, setShowQr] = useState<boolean>(false);
-  const [gestureAlert, setGestureAlert] = useState<boolean>(false);
-
-  // AI Dialogue
-  const [aiThinking, setAiThinking] = useState<boolean>(false);
-  const [aiSpeaking, setAiSpeaking] = useState<boolean>(false);
-  const [aiSpeechText, setAiSpeechText] = useState<string>('');
+  // Dialogue & Speech Recognition
   const [userSpokenText, setUserSpokenText] = useState<string>('');
-  const [unrecognizedSpeechCount, setUnrecognizedSpeechCount] = useState<number>(0);
 
   // Timers
   const idleTimerRef = useRef<number>(0);
@@ -76,6 +75,9 @@ export const App: React.FC = () => {
       setLang(initialLang);
       const data = await fetchPlaces(initialLang);
       setPlaces(data.places);
+      if (data.places.length > 0) {
+        setSelectedPlace(data.places[0]);
+      }
     }
     init();
   }, []);
@@ -83,23 +85,24 @@ export const App: React.FC = () => {
   // Update places when language changes
   useEffect(() => {
     if (!config) return;
-    fetchPlaces(lang, activeCategory).then((data) => {
+    fetchPlaces(lang).then((data) => {
       setPlaces(data.places);
       if (selectedPlace) {
         const updated = data.places.find((p) => p.id === selectedPlace.id);
         if (updated) setSelectedPlace(updated);
       }
     });
-  }, [lang, activeCategory]);
+  }, [lang, config, selectedPlace]);
 
+  // Touch / User activity reset
   const touchActivity = useCallback(() => {
     idleTimerRef.current = 0;
   }, []);
 
   // Wake up action (triggered when camera detects person arriving)
   const handleWakeUp = useCallback(() => {
-    setIsAsleep(false);
     touchActivity();
+    setCurrentPage('greeting');
 
     const greeting =
       lang === 'kk'
@@ -108,8 +111,7 @@ export const App: React.FC = () => {
         ? 'Welcome! I am BaGdar, your digital guide to Aktau. Where would you like to explore?'
         : 'Здравствуйте! Я цифровой гид BaGdar. Какое место в Актау вас интересует?';
 
-    setAiSpeechText(greeting);
-    speakText(greeting, lang, () => setAiSpeaking(true), () => setAiSpeaking(false));
+    speakText(greeting, lang);
   }, [lang, touchActivity]);
 
   // Reset Session
@@ -117,45 +119,40 @@ export const App: React.FC = () => {
     stopSpeaking();
     endSession(sessionId);
     setSessionId('sess-' + Math.random().toString(36).substring(2, 10));
-    setIsAsleep(true);
-    setSelectedPlace(null);
+    setCurrentPage('sleep');
     setRoute(null);
-    setShowTarihSky(false);
-    setShowQr(false);
-    setGestureAlert(false);
-    setUnrecognizedSpeechCount(0);
-    setAiSpeechText('');
+    setScene(null);
+    setQrData(null);
     setUserSpokenText('');
-    setAiSpeaking(false);
-    setAiThinking(false);
     idleTimerRef.current = 0;
   }, [sessionId]);
 
   // 2. Camera Presence Hook (Optical Person Detection)
-  // Rule 1: Presence is strictly determined by camera. Main screen shows when person is in frame.
+  // RULE 1: Presence is strictly determined by camera. Main screen shows when person is in frame.
   const {
     isPersonPresent,
-    cameraActive,
     simulatePersonApproach,
     simulatePersonDeparture,
   } = useCameraPresence({
     onPersonArrived: () => {
-      // Camera sees person -> wake up to main screen!
-      handleWakeUp();
+      // Camera sees person -> wake up to greeting!
+      if (currentPage === 'sleep') {
+        handleWakeUp();
+      }
     },
     onPersonDeparted: () => {
-      // Person left camera view -> return to sleep screen!
-      handleResetSession();
+      // Person left camera view -> farewell and then sleep!
+      if (currentPage !== 'sleep') {
+        setCurrentPage('farewell');
+      }
     },
     enabled: true,
   });
 
-  // Select Place & Load Route
-  const handleSelectPlace = useCallback(
+  // Load Route for a Place
+  const loadRouteForPlace = useCallback(
     async (place: Place) => {
-      touchActivity();
       setSelectedPlace(place);
-
       try {
         const routeData = await fetchRoute(place.id, lang);
         setRoute(routeData);
@@ -163,39 +160,35 @@ export const App: React.FC = () => {
         console.warn('Could not fetch route:', err);
       }
     },
-    [lang, touchActivity]
+    [lang]
   );
 
-  // TarihSky
-  const handleOpenTarihSky = useCallback(
-    async (placeId?: number) => {
-      touchActivity();
-      const targetId = placeId || selectedPlace?.id || 1;
-      const sceneData = await fetchScene(targetId);
-      if (sceneData) {
+  // Load Scene (TarihSky) for a Place
+  const loadSceneForPlace = useCallback(
+    async (place: Place) => {
+      setSelectedPlace(place);
+      try {
+        const sceneData = await fetchScene(place.id);
         setScene(sceneData);
-        setShowTarihSky(true);
-        setShowQr(false);
+      } catch (err) {
+        console.warn('Could not fetch scene:', err);
       }
     },
-    [selectedPlace, touchActivity]
+    []
   );
 
-  // QR
-  const handleOpenQr = useCallback(
-    async (placeId?: number) => {
-      touchActivity();
-      const targetId = placeId || selectedPlace?.id || 1;
-      const targetPlace = places.find((p) => p.id === targetId) || selectedPlace || places[0];
-      if (targetPlace) {
-        setSelectedPlace(targetPlace);
-        const qrRes = await fetchQr(targetId, lang, sessionId);
+  // Load QR for a Place
+  const loadQrForPlace = useCallback(
+    async (place: Place) => {
+      setSelectedPlace(place);
+      try {
+        const qrRes = await fetchQr(place.id, lang, sessionId);
         setQrData(qrRes);
-        setShowQr(true);
-        setShowTarihSky(false);
+      } catch (err) {
+        console.warn('Could not fetch QR:', err);
       }
     },
-    [selectedPlace, places, lang, sessionId, touchActivity]
+    [lang, sessionId]
   );
 
   // Core Voice Dialogue Turn
@@ -206,10 +199,10 @@ export const App: React.FC = () => {
 
       touchActivity();
       setUserSpokenText(text);
-      setAiThinking(true);
+      setCurrentPage('thinking');
       stopSpeaking();
 
-      // Language Switch Commands
+      // Language Switch Command detection
       if (/қазақ|қазақша/i.test(text)) {
         setLang('kk');
       } else if (/english/i.test(text)) {
@@ -224,450 +217,403 @@ export const App: React.FC = () => {
           lang: 'auto',
           text,
           context: {
-            screen: showTarihSky ? 'scene' : showQr ? 'qr' : selectedPlace ? 'place' : 'map',
+            screen: currentPage,
             last_place_id: selectedPlace?.id || null,
           },
         });
-
-        setAiThinking(false);
 
         if (response.lang && ['kk', 'ru', 'en'].includes(response.lang) && response.lang !== lang) {
           setLang(response.lang);
         }
 
-        setAiSpeechText(response.say);
-        speakText(response.say, response.lang || lang, () => setAiSpeaking(true), () => setAiSpeaking(false));
+        speakText(response.say, response.lang || lang);
 
-        // Check if dialogue recognized speech or fell back to prompt
+        // Check for unrecognized speech / fallback
         if (response.debug?.via === 'fallback_prompt' || response.intent === 'speech_unrecognized') {
-          // Sound was present, but speech was not recognized into a place/command
-          setUnrecognizedSpeechCount((prev) => {
-            const next = prev + 1;
-            if (next >= 2) {
-              setGestureAlert(true);
-            }
-            return next;
-          });
-        } else {
-          // Valid speech successfully recognized! Reset counter & dismiss gesture alert
-          setUnrecognizedSpeechCount(0);
-          setGestureAlert(false);
+          // RULE 2: Sound was present, but speech was not recognized.
+          setCurrentPage((prev) => (prev === 'error' ? 'gestures' : 'error'));
+          return;
         }
 
-        for (const action of response.actions) {
-          if (action.show === 'sleep') {
-            handleResetSession();
-            return;
-          }
+        // Execute actions returned by AI brain
+        if (response.actions && response.actions.length > 0) {
+          const primaryAction = response.actions[0];
+          const targetPlaceId = primaryAction.place_id || response.place_id || selectedPlace?.id || 1;
+          const targetPlace = places.find((p) => p.id === targetPlaceId) || selectedPlace || places[0];
 
-          if (action.show === 'map') {
-            setSelectedPlace(null);
-            setRoute(null);
-            setShowTarihSky(false);
-            setShowQr(false);
+          if (primaryAction.show === 'route') {
+            await loadRouteForPlace(targetPlace);
+            setCurrentPage('route');
+          } else if (primaryAction.show === 'scene') {
+            await loadSceneForPlace(targetPlace);
+            setCurrentPage('history');
+          } else if (primaryAction.show === 'qr') {
+            await loadQrForPlace(targetPlace);
+            setCurrentPage('qr');
+          } else if (primaryAction.show === 'sleep') {
+            setCurrentPage('farewell');
+          } else {
+            setSelectedPlace(targetPlace);
+            setCurrentPage('place');
           }
+          return;
+        }
 
-          if (action.show === 'route' && action.place_id) {
-            setShowTarihSky(false);
-            setShowQr(false);
-            const foundPlace = places.find((p) => p.id === action.place_id);
-            if (foundPlace) {
-              handleSelectPlace(foundPlace);
-            } else {
-              fetchPlaceById(action.place_id, lang).then(handleSelectPlace);
-            }
-          }
+        // If suggestions are returned (multiple places found)
+        if (response.suggestions && response.suggestions.length > 1) {
+          setCurrentPage('variants');
+          return;
+        }
 
-          if (action.show === 'scene') {
-            handleOpenTarihSky(action.place_id || selectedPlace?.id);
-          }
-
-          if (action.show === 'qr') {
-            handleOpenQr(action.place_id || selectedPlace?.id);
+        // Intent-based fallback routing
+        if (response.intent === 'nearby') {
+          setCurrentPage('nearby');
+        } else if (response.intent === 'help') {
+          setCurrentPage('help');
+        } else if (response.intent === 'farewell') {
+          setCurrentPage('farewell');
+        } else if (response.place_id) {
+          const targetPlace = places.find((p) => p.id === response.place_id) || selectedPlace || places[0];
+          setSelectedPlace(targetPlace);
+          setCurrentPage('place');
+        } else {
+          if (selectedPlace) {
+            setCurrentPage('place');
+          } else {
+            setCurrentPage('variants');
           }
         }
       } catch (err) {
-        setAiThinking(false);
-        console.error('Error handling dialog turn:', err);
+        console.error('Dialog turn failed:', err);
+        setCurrentPage('error');
       }
     },
-    [
-      sessionId,
-      lang,
-      places,
-      selectedPlace,
-      showTarihSky,
-      showQr,
-      touchActivity,
-      handleSelectPlace,
-      handleOpenTarihSky,
-      handleOpenQr,
-      handleResetSession,
-    ]
+    [sessionId, currentPage, selectedPlace, lang, places, loadRouteForPlace, loadSceneForPlace, loadQrForPlace, touchActivity]
   );
 
-  // Voice listener hook:
-  // Rule 1: Sound threshold > -30 dBFS
-  // Rule 2: Gestures trigger ONLY when sound exists (> -30 dBFS) AND speech is not recognized 2 times. Silence does NOT trigger gestures.
-  const { isListening, interimTranscript, volumeLevel, triggerManualUtterance } =
-    useVoiceListener({
-      onSpeechFinal: handleVoiceUtterance,
-      onUnrecognizedSound: () => {
-        if (!isPersonPresent) return;
+  // 3. Voice Listener Hook (Web Audio API Level + Web Speech STT)
+  const {
+    interimTranscript,
+    volumeLevel,
+  } = useVoiceListener({
+    lang,
+    onSpeechFinal: (text: string) => {
+      handleVoiceUtterance(text);
+    },
+    onUnrecognizedSound: () => {
+      // Sound heard, but speech not recognized
+      if (currentPage === 'sleep' && isPersonPresent) {
+        setCurrentPage('listening');
+      }
+    },
+    enabled: true,
+  });
 
-        setUnrecognizedSpeechCount((prev) => {
-          const next = prev + 1;
-          if (next >= 2) {
-            setGestureAlert(true);
-          }
-          return next;
-        });
-      },
-      lang,
-      enabled: true,
-    });
+  // Sync interim transcript to UI
+  useEffect(() => {
+    if (interimTranscript) {
+      setUserSpokenText(interimTranscript);
+    }
+  }, [interimTranscript]);
 
-  if (!config) {
-    return (
-      <div className="kiosk-preloader">
-        <div className="preloader-spinner" />
-        <span className="preloader-text">BAĠDAR AKTAU DIGITAL KIOSK INITIALIZING...</span>
-      </div>
-    );
-  }
+  // Session idle timer (90 seconds)
+  useEffect(() => {
+    if (currentPage === 'sleep') return;
 
-  return (
-    <div className="kiosk-app-viewport" onClick={touchActivity}>
-      {/* 1. Lando Norris SOTY 2025 Style Idle Screensaver */}
-      {isAsleep && (
-        <SleepScreen
-          onWake={handleWakeUp}
-          lang={lang}
-          isPersonPresent={isPersonPresent}
-          cameraActive={cameraActive}
-          onSimulateApproach={simulatePersonApproach}
-        />
-      )}
+    const interval = setInterval(() => {
+      idleTimerRef.current += 1;
+      const timeoutSec = config?.session?.idle_timeout_sec || 90;
+      if (idleTimerRef.current >= timeoutSec) {
+        handleResetSession();
+      }
+    }, 1000);
 
-      {/* 2. Top Kiosk Navigation Header */}
-      <header className="kiosk-editorial-header">
-        <div className="header-brand-group">
-          <div className="brand-accent-gem" />
-          <div className="brand-text-block">
-            <span className="brand-main-title">BAĠDAR</span>
-            <span className="brand-tagline">AQTAU · CASPIAN HORIZON</span>
-          </div>
+    return () => clearInterval(interval);
+  }, [currentPage, config, handleResetSession]);
 
-          <div className="stele-meta-pill">
-            <span className="stele-coords-label">43.6582°N 51.1352°E</span>
-            <span className="stele-pill-divider">/</span>
-            <span className="stele-id-badge">AKTAU-EMB-01</span>
-          </div>
+  // Helper for selecting a place from variants / nearby
+  const handleSelectAndShowPlace = useCallback(
+    async (place: Place) => {
+      setSelectedPlace(place);
+      await loadRouteForPlace(place);
+      setCurrentPage('place');
+    },
+    [loadRouteForPlace]
+  );
 
-          {/* Camera Presence Telemetry & Simulation Pill */}
-          <div
-            className={`camera-telemetry-badge ${isPersonPresent ? 'person-detected' : 'person-idle'}`}
-            title="Камера арқылы адамды анықтау / Обнаружение человека камерой"
-          >
-            <Camera size={13} className="cam-badge-icon" />
-            <span className="cam-badge-text">
-              {isPersonPresent
-                ? (lang === 'kk' ? 'АДАМ АЛДЫНДА' : lang === 'en' ? 'PERSON IN FRONT' : 'ЧЕЛОВЕК У СТЕЛЫ')
-                : (lang === 'kk' ? 'КАМЕРА: КҮТУДЕ' : lang === 'en' ? 'CAM: STANDBY' : 'КАМЕРА: ОЖИДАНИЕ')}
-            </span>
+  // Fallback default place if none loaded
+  const currentPlace: Place = selectedPlace || places[0] || {
+    id: 1,
+    name: 'Набережная Актау и Скальная тропа',
+    summary: 'Уникальная пешеходная тропа вдоль скал и лазурного побережья Каспия.',
+    description: 'Один из главных символов Актау.',
+    category: 'nature',
+    lat: 43.642,
+    lng: 51.172,
+    address: 'г. Актау, побережье Каспия, 15 микрорайон',
+    thumb_url: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80',
+    has_scene: true,
+    hours: null,
+    access: 'walk',
+  };
 
-            {/* Quick Toggle for demo / test without camera */}
-            <button
-              className="cam-sim-toggle"
-              onClick={(e) => {
-                e.stopPropagation();
-                if (isPersonPresent) simulatePersonDeparture();
-                else simulatePersonApproach();
-              }}
-              title={isPersonPresent ? 'Имитировать уход' : 'Имитировать подход человека'}
-            >
-              {isPersonPresent ? <UserX size={12} /> : <UserCheck size={12} />}
-            </button>
-          </div>
-        </div>
+  // Convert volumeLevel (0-100) to approximate dBFS (-60 to 0)
+  const approxDb = Math.round((volumeLevel / 100) * 60 - 60);
 
-        <div className="header-controls-group">
-          {/* Trilingual Selector */}
-          <div className="trilingual-pill-switch">
-            <button
-              className={`lang-tab ${lang === 'kk' ? 'is-active' : ''}`}
-              onClick={() => { setLang('kk'); touchActivity(); }}
-            >
-              ҚАЗ
-            </button>
-            <button
-              className={`lang-tab ${lang === 'ru' ? 'is-active' : ''}`}
-              onClick={() => { setLang('ru'); touchActivity(); }}
-            >
-              РУС
-            </button>
-            <button
-              className={`lang-tab ${lang === 'en' ? 'is-active' : ''}`}
-              onClick={() => { setLang('en'); touchActivity(); }}
-            >
-              ENG
-            </button>
-          </div>
-
-          {/* Reset / End Session */}
-          <button
-            className="kiosk-reset-action-btn"
-            onClick={handleResetSession}
-            title="Сеансты аяқтау / Завершить сеанс"
-          >
-            <RotateCcw size={15} />
-            <span className="btn-label">{lang === 'kk' ? 'Аяқтау' : lang === 'en' ? 'Reset' : 'Сброс'}</span>
-          </button>
-        </div>
-      </header>
-
-      {/* 3. Acoustic Voice Intelligence Bar */}
-      <section className="acoustic-voice-bar">
-        <div className="acoustic-sensor-cluster">
-          <div
-            className={`acoustic-visual-orb ${
-              aiSpeaking
-                ? 'state-speaking'
-                : aiThinking
-                ? 'state-thinking'
-                : isListening
-                ? 'state-listening'
-                : ''
-            }`}
-          >
-            {aiSpeaking ? (
-              <Volume2 className="orb-status-glyph" />
-            ) : aiThinking ? (
-              <Sparkles className="orb-status-glyph is-revolving" />
-            ) : (
-              <span className="orb-dot-pulse" />
-            )}
-          </div>
-
-          <div className="acoustic-text-meta">
-            <span className="acoustic-status-title">
-              {aiSpeaking
-                ? (lang === 'kk' ? 'ИИ СӨЙЛЕУДЕ' : lang === 'en' ? 'AI SPEAKING' : 'ИИ ОТВЕЧАЕТ')
-                : aiThinking
-                ? (lang === 'kk' ? 'ИИ ОЙЛАНУДА...' : lang === 'en' ? 'AI THINKING...' : 'ИИ ДУМАЕТ...')
-                : (lang === 'kk' ? 'ИИ ТЫҢДАУДА' : lang === 'en' ? 'AI LISTENING' : 'ИИ СЛУШАЕТ')}
-            </span>
-
-            {/* Audio Wave Meter */}
-            <div className="audio-bars-spectrum">
-              <span className="spectrum-bar" style={{ height: `${Math.max(4, volumeLevel * 0.9)}px` }} />
-              <span className="spectrum-bar" style={{ height: `${Math.max(4, volumeLevel * 1.3)}px` }} />
-              <span className="spectrum-bar" style={{ height: `${Math.max(4, volumeLevel * 0.6)}px` }} />
-              <span className="spectrum-bar" style={{ height: `${Math.max(4, volumeLevel * 1.5)}px` }} />
-              <span className="spectrum-bar" style={{ height: `${Math.max(4, volumeLevel * 1.0)}px` }} />
-              <span className="spectrum-bar" style={{ height: `${Math.max(4, volumeLevel * 0.5)}px` }} />
-            </div>
-          </div>
-        </div>
-
-        {/* Live Subtitle Transcript */}
-        <div className="acoustic-subtitles-viewport">
-          {interimTranscript ? (
-            <div className="subtitle-bubble live-input">
-              <span className="bubble-type-tag">Слушаю:</span>
-              <span className="bubble-quote">«{interimTranscript}»</span>
-            </div>
-          ) : userSpokenText ? (
-            <div className="subtitle-bubble last-input">
-              <span className="bubble-type-tag">Сұрау:</span>
-              <span className="bubble-quote">«{userSpokenText}»</span>
-            </div>
-          ) : null}
-
-          {aiSpeechText ? (
-            <div className="subtitle-bubble ai-answer">
-              <span className="ai-speech-string">{aiSpeechText}</span>
-            </div>
-          ) : (
-            <div className="subtitle-placeholder">
-              <span>{lang === 'kk' ? '«Амфитеатр қайда?», «Тарихты көрсет», «Не көруге болады?»' : lang === 'en' ? 'Say: "Where is the Amphitheater?", "Show history"' : 'Скажите: «Как пройти к Амфитеатру?», «Что рядом?», «Покажи историю»'}</span>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* 4. Main Stage: Bhutan-Style Map & Estepona Editorial Drawer */}
-      <main className="kiosk-interactive-canvas">
-        {/* Map Layer */}
-        <div className="canvas-map-frame">
-          <KioskMap
-            origin={config.origin}
-            places={places}
-            selectedPlace={selectedPlace}
-            route={route}
-            onMarkerSelect={handleSelectPlace}
+  // 14 Pages Presentation Map
+  const renderCurrentPage = () => {
+    switch (currentPage) {
+      case 'sleep':
+        return (
+          <PageSleep
+            onWakeUp={handleWakeUp}
+            lang={lang}
+            isPersonPresent={isPersonPresent}
+            onSimulateApproach={simulatePersonApproach}
           />
-        </div>
+        );
 
-        {/* Estepona Travel Editorial Drawer */}
-        {selectedPlace && (
-          <PlaceEditorialDrawer
-            place={selectedPlace}
+      case 'greeting':
+        return (
+          <PageGreeting
+            lang={lang}
+            onProceedToListening={() => setCurrentPage('listening')}
+          />
+        );
+
+      case 'listening':
+        return (
+          <PageListening
+            lang={lang}
+            userSpokenText={userSpokenText}
+            audioDbLevel={approxDb}
+            onSimulateUtterance={handleVoiceUtterance}
+            onCancel={() => setCurrentPage('place')}
+          />
+        );
+
+      case 'thinking':
+        return (
+          <PageThinking
+            userSpokenText={userSpokenText}
+            lang={lang}
+          />
+        );
+
+      case 'place':
+        return (
+          <PagePlace
+            place={currentPlace}
+            lang={lang}
+            onGoToRoute={async () => {
+              await loadRouteForPlace(currentPlace);
+              setCurrentPage('route');
+            }}
+            onGoToHistory={async () => {
+              await loadSceneForPlace(currentPlace);
+              setCurrentPage('history');
+            }}
+            onGoToQr={async () => {
+              await loadQrForPlace(currentPlace);
+              setCurrentPage('qr');
+            }}
+            onBackToNearby={() => setCurrentPage('nearby')}
+          />
+        );
+
+      case 'route':
+        return (
+          <PageRoute
+            place={currentPlace}
             route={route}
             config={config}
+            places={places}
             lang={lang}
-            onClose={() => {
-              setSelectedPlace(null);
-              setRoute(null);
+            onGoToPlace={() => setCurrentPage('place')}
+            onGoToHistory={async () => {
+              await loadSceneForPlace(currentPlace);
+              setCurrentPage('history');
             }}
-            onOpenTarihSky={handleOpenTarihSky}
-            onOpenQr={handleOpenQr}
+            onGoToQr={async () => {
+              await loadQrForPlace(currentPlace);
+              setCurrentPage('qr');
+            }}
           />
-        )}
+        );
 
-        {/* Bottom Photo Atlas Strip (Photo-First Discovery) */}
-        <AtlasStrip
-          places={places}
-          selectedPlace={selectedPlace}
-          onSelectPlace={handleSelectPlace}
-          activeCategory={activeCategory}
-          onSelectCategory={(cat) => {
-            setActiveCategory(cat);
-            touchActivity();
-          }}
-          lang={lang}
-        />
-      </main>
+      case 'history':
+        return (
+          <PageHistory
+            place={currentPlace}
+            scene={scene}
+            lang={lang}
+            onBackToPlace={() => setCurrentPage('place')}
+            onGoToRoute={async () => {
+              await loadRouteForPlace(currentPlace);
+              setCurrentPage('route');
+            }}
+            onGoToQr={async () => {
+              await loadQrForPlace(currentPlace);
+              setCurrentPage('qr');
+            }}
+          />
+        );
 
-      {/* 5. Quick Voice Simulator & Accessibility Footer */}
-      <footer className="kiosk-bottom-voice-bar">
-        <div className="bottom-guidance-pill">
-          <HelpCircle size={14} className="guidance-icon" />
-          <span>{lang === 'kk' ? 'Дауыс сұраулары:' : lang === 'en' ? 'Voice Queries:' : 'Голосовые команды:'}</span>
-        </div>
+      case 'qr':
+        return (
+          <PageQr
+            place={currentPlace}
+            qrData={qrData}
+            onBackToRoute={() => setCurrentPage('route')}
+            onBackToPlace={() => setCurrentPage('place')}
+          />
+        );
 
-        <div className="bottom-chips-track">
-          <button
-            className="voice-command-chip"
-            onClick={() => triggerManualUtterance('Как пройти к Амфитеатру?')}
-          >
-            «Как пройти к Амфитеатру?»
-          </button>
+      case 'variants':
+        return (
+          <PageVariants
+            places={places}
+            lang={lang}
+            onSelectPlace={handleSelectAndShowPlace}
+          />
+        );
 
-          <button
-            className="voice-command-chip"
-            onClick={() => triggerManualUtterance('Что рядом посмотреть?')}
-          >
-            «Что рядом?»
-          </button>
+      case 'nearby':
+        return (
+          <PageNearby
+            places={places}
+            lang={lang}
+            onSelectPlace={handleSelectAndShowPlace}
+          />
+        );
 
-          <button
-            className="voice-command-chip"
-            onClick={() => triggerManualUtterance('Покажи как было раньше')}
-          >
-            «Покажи историю»
-          </button>
+      case 'help':
+        return (
+          <PageHelp
+            lang={lang}
+            onBack={() => setCurrentPage(selectedPlace ? 'place' : 'greeting')}
+            onStartListening={() => setCurrentPage('listening')}
+          />
+        );
 
-          <button
-            className="voice-command-chip"
-            onClick={() => triggerManualUtterance('Отправь на телефон')}
-          >
-            «Отправь на телефон»
-          </button>
+      case 'farewell':
+        return (
+          <PageFarewell
+            lang={lang}
+            onFinishFarewell={handleResetSession}
+          />
+        );
 
-          <button
-            className="voice-command-chip"
-            onClick={() => triggerManualUtterance('Қазақша')}
-          >
-            «Қазақша»
-          </button>
+      case 'error':
+        return (
+          <PageError
+            lang={lang}
+            onRetry={() => setCurrentPage('listening')}
+            onShowHelp={() => setCurrentPage('help')}
+          />
+        );
 
-          <button
-            className="voice-command-chip"
-            onClick={() => triggerManualUtterance('English')}
-          >
-            «English»
-          </button>
+      case 'gestures':
+        return (
+          <PageGestures
+            onSelectGesture={(gesture) => {
+              if (gesture.includes('1-й') || gesture.includes('Да')) {
+                handleSelectAndShowPlace(places[0]);
+              } else if (gesture.includes('2-й')) {
+                handleSelectAndShowPlace(places[1] || places[0]);
+              } else if (gesture.includes('маршрут')) {
+                loadRouteForPlace(currentPlace).then(() => setCurrentPage('route'));
+              } else {
+                setCurrentPage('place');
+              }
+            }}
+            onReturnToVoice={() => {
+              setCurrentPage('listening');
+            }}
+          />
+        );
 
-          <button
-            className="voice-command-chip chip-farewell"
-            onClick={() => triggerManualUtterance('Спасибо, пока')}
-          >
-            «Спасибо, пока»
-          </button>
-        </div>
-      </footer>
+      default:
+        return (
+          <PageSleep
+            onWakeUp={handleWakeUp}
+            lang={lang}
+            isPersonPresent={isPersonPresent}
+            onSimulateApproach={simulatePersonApproach}
+          />
+        );
+    }
+  };
 
-      {/* 6. Sign Language Gesture Notification Banner (Rule #7) */}
-      {/* TRIGGER: Sound detected + normal speech unrecognized + person present via camera */}
-      {gestureAlert && (
-        <div className="gesture-notification-overlay">
-          <div className="gesture-badge-cam">
-            <Camera size={14} />
-            <span>CV КАМЕРА · {unrecognizedSpeechCount}/2</span>
-          </div>
+  const pagesList: { id: KioskPage; label: string; num: string }[] = [
+    { id: 'sleep', label: 'Сон', num: '01' },
+    { id: 'greeting', label: 'Приветствие', num: '02' },
+    { id: 'listening', label: 'Слушаю', num: '03' },
+    { id: 'thinking', label: 'Думаю', num: '04' },
+    { id: 'place', label: 'Место', num: '05' },
+    { id: 'route', label: 'Маршрут', num: '06' },
+    { id: 'history', label: 'История', num: '07' },
+    { id: 'qr', label: 'QR', num: '08' },
+    { id: 'variants', label: 'Варианты', num: '09' },
+    { id: 'nearby', label: 'Рядом', num: '10' },
+    { id: 'help', label: 'Помощь', num: '11' },
+    { id: 'farewell', label: 'Прощание', num: '12' },
+    { id: 'error', label: 'Ошибка', num: '13' },
+    { id: 'gestures', label: 'Жесты', num: '14' },
+  ];
 
-          <Hand className="gesture-glow-icon" />
+  return (
+    <div className="presentation-stage-root">
+      {/* Active Page Viewport with Cinematic Transitions */}
+      {renderCurrentPage()}
 
-          <div className="gesture-copy">
-            <strong className="gesture-strong">
-              {lang === 'kk'
-                ? 'Сіз ым-ишарамен сөйлесесіз бе? Көрсетіңіз!'
-                : lang === 'en'
-                ? 'Do you communicate with gestures? Show us!'
-                : 'Вы общаетесь жестами? Показывайте!'}
-            </strong>
-            <span className="gesture-desc">
-              {lang === 'kk'
-                ? 'Дыбыс бар, бірақ сөздер 2 рет танылмады. Камера алдында белгі көрсетіңіз — стела сізді түсінеді!'
-                : lang === 'en'
-                ? 'Sound detected, but speech was not recognized twice. Show gestures to the camera — we understand!'
-                : 'Звук зафиксирован, но речь не распознана 2 раза. Показывайте жесты перед камерой — стела вас поймёт!'}
-            </span>
-          </div>
+      {/* Floating Storyboard Controller Toolbar */}
+      {showStoryboard && (
+        <div className="storyboard-toolbar" role="navigation" aria-label="Презентация 14 экранов">
+          <span className="storyboard-label">14 Экранов BaGdar:</span>
 
-          <div className="gesture-action-pills">
+          {pagesList.map((p) => (
             <button
-              className="gesture-choice-btn"
+              key={p.id}
+              className={`storyboard-btn ${currentPage === p.id ? 'active' : ''}`}
               onClick={() => {
-                triggerManualUtterance('Как пройти к Амфитеатру?');
-                setGestureAlert(false);
+                touchActivity();
+                if (p.id === 'route') {
+                  loadRouteForPlace(currentPlace).then(() => setCurrentPage('route'));
+                } else if (p.id === 'history') {
+                  loadSceneForPlace(currentPlace).then(() => setCurrentPage('history'));
+                } else if (p.id === 'qr') {
+                  loadQrForPlace(currentPlace).then(() => setCurrentPage('qr'));
+                } else {
+                  setCurrentPage(p.id);
+                }
               }}
+              title={`Перейти на экран ${p.num}: ${p.label}`}
             >
-              👍 {lang === 'kk' ? 'Амфитеатр' : 'Амфитеатр'}
+              <span className="btn-num">{p.num}</span>
+              <span>{p.label}</span>
             </button>
-            <button
-              className="gesture-choice-btn"
-              onClick={() => {
-                triggerManualUtterance('Что рядом?');
-                setGestureAlert(false);
-              }}
-            >
-              👌 {lang === 'kk' ? 'Жақын жерлер' : 'Что рядом'}
-            </button>
-            <button className="gesture-dismiss-btn" onClick={() => setGestureAlert(false)}>✕</button>
-          </div>
+          ))}
+
+          {/* Quick Sensor Simulator Toggles */}
+          <button
+            className="storyboard-btn sensor-toggle"
+            onClick={isPersonPresent ? simulatePersonDeparture : simulatePersonApproach}
+            title="Камера: симуляция присутствия человека"
+          >
+            {isPersonPresent ? (
+              <>
+                <UserCheck size={12} className="text-emerald-400" />
+                <span>Человек в кадре</span>
+              </>
+            ) : (
+              <>
+                <UserX size={12} className="text-slate-400" />
+                <span>Кадр пуст</span>
+              </>
+            )}
+          </button>
         </div>
-      )}
-
-      {/* 7. TarihSky Modal */}
-      {showTarihSky && scene && (
-        <TarihSkyModal
-          scene={scene}
-          lang={lang}
-          onClose={() => setShowTarihSky(false)}
-        />
-      )}
-
-      {/* 8. QR Modal */}
-      {showQr && qrData && selectedPlace && (
-        <QrModal
-          url={qrData.url}
-          place={selectedPlace}
-          lang={lang}
-          onClose={() => setShowQr(false)}
-          timeoutSec={config.session.qr_timeout_sec || 60}
-        />
       )}
     </div>
   );

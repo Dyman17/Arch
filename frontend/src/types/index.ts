@@ -2,6 +2,23 @@
 
 export type Language = 'kk' | 'ru' | 'en' | string;
 
+export type KioskPage =
+  | 'sleep'
+  | 'greeting'
+  | 'listening'
+  | 'thinking'
+  | 'place'
+  | 'route'
+  | 'history'
+  | 'qr'
+  | 'variants'
+  | 'nearby'
+  | 'help'
+  | 'farewell'
+  | 'error'
+  | 'gestures';
+
+
 export interface KioskOrigin {
   lat: number;
   lng: number;
