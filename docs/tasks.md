@@ -29,7 +29,7 @@
 
 | # | Задача | Ветка | Статус |
 |---|--------|-------|--------|
-| B1 | Модели + seed: 10–20 places, hours, access, языки | `feature/seed` | ⬜ |
+| B1 | Модели + seed: 10–20 places, hours, access, языки | `feature/seed` | 🔄 |
 | B2 | `GET config`, `GET places`, `GET places/{id}`, `GET route` (+ fallback) | `feature/api-places` | ⬜ |
 | B3 | `POST voice`: STT, lang auto, intent → place_id / suggestions, mode scene | `feature/api-voice` | ⬜ |
 | B4 | `GET scene`, `POST qr`, `POST session/end`, `GET health` | `feature/api-scene-qr` | ⬜ |
