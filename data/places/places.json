@@ -1,0 +1,322 @@
+[
+  {
+    "id": 1,
+    "category": "culture",
+    "lat": 43.661365,
+    "lng": 51.132965,
+    "thumb_url": "/static/places/placeholder.svg",
+    "photos": [
+      "/static/places/placeholder.svg"
+    ],
+    "hours": null,
+    "access": "walk",
+    "texts": {
+      "kk": {
+        "name": "Амфитеатр",
+        "summary": "Каспий жағасындағы ашық сахна.",
+        "description": "Каспий жағасындағы ашық сахна. Жағалауда қалалық іс-шаралар өтеді.",
+        "address": "Ақтау, 15-шағынаудан жағалауы"
+      },
+      "ru": {
+        "name": "Амфитеатр",
+        "summary": "Открытая сцена у Каспийского моря.",
+        "description": "Открытая сцена у Каспийского моря. На набережной здесь проводят городские мероприятия.",
+        "address": "Актау, набережная 15-го микрорайона"
+      },
+      "en": {
+        "name": "Amphitheater",
+        "summary": "Open-air stage by the Caspian Sea.",
+        "description": "Open-air stage by the Caspian Sea. The waterfront venue hosts city events.",
+        "address": "Aktau, 15th microdistrict waterfront"
+      }
+    }
+  },
+  {
+    "id": 2,
+    "category": "park",
+    "lat": 43.662252,
+    "lng": 51.133075,
+    "thumb_url": "/static/places/placeholder.svg",
+    "photos": [
+      "/static/places/placeholder.svg"
+    ],
+    "hours": null,
+    "access": "walk",
+    "texts": {
+      "kk": {
+        "name": "15-шағынаудан жағалауы",
+        "summary": "Теңіз бойындағы серуен аймағы.",
+        "description": "Теңіз бойындағы серуен аймағы. Серуен жолы амфитеатрдың жанында орналасқан.",
+        "address": "Ақтау, 15-шағынаудан жағалауы"
+      },
+      "ru": {
+        "name": "Набережная 15-го микрорайона",
+        "summary": "Прогулочная зона вдоль моря.",
+        "description": "Прогулочная зона вдоль моря. Променад расположен рядом с амфитеатром.",
+        "address": "Актау, набережная 15-го микрорайона"
+      },
+      "en": {
+        "name": "15th Microdistrict Promenade",
+        "summary": "Walking area along the sea.",
+        "description": "Walking area along the sea. The promenade is next to the amphitheater.",
+        "address": "Aktau, 15th microdistrict waterfront"
+      }
+    }
+  },
+  {
+    "id": 3,
+    "category": "nature",
+    "lat": 43.658903,
+    "lng": 51.133838,
+    "thumb_url": "/static/places/placeholder.svg",
+    "photos": [
+      "/static/places/placeholder.svg"
+    ],
+    "hours": null,
+    "access": "walk",
+    "texts": {
+      "kk": {
+        "name": "Көрініс алаңы",
+        "summary": "Каспий теңізіне қарайтын орын.",
+        "description": "Каспий теңізіне қарайтын орын. Алаң жағалаудағы серуен аймағында орналасқан.",
+        "address": "Ақтау, 15-шағынаудан жағалауы"
+      },
+      "ru": {
+        "name": "Смотровая площадка",
+        "summary": "Точка с видом на Каспийское море.",
+        "description": "Точка с видом на Каспийское море. Площадка находится у прибрежной прогулочной зоны.",
+        "address": "Актау, набережная 15-го микрорайона"
+      },
+      "en": {
+        "name": "Viewpoint",
+        "summary": "View over the Caspian Sea.",
+        "description": "View over the Caspian Sea. The viewpoint is on the waterfront walking area.",
+        "address": "Aktau, 15th microdistrict waterfront"
+      }
+    }
+  },
+  {
+    "id": 4,
+    "category": "culture",
+    "lat": 43.659594,
+    "lng": 51.134827,
+    "thumb_url": "/static/places/placeholder.svg",
+    "photos": [
+      "/static/places/placeholder.svg"
+    ],
+    "hours": null,
+    "access": "walk",
+    "texts": {
+      "kk": {
+        "name": "«Құдықшылар» мүсіні",
+        "summary": "Жағалаудағы мүсін.",
+        "description": "Жағалаудағы мүсін. Мүсін серуен аймағының жанында орналасқан.",
+        "address": "Ақтау, 15-шағынаудан жағалауы"
+      },
+      "ru": {
+        "name": "Скульптура «Құдықшылар»",
+        "summary": "Скульптура на набережной.",
+        "description": "Скульптура на набережной. Она расположена рядом с прогулочной зоной.",
+        "address": "Актау, набережная 15-го микрорайона"
+      },
+      "en": {
+        "name": "Qudyqshylar Sculpture",
+        "summary": "Sculpture on the waterfront.",
+        "description": "Sculpture on the waterfront. It stands beside the walking area.",
+        "address": "Aktau, 15th microdistrict waterfront"
+      }
+    }
+  },
+  {
+    "id": 5,
+    "category": "culture",
+    "lat": 43.662236,
+    "lng": 51.132432,
+    "thumb_url": "/static/places/placeholder.svg",
+    "photos": [
+      "/static/places/placeholder.svg"
+    ],
+    "hours": null,
+    "access": "walk",
+    "texts": {
+      "kk": {
+        "name": "«Түйе мінген хан» мүсіні",
+        "summary": "Түйедегі салт атты бейнесі.",
+        "description": "Түйедегі салт атты бейнесі. Мүсін теңіз жағасында орналасқан.",
+        "address": "Ақтау, 15-шағынаудан жағалауы"
+      },
+      "ru": {
+        "name": "Скульптура «Хан на верблюде»",
+        "summary": "Фигура всадника на верблюде.",
+        "description": "Фигура всадника на верблюде. Скульптура находится у моря.",
+        "address": "Актау, набережная 15-го микрорайона"
+      },
+      "en": {
+        "name": "Khan on a Camel Sculpture",
+        "summary": "Figure of a rider on a camel.",
+        "description": "Figure of a rider on a camel. The sculpture stands by the sea.",
+        "address": "Aktau, 15th microdistrict waterfront"
+      }
+    }
+  },
+  {
+    "id": 6,
+    "category": "culture",
+    "lat": 43.664791,
+    "lng": 51.132468,
+    "thumb_url": "/static/places/placeholder.svg",
+    "photos": [
+      "/static/places/placeholder.svg"
+    ],
+    "hours": null,
+    "access": "walk",
+    "texts": {
+      "kk": {
+        "name": "«Кобра» мүсіні",
+        "summary": "Жағалаудағы кобра бейнесі.",
+        "description": "Жағалаудағы кобра бейнесі. Мүсін серуен жолының бойында орналасқан.",
+        "address": "Ақтау, 15-шағынаудан жағалауы"
+      },
+      "ru": {
+        "name": "Скульптура «Кобра»",
+        "summary": "Фигура кобры на набережной.",
+        "description": "Фигура кобры на набережной. Скульптура расположена вдоль прогулочного маршрута.",
+        "address": "Актау, набережная 15-го микрорайона"
+      },
+      "en": {
+        "name": "Cobra Sculpture",
+        "summary": "Cobra figure on the waterfront.",
+        "description": "Cobra figure on the waterfront. It stands along the walking route.",
+        "address": "Aktau, 15th microdistrict waterfront"
+      }
+    }
+  },
+  {
+    "id": 7,
+    "category": "culture",
+    "lat": 43.665396,
+    "lng": 51.132105,
+    "thumb_url": "/static/places/placeholder.svg",
+    "photos": [
+      "/static/places/placeholder.svg"
+    ],
+    "hours": null,
+    "access": "walk",
+    "texts": {
+      "kk": {
+        "name": "«Қасқыр мінген бала» мүсіні",
+        "summary": "Қасқыр мінген бала бейнесі.",
+        "description": "Қасқыр мінген бала бейнесі. Мүсін жағалаудың солтүстік бөлігінде орналасқан.",
+        "address": "Ақтау, 15-шағынаудан жағалауы"
+      },
+      "ru": {
+        "name": "Скульптура «Ребёнок на волке»",
+        "summary": "Фигура ребёнка верхом на волке.",
+        "description": "Фигура ребёнка верхом на волке. Скульптура находится у северной части набережной.",
+        "address": "Актау, набережная 15-го микрорайона"
+      },
+      "en": {
+        "name": "Child on a Wolf Sculpture",
+        "summary": "Figure of a child riding a wolf.",
+        "description": "Figure of a child riding a wolf. The sculpture is near the northern waterfront.",
+        "address": "Aktau, 15th microdistrict waterfront"
+      }
+    }
+  },
+  {
+    "id": 8,
+    "category": "culture",
+    "lat": 43.656153,
+    "lng": 51.147971,
+    "thumb_url": "/static/places/placeholder.svg",
+    "photos": [
+      "/static/places/placeholder.svg"
+    ],
+    "hours": null,
+    "access": "walk",
+    "texts": {
+      "kk": {
+        "name": "Ту тұғыры",
+        "summary": "Жағалау маңындағы биік ту тұғыры.",
+        "description": "Жағалау маңындағы биік ту тұғыры. Ол серуен аймағына жақын бағдар ретінде көрінеді.",
+        "address": "Ақтау, 15-шағынаудан жағалауы"
+      },
+      "ru": {
+        "name": "Флагшток",
+        "summary": "Высокий флагшток у прибрежной зоны.",
+        "description": "Высокий флагшток у прибрежной зоны. Он служит ориентиром рядом с прогулочным районом.",
+        "address": "Актау, набережная 15-го микрорайона"
+      },
+      "en": {
+        "name": "Flagpole",
+        "summary": "Tall flagpole near the coast.",
+        "description": "Tall flagpole near the coast. It is a visible landmark near the walking area.",
+        "address": "Aktau, 15th microdistrict waterfront"
+      }
+    }
+  },
+  {
+    "id": 9,
+    "category": "park",
+    "lat": 43.66546,
+    "lng": 51.141331,
+    "thumb_url": "/static/places/placeholder.svg",
+    "photos": [
+      "/static/places/placeholder.svg"
+    ],
+    "hours": null,
+    "access": "walk",
+    "texts": {
+      "kk": {
+        "name": "Балалар алаңы",
+        "summary": "Ашық ойын алаңы.",
+        "description": "Ашық ойын алаңы. Ол жағалау ауданында орналасқан.",
+        "address": "Ақтау, 15-шағынаудан жағалауы"
+      },
+      "ru": {
+        "name": "Детская площадка",
+        "summary": "Открытая площадка для игр.",
+        "description": "Открытая площадка для игр. Она находится в районе набережной.",
+        "address": "Актау, набережная 15-го микрорайона"
+      },
+      "en": {
+        "name": "Children's Playground",
+        "summary": "Outdoor play area.",
+        "description": "Outdoor play area. It is in the waterfront district.",
+        "address": "Aktau, 15th microdistrict waterfront"
+      }
+    }
+  },
+  {
+    "id": 10,
+    "category": "park",
+    "lat": 43.656405,
+    "lng": 51.139441,
+    "thumb_url": "/static/places/placeholder.svg",
+    "photos": [
+      "/static/places/placeholder.svg"
+    ],
+    "hours": null,
+    "access": "walk",
+    "texts": {
+      "kk": {
+        "name": "Жағалау маңындағы ойын орны",
+        "summary": "Демалыс пен ойынға арналған шағын орын.",
+        "description": "Демалыс пен ойынға арналған шағын орын. Ол серуен жолына жақын орналасқан.",
+        "address": "Ақтау, 15-шағынаудан жағалауы"
+      },
+      "ru": {
+        "name": "Игровая зона у набережной",
+        "summary": "Небольшое место для отдыха и игр.",
+        "description": "Небольшое место для отдыха и игр. Зона расположена недалеко от променада.",
+        "address": "Актау, набережная 15-го микрорайона"
+      },
+      "en": {
+        "name": "Waterfront Play Area",
+        "summary": "Small recreation and play area.",
+        "description": "Small recreation and play area. It is close to the promenade.",
+        "address": "Aktau, 15th microdistrict waterfront"
+      }
+    }
+  }
+]
