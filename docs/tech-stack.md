@@ -22,6 +22,9 @@
 | OSRM public | пеший routing | не нужен | ✅ работает |
 | Gemini API (`gemini-2.0-flash`) | понимание + ответы на любом языке, перевод каталога | `GEMINI_API_KEY` | ⬜ ждёт ключ (B7) |
 | OpenAI-совместимый (`gpt-4o-mini`) | то же, альтернатива | `OPENAI_API_KEY` | ⬜ ждёт ключ (B7) |
+| OpenAI TTS | озвучка ответа на языке туриста (B11) | тот же `OPENAI_API_KEY` | ⬜ (B11) |
+
+Языки: основные **kk/ru/en** без иерархии (default `kk`); любой другой (zh, pt-BR…) — через LLM/TTS.
 
 Код: `backend/app/llm.py` (провайдеры), подключение в `voice` и `places`. Без ключа — правила/русский.
 

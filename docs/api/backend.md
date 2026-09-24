@@ -43,8 +43,8 @@
 {
   "screen_id": "aktau-naberezhnaya-1",
   "origin": { "lat": 43.6420, "lng": 51.1720, "heading_deg": 90 },
-  "languages": ["ru", "en", "kk"],
-  "default_lang": "ru",
+  "languages": ["kk", "ru", "en"],
+  "default_lang": "kk",
   "modes": { "voice": true, "tarihsky": true, "qr": true, "huskylens": false },
   "session": { "idle_timeout_sec": 90, "qr_timeout_sec": 30 },
   "district": "aktau-centr",
@@ -170,7 +170,7 @@ Request:
 }
 ```
 
-- `lang`: `"auto"` | `"ru"` | `"en"` | `"kk"`; `mode`: `"nav"` | `"scene"`; лимит аудио 15 с
+- `lang`: `"auto"` | `"kk"` | `"ru"` | `"en"` | **любой другой** (zh, pt-BR и т.д. — через LLM/TTS OpenAI); `mode`: `"nav"` | `"scene"`; лимит аудио 15 с
 
 Место найдено:
 ```json

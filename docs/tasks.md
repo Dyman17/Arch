@@ -36,7 +36,8 @@
 | B5 | Seed 2–3 scenes + тексты + sources | `feature/seed-scenes` | ⬜ |
 | B6 | .env, ключи, rate-limit, единый error-format | `feature/ops-api` | ⬜ |
 | B7 | LLM: вставить ключ в `backend/.env` (`LLM_PROVIDER` + `GEMINI_API_KEY` / `OPENAI_API_KEY`), перезапустить, `GET health` → `"ai": true` | `feature/llm-key` | ⬜ |
-| B8 | LLM: проверить голос на 3 языках (ru/en + китайский), каталог на неродном языке, фоллбэк без ключа | `feature/llm-i18n` | ⬜ |
+| B8 | LLM: проверить голос на 4 языках (kk/ru/en + китайский), каталог на неродном языке, фоллбэк без ключа | `feature/llm-i18n` | ⬜ |
+| B11 | TTS через OpenAI (ответ вслух на языке туриста): `POST /api/tts` → аудио; фронт проигрывает | `feature/api-tts` | ⬜ |
 | B9 | `GET /api/stats`: популярные места, языки, сессии (цифры для питча + акимат) | `feature/api-stats` | ⬜ |
 | B10 | `POST /api/feedback`: 👍/👎 на ответ (петля обучения) | `feature/api-feedback` | ⬜ |
 
@@ -88,9 +89,18 @@ feature/integration | docs/pitch | chore/deploy
 1. Скопировать `backend/.env.example` → `backend/.env` (файл не коммитится)
 2. Выбрать провайдера: `LLM_PROVIDER=gemini` + `GEMINI_API_KEY` **или** `LLM_PROVIDER=openai` + `OPENAI_API_KEY` (модель по умолчанию `gpt-4o-mini`)
 3. Перезапустить бэк, проверить `GET /api/health` → `"ai": true`
-4. Проверить `POST /api/voice` с текстом на трёх языках (ru/en/zh): в ответе `place_id` + `answer` на языке запроса, в `debug` — `"via": "llm"`
+4. Проверить `POST /api/voice` с текстом на четырёх языках (kk/ru/en/zh): в ответе `place_id` + `answer` на языке запроса, в `debug` — `"via": "llm"`
 5. Проверить `GET /api/places?lang=zh` — названия/описания переведены
 6. Убрать ключ → убедиться, что всё падает на правила/русский без ошибок (деградация)
+
+## B11. TTS (озвучка ответа)
+
+Цель: стойка не только показывает, но и **говорит** на языке туриста (китайский, бразильский и т.д.).
+
+1. Провайдер — OpenAI TTS (ключ тот же `OPENAI_API_KEY`)
+2. Контракт предложить техлиду до кода (вариант: `POST /api/tts` `{ text, lang }` → `{ audio_url }` или base64)
+3. Фронт: проиграть аудио после показа ответа; без аудио — всё работает молча (деградация)
+4. Код `llm.py` расширить, не ломая frozen-контракты без PR
 
 Код уже готов: `backend/app/llm.py` (провайдеры + перевод), подключение в `voice` и `places`. Ключ только добавляешь.
 
