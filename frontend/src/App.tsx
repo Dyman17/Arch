@@ -62,6 +62,7 @@ export const App: React.FC = () => {
   const [aiSpeaking, setAiSpeaking] = useState<boolean>(false);
   const [aiSpeechText, setAiSpeechText] = useState<string>('');
   const [userSpokenText, setUserSpokenText] = useState<string>('');
+  const [unrecognizedSpeechCount, setUnrecognizedSpeechCount] = useState<number>(0);
 
   // Timers
   const idleTimerRef = useRef<number>(0);
@@ -122,6 +123,7 @@ export const App: React.FC = () => {
     setShowTarihSky(false);
     setShowQr(false);
     setGestureAlert(false);
+    setUnrecognizedSpeechCount(0);
     setAiSpeechText('');
     setUserSpokenText('');
     setAiSpeaking(false);
@@ -130,6 +132,7 @@ export const App: React.FC = () => {
   }, [sessionId]);
 
   // 2. Camera Presence Hook (Optical Person Detection)
+  // Rule 1: Presence is strictly determined by camera. Main screen shows when person is in frame.
   const {
     isPersonPresent,
     cameraActive,
@@ -137,18 +140,12 @@ export const App: React.FC = () => {
     simulatePersonDeparture,
   } = useCameraPresence({
     onPersonArrived: () => {
-      // Rule: Camera detects person in front -> Kiosk wakes up automatically!
-      if (isAsleep) {
-        handleWakeUp();
-      }
+      // Camera sees person -> wake up to main screen!
+      handleWakeUp();
     },
     onPersonDeparted: () => {
-      // Person stepped away from kiosk
-      setTimeout(() => {
-        if (!isPersonPresent) {
-          handleResetSession();
-        }
-      }, 5000);
+      // Person left camera view -> return to sleep screen!
+      handleResetSession();
     },
     enabled: true,
   });
@@ -241,6 +238,22 @@ export const App: React.FC = () => {
         setAiSpeechText(response.say);
         speakText(response.say, response.lang || lang, () => setAiSpeaking(true), () => setAiSpeaking(false));
 
+        // Check if dialogue recognized speech or fell back to prompt
+        if (response.debug?.via === 'fallback_prompt' || response.intent === 'speech_unrecognized') {
+          // Sound was present, but speech was not recognized into a place/command
+          setUnrecognizedSpeechCount((prev) => {
+            const next = prev + 1;
+            if (next >= 2) {
+              setGestureAlert(true);
+            }
+            return next;
+          });
+        } else {
+          // Valid speech successfully recognized! Reset counter & dismiss gesture alert
+          setUnrecognizedSpeechCount(0);
+          setGestureAlert(false);
+        }
+
         for (const action of response.actions) {
           if (action.show === 'sleep') {
             handleResetSession();
@@ -293,17 +306,22 @@ export const App: React.FC = () => {
     ]
   );
 
-  // Voice listener hook with sensitive unrecognized sound detection
+  // Voice listener hook:
+  // Rule 1: Sound threshold > -30 dBFS
+  // Rule 2: Gestures trigger ONLY when sound exists (> -30 dBFS) AND speech is not recognized 2 times. Silence does NOT trigger gestures.
   const { isListening, interimTranscript, volumeLevel, triggerManualUtterance } =
     useVoiceListener({
       onSpeechFinal: handleVoiceUtterance,
       onUnrecognizedSound: () => {
-        // EXACT USER REQUIREMENT:
-        // "если звук есть, а нормальной речи не распознается то только тогда спросить про язык жестов"
-        // Camera confirms person presence AND sound heard but no speech recognized -> offer sign language!
-        if (isPersonPresent) {
-          setGestureAlert(true);
-        }
+        if (!isPersonPresent) return;
+
+        setUnrecognizedSpeechCount((prev) => {
+          const next = prev + 1;
+          if (next >= 2) {
+            setGestureAlert(true);
+          }
+          return next;
+        });
       },
       lang,
       enabled: true,
@@ -586,7 +604,7 @@ export const App: React.FC = () => {
         <div className="gesture-notification-overlay">
           <div className="gesture-badge-cam">
             <Camera size={14} />
-            <span>CV КАМЕРА</span>
+            <span>CV КАМЕРА · {unrecognizedSpeechCount}/2</span>
           </div>
 
           <Hand className="gesture-glow-icon" />
@@ -594,17 +612,17 @@ export const App: React.FC = () => {
           <div className="gesture-copy">
             <strong className="gesture-strong">
               {lang === 'kk'
-                ? 'Ым-ишара тілінде сөйлейсіз бе?'
+                ? 'Сіз ым-ишарамен сөйлесесіз бе? Көрсетіңіз!'
                 : lang === 'en'
-                ? 'Do you communicate in sign language?'
-                : 'Общаетесь на языке жестов?'}
+                ? 'Do you communicate with gestures? Show us!'
+                : 'Вы общаетесь жестами? Показывайте!'}
             </strong>
             <span className="gesture-desc">
               {lang === 'kk'
-                ? 'Камера алдында белгі көрсетіңіз (мысалы: «Иә», «Жоқ», «Амфитеатр») — стела сізді түсінеді!'
+                ? 'Дыбыс бар, бірақ сөздер 2 рет танылмады. Камера алдында белгі көрсетіңіз — стела сізді түсінеді!'
                 : lang === 'en'
-                ? 'Show gestures in front of the camera (e.g. "Yes", "No", "Amphitheater") — we understand!'
-                : 'Камера включена: показывайте жесты перед экраном — стела распознает ваш выбор!'}
+                ? 'Sound detected, but speech was not recognized twice. Show gestures to the camera — we understand!'
+                : 'Звук зафиксирован, но речь не распознана 2 раза. Показывайте жесты перед камерой — стела вас поймёт!'}
             </span>
           </div>
 

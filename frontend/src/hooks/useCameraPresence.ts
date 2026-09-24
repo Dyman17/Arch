@@ -33,13 +33,13 @@ export function useCameraPresence({
       if (departedTimerRef.current) clearTimeout(departedTimerRef.current);
       onPersonArrived?.();
     } else {
-      // Refresh presence, cancel departure timer
+      // Refresh presence, reset departure timer
       if (departedTimerRef.current) clearTimeout(departedTimerRef.current);
       departedTimerRef.current = setTimeout(() => {
         setIsPersonPresent(false);
         isPersonPresentRef.current = false;
         onPersonDeparted?.();
-      }, 15000); // 15 seconds without motion = person left
+      }, 8000); // 8 seconds without person in camera frame = person departed
     }
   }, [onPersonArrived, onPersonDeparted]);
 
