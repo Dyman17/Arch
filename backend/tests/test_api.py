@@ -91,7 +91,7 @@ def test_public_routing_demo_is_marked_approximate(tmp_path, monkeypatch):
     monkeypatch.setattr(catalog, 'CATALOG_PATH', path)
     payload = {'code': 'Ok', 'routes': [{
         'distance': 1600, 'duration': 180,
-        'geometry': {'type': 'LineString', 'coordinates': [[51.1352, 43.6582], [51.18, 43.65]]},
+        'geometry': {'type': 'LineString', 'coordinates': [[51.14, 43.66], [51.175, 43.651]]},
     }]}
     monkeypatch.setattr(routing, 'urlopen',
                         lambda *_args, **_kwargs: io.BytesIO(json.dumps(payload).encode()))
@@ -100,5 +100,7 @@ def test_public_routing_demo_is_marked_approximate(tmp_path, monkeypatch):
     assert response.status_code == 200
     route = response.json()
     assert route['is_approximate'] is True
-    assert route['duration_min'] == 20  # walking estimate, not the demo's driving duration
-    assert route['steps'][0]['distance_m'] == 1600
+    assert route['duration_min'] > 20  # connectors plus the walking estimate
+    assert route['geometry']['coordinates'][0] == [51.1352, 43.6582]
+    assert route['geometry']['coordinates'][-1] == [51.18, 43.65]
+    assert route['steps'][0]['distance_m'] == route['distance_m']

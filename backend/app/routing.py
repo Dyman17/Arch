@@ -60,13 +60,22 @@ def routed_walk(place: Place, settings: Settings) -> dict:
             raise RouteUnavailable()
         route = payload['routes'][0]
         geometry = route['geometry']
-        if geometry.get('type') != 'LineString':
+        if geometry.get('type') != 'LineString' or len(geometry.get('coordinates', [])) < 2:
             raise RouteUnavailable()
         public_demo = settings.osrm_base_url == 'https://router.project-osrm.org'
         distance = round(route['distance'])
         steps = []
         if public_demo:
             # The public demo accepts /foot but currently returns driving timings.
+            # It also snaps both ends to roads, so include the kiosk and place explicitly.
+            coordinates = geometry['coordinates']
+            start = [settings.origin_lng, settings.origin_lat]
+            end = [place.lng, place.lat]
+            distance += haversine_m(settings.origin_lat, settings.origin_lng,
+                                    coordinates[0][1], coordinates[0][0])
+            distance += haversine_m(coordinates[-1][1], coordinates[-1][0],
+                                    place.lat, place.lng)
+            geometry = {'type': 'LineString', 'coordinates': [start, *coordinates, end]}
             steps = [{'instruction': 'Примерный путь по дорогам', 'distance_m': distance}]
         else:
             for leg in route.get('legs', []):
