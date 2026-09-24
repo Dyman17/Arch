@@ -1,43 +1,44 @@
-# ⚙️ API-контракт — Backend
+# ⚙️ API-контракт — Backend (фиксированный)
 
-> 🔒 **ЗАМОРОЖЕНО.** Менять этот файл может только техлид (@Dyman17). Изменение 24.09: по приказу техлида добавлены `q`/`categories` в `GET places` и `categories` в `config`.
+> 🔒 **ЗАМОРОЖЕНО.** Менять этот файл может только техлид (@Dyman17). Фронт подключается отдельно строго по этим эндпоинтам. Изменение 24.09: `POST /dialog/turn` (мозг), `POST /event`, админские, языки kk/ru/en+any.
 
-Что реализует бэк (@RKydyrali). Фронт читает [frontend.md](frontend.md), общий процесс — в [README.md](README.md).
-
-**Base URL:** `/api` · **JSON, UTF-8** · **Языки:** `ru` | `en` | `kk`
-
----
+**Base URL:** `/api` · **Формат:** JSON, UTF-8 · **Языки:** основные `kk` | `ru` | `en` (default `kk`), любой другой через LLM
 
 ## 0. Общее
 
-### Единый формат ошибки
+### Формат успеха
+
+Прямой JSON объекта (без обёрток).
+
+### Формат ошибки
 
 ```json
-{ "error": { "code": "PLACE_NOT_FOUND", "message": "Место не найдено", "details": {} } }
+{ "error": { "code": "PLACE_NOT_FOUND", "message": "Место не найдено", "lang": "ru", "details": {} } }
 ```
 
 | HTTP | code | Когда |
 |------|------|-------|
-| 400 | `BAD_REQUEST` | Невалидное тело/параметры |
-| 404 | `PLACE_NOT_FOUND` | Нет места / сцены |
-| 422 | `SPEECH_UNRECOGNIZED` | STT/intent не сработал, `details.stage`: `stt` / `intent` |
-| 429 | `RATE_LIMITED` | Слишком часто |
-| 500 | `INTERNAL` | Внутренняя ошибка |
-| 503 | `ROUTE_UNAVAILABLE` | Сервис маршрутов недоступен |
+| 400 | `BAD_REQUEST` | невалидное тело/параметры, неизвестный тип события |
+| 404 | `PLACE_NOT_FOUND` | нет места / сцены |
+| 422 | `SPEECH_UNRECOGNIZED` | STT/intent не сработал; `details.stage`: `stt` / `intent` |
+| 429 | `RATE_LIMITED` | >10 voice/мин на `session_id` |
+| 500 | `INTERNAL` | внутренняя ошибка |
+| 503 | `ROUTE_UNAVAILABLE` | сервис маршрутов недоступен |
 | 503 | `AI_UNAVAILABLE` | STT/LLM недоступен |
 
-### Порядок реализации
+### Порядок реализации бэка
 
 ```
-1. Модели + seed → 2. config/places/route → 3. voice → 4. scene/qr → 5. health
+B1 модели+seed → B2 config/places/route → B3 voice→dialog/turn → B4 scene/qr →
+B9 stats → B10 feedback → B7/B8 LLM-ключ → B11 TTS → B12 память
 Каждый шаг: сначала 200 на seed, потом логика.
 ```
 
 ---
 
-## Флоу 1. Карта + каталог
+## Флоу 01. Витрина
 
-### `GET /api/config`
+### `GET /api/config` → 200
 
 ```json
 {
@@ -46,31 +47,25 @@
   "languages": ["kk", "ru", "en"],
   "default_lang": "kk",
   "modes": { "voice": true, "tarihsky": true, "qr": true, "huskylens": false },
-  "session": { "idle_timeout_sec": 90, "qr_timeout_sec": 30 },
+  "session": { "idle_timeout_sec": 90, "qr_timeout_sec": 60 },
   "district": "aktau-centr",
   "categories": ["park", "mall", "market", "history", "nature", "religion"]
 }
 ```
 
-### `GET /api/places`
+### `GET /api/places` → 200
 
-Query: `lang=ru`, `bbox=` (опц.), `limit=50`, **`q=` (поиск по имени/описанию, выполняет бэк)**, **`categories=` («nature,religion» — мультифильтр, OR)**
-
-`total` — число после фильтров (до `limit`).
+Query: `lang` (def `ru`), `limit` (def 50), `q` (поиск по имени/описанию, выполняет бэк), `categories` (`"nature,religion"`, OR), `bbox` (опц.).
 
 ```json
 {
   "places": [
     {
-      "id": 1,
-      "name": "Музей моря",
-      "summary": "Короткое описание",
-      "category": "museum",
-      "lat": 43.6551,
-      "lng": 51.1922,
+      "id": 1, "name": "Набережная Актау", "summary": "…",
+      "category": "park", "lat": 43.6420, "lng": 51.1720,
       "thumb_url": "/static/places/1.jpg",
       "has_scene": true,
-      "hours": { "open": "10:00", "close": "18:00", "days": [1,2,3,4,5,6], "tz": "Asia/Almaty" },
+      "hours": null,
       "access": "walk"
     }
   ],
@@ -79,69 +74,50 @@ Query: `lang=ru`, `bbox=` (опц.), `limit=50`, **`q=` (поиск по име�
 }
 ```
 
-`access`: `"walk"` | `"transit"`.
+`total` — после фильтров, до `limit`. `hours: null` = открыто всегда. `access`: `walk` | `transit`.
 
 ---
 
-## Флоу 2. Карточка места + маршрут
+## Флоу 02. Показ места
 
-### `GET /api/places/{id}`
-
-**`hours: null` = уличные места (открыто всегда).** `opens_next: null` при `hours: null`.
+### `GET /api/places/{id}?lang=` → 200 | 404 `PLACE_NOT_FOUND`
 
 ```json
 {
-  "id": 1,
-  "name": "Музей моря",
-  "summary": "…",
-  "description": "Развёрнутый текст",
-  "category": "museum",
-  "lat": 43.6551,
-  "lng": 51.1922,
-  "address": "ул. …, Актау",
+  "id": 1, "name": "…", "summary": "…", "description": "…",
+  "category": "park", "lat": 43.6420, "lng": 51.1720, "address": "Актау",
   "photos": ["/static/places/1a.jpg"],
-  "hours": { "open": "10:00", "close": "18:00", "days": [1,2,3,4,5,6], "tz": "Asia/Almaty" },
-  "is_open_now": true,
-  "opens_next": "10:00",
-  "has_scene": true,
-  "access": "walk",
-  "langs": ["ru", "en", "kk"]
+  "hours": null, "is_open_now": true, "opens_next": null,
+  "has_scene": true, "access": "walk",
+  "langs": ["kk", "ru", "en"]
 }
 ```
 
-**404:** `PLACE_NOT_FOUND`
+### `GET /api/places/{id}/route?mode=walk&fallback=0` → 200 | 404 | 503 `ROUTE_UNAVAILABLE`
 
-### `GET /api/places/{id}/route`
-
-Маршрут **от точки стелы** (`config.origin`). Query: `mode=walk` (default) | `transit`
+Маршрут **от `config.origin`**. `mode`: `walk` (def) | `transit`.
 
 ```json
 {
-  "place_id": 1,
-  "mode": "walk",
-  "distance_m": 850,
-  "duration_min": 11,
+  "place_id": 1, "mode": "walk",
+  "distance_m": 850, "duration_min": 11,
   "bearing_deg": 42,
   "direction_text": "идите на северо-восток",
   "is_approximate": false,
-  "geometry": { "type": "LineString", "coordinates": [[51.19, 43.65], [51.1922, 43.6551]] },
-  "steps": [
-    { "instruction": "Прямо по набережной 400 м", "distance_m": 400 },
-    { "instruction": "Повернуть направо", "distance_m": 450 }
-  ]
+  "geometry": { "type": "LineString", "coordinates": [[51.172, 43.642], [51.1922, 43.6551]] },
+  "steps": [{ "instruction": "Прямо по набережной 400 м", "distance_m": 400 }]
 }
 ```
 
-- `bearing_deg` — азимут от стелы (0–360). Считает бэк
-- `mode=transit` / `access=transit` — `steps` включают точку посадки
-- Фоллбэк: `GET .../route?fallback=1` → 200, прямая линия, `is_approximate: true`
-- **503:** `ROUTE_UNAVAILABLE`
+- `bearing_deg` считает **только бэк** (азимут от стелы, 0–360)
+- `transit`/`access=transit`: `steps` включают точку посадки
+- `?fallback=1` → 200, прямая линия, `is_approximate: true`
 
 ---
 
-## Флоу 3. QR
+## Флоу 03. QR
 
-### `POST /api/qr`
+### `POST /api/qr` → 200 | 404
 
 Request: `{ "place_id": 1, "lang": "ru", "session_id": "uuid" }`
 
@@ -149,123 +125,170 @@ Request: `{ "place_id": 1, "lang": "ru", "session_id": "uuid" }`
 { "url": "https://m.example/r/abc123", "payload_version": 1, "expires_in_sec": 3600 }
 ```
 
-Страница по `url` — маршрут места на телефоне.
+Токен пишется в `qr_tokens` (TTL 3600). Событие `qr_scan` пишет бэк.
 
 ---
 
-## Флоу 4. Голос
+## Флоу 04. Диалог (мозг)
 
-### `POST /api/voice`
+### `POST /api/dialog/turn` → 200 | 422 | 429 | 503
+
+Единственный вход диалога. Память — на сервере по `session_id`.
 
 Request:
+
 ```json
 {
-  "session_id": "uuid-сеанса",
+  "session_id": "uuid",
   "lang": "auto",
-  "mode": "nav",
-  "audio_b64": "base64-аудио",
+  "audio_b64": "base64-аудио (опц.)",
   "mime": "audio/wav",
-  "text": "опционально, если распознано на клиенте",
-  "context": { "screen": "recording", "last_place_id": null }
+  "text": "опционально (распознано клиентом / транскрибация жестов)",
+  "signs": [ { "hand": "right", "landmarks": [[x, y, z], "...21 точка..."] } ],
+  "context": { "screen": "listening", "last_place_id": null }
 }
 ```
 
-- `lang`: `"auto"` | `"kk"` | `"ru"` | `"en"` | **любой другой** (zh, pt-BR и т.д. — через LLM/TTS OpenAI); `mode`: `"nav"` | `"scene"`; лимит аудио 15 с
+- `lang`: `"auto"` | `"kk"` | `"ru"` | `"en"` | любой (zh, pt-BR…) — через LLM
+- Лимит аудио: 15 с. `signs` — MediaPipe Hands, позже (поле зарезервировано)
 
-Место найдено:
+Response (место найдено):
+
 ```json
 {
-  "lang": "en",
+  "lang": "zh",
+  "say": "׳ɯմմ… (1–2 предложения на языке туриста)",
   "intent": "route_to_place",
   "place_id": 1,
-  "answer": "The Sea Museum is an 11-minute walk from here.",
-  "need_route": true,
-  "need_scene": false,
+  "actions": [{ "show": "route", "place_id": 1 }],
   "suggestions": [],
-  "debug": { "stt_text": "how to get to the sea museum" }
+  "memory_patch": { "places": [1] },
+  "debug": { "stt_text": "…", "via": "llm" }
 }
 ```
 
-Точного места нет:
+Response (несколько вариантов):
+
 ```json
 {
-  "lang": "en",
-  "intent": "search",
-  "place_id": null,
-  "answer": "I found several places nearby.",
-  "need_route": false,
-  "need_scene": false,
+  "lang": "ru", "say": "Нашёл несколько мест рядом.",
+  "intent": "search", "place_id": null,
+  "actions": [],
   "suggestions": [{ "id": 1, "name": "Музей моря" }],
-  "debug": { "stt_text": "museums" }
+  "memory_patch": {},
+  "debug": { "stt_text": "…", "via": "rules" }
 }
 ```
 
-Вопрос по сцене:
+Response (история):
+
 ```json
 {
-  "lang": "en",
-  "intent": "scene_info",
-  "place_id": 1,
-  "answer": "This building was constructed in 1972…",
-  "need_route": false,
-  "need_scene": true,
-  "suggestions": []
+  "lang": "ru", "say": "…", "intent": "scene_info", "place_id": 1,
+  "actions": [{ "show": "scene", "place_id": 1 }],
+  "suggestions": [], "memory_patch": {},
+  "debug": { "via": "llm" }
 }
 ```
 
-**422:** `SPEECH_UNRECOGNIZED` · **503:** `AI_UNAVAILABLE`
+`actions[].show`: `map` | `route` | `scene` | `qr` | `sleep`. Фронт исполняет по порядку, ничего не решает.
+
+Совместимость: старый `POST /api/voice` остаётся рабочим алиасом (тот же ответ + `need_route/need_scene`).
 
 ---
 
-## Флоу 5. TarihSky
+## Флоу 05. TarihSky
 
-### `GET /api/places/{id}/scene`
+### `GET /api/places/{id}/scene` → 200 | 404 `PLACE_NOT_FOUND`
 
 ```json
 {
-  "place_id": 1,
-  "enabled": true,
+  "place_id": 1, "enabled": true,
   "modern_url": "/static/scenes/1/modern.jpg",
   "historic_url": "/static/scenes/1/historic.jpg",
   "attribution": "художественная реконструкция",
   "texts": {
-    "ru": { "title": "Тогда и сейчас", "body": "Справка…" },
-    "en": { "title": "Then and Now", "body": "…" },
-    "kk": { "title": "Бұрын және қазір", "body": "…" }
+    "kk": { "title": "…", "body": "…" },
+    "ru": { "title": "Тогда и сейчас", "body": "…" },
+    "en": { "title": "Then and Now", "body": "…" }
   },
   "sources": ["…"]
 }
 ```
 
-**404:** `PLACE_NOT_FOUND`
+404 → фронт ничего не показывает, диалог говорит «истории пока нет».
 
 ---
 
-## Флоу 6. Сеанс и здоровье
+## Флоу 06. Сеанс, события, здоровье
 
-### `POST /api/session/end`
+### `POST /api/event` → 200 | 400 `BAD_REQUEST`
 
-`{ "session_id": "uuid" }` → 200 `{ "ok": true }`
+Request: `{ "session_id": "uuid", "type": "place_view|route_click|scene_open|qr_scan|voice_query|session_start", "place_id": null, "lang": "ru" }`
 
-### `GET /api/health`
+Response: `{ "ok": true }`
+
+### `POST /api/session/end` → 200
+
+Request: `{ "session_id": "uuid" }` → `{ "ok": true }`. Память сеанса стирается.
+
+### `GET /api/health` → 200
 
 ```json
-{ "status": "ok", "db": true, "route_provider": true, "ai": true, "version": "0.1.0" }
+{ "status": "ok", "db": true, "route_provider": true, "ai": false, "version": "0.1.0" }
 ```
 
 ---
 
-## Seed-данные
+## Админ (B2G дашборд)
 
-10–20 мест одного района Актау. Обязательно: id, name, lat, lng, summary/description по языкам, hours (или null), access walk/transit. Для 2–3 мест: scene (2 изображения + texts + sources).
+### `GET /api/admin/metrics` → 200
 
-## Env и ключи
+```json
+{
+  "sessions": 42, "unique_langs": 3,
+  "by_lang": { "ru": 30, "kk": 8, "zh": 4 },
+  "top_places": [{ "place_id": 1, "name": "…", "requests": 15 }],
+  "by_hour": { "10": 5, "11": 12 }
+}
+```
 
-Routing, STT, LLM — ключи **только на сервере** (`.env`, не в репозитории). Выбор провайдеров — техлид.
+### `GET /api/admin/heatmap` → 200
 
-## Чеклист бэка
+```json
+[{ "lat": 43.642, "lng": 51.172, "weight": 15 }]
+```
 
-- [ ] Все эндпоинты отдают 200 на seed
-- [ ] Ошибки — только форматом из раздела 0
-- [ ] `route` считает `bearing_deg` от `config.origin`
-- [ ] Ключей в коде/репо нет
+### `GET /api/admin/places/stats` → 200
+
+```json
+[{ "place_id": 1, "name": "…", "requests": 15, "route_clicks": 9, "scene_opens": 4, "dead": false }]
+```
+
+---
+
+## B11. TTS (на утверждении, не реализовывать до PR)
+
+```
+POST /api/tts
+← { "text": "…", "lang": "zh" }
+→ { "audio_url": "/static/tts/abc.mp3", "expires_in_sec": 3600 }
+```
+
+---
+
+## Seed (минимум)
+
+12 мест (Акту/Мангистау, координаты сверены) + 3 сцены-заглушки. Обязательные поля — см. `places`/`scene` выше.
+
+## Env (только сервер, не в репо)
+
+```
+DATABASE_URL=postgresql+psycopg://…  (черновик: sqlite-файл)
+LLM_PROVIDER=gemini|openai|none
+GEMINI_API_KEY=… | OPENAI_API_KEY=… / OPENAI_BASE_URL / LLM_MODEL=gpt-4o-mini
+```
+
+---
+
+_Фронт: [frontend.md](frontend.md). Флоу: [../flows/](../flows/README.md)._
