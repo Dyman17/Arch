@@ -1,9 +1,12 @@
 import io
 import json
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 from fastapi.testclient import TestClient
 
 from app import catalog, main, routing
+from app.catalog import Hours, opening_state
 from app.routing import RouteUnavailable
 
 
@@ -104,3 +107,16 @@ def test_public_routing_demo_is_marked_approximate(tmp_path, monkeypatch):
     assert route['geometry']['coordinates'][0] == [51.1352, 43.6582]
     assert route['geometry']['coordinates'][-1] == [51.18, 43.65]
     assert route['steps'][0]['distance_m'] == route['distance_m']
+
+
+def test_opening_state_for_daytime_and_overnight_hours():
+    tz = ZoneInfo('Asia/Almaty')
+    daytime = Hours(open='09:00', close='18:00', days=[1])
+    overnight = Hours(open='22:00', close='02:00', days=[1])
+
+    assert opening_state(None, datetime(2026, 9, 21, 23, tzinfo=tz)) == (True, None)
+    assert opening_state(daytime, datetime(2026, 9, 21, 10, tzinfo=tz)) == (True, '09:00')
+    assert opening_state(daytime, datetime(2026, 9, 21, 20, tzinfo=tz)) == (False, '09:00')
+    assert opening_state(overnight, datetime(2026, 9, 21, 23, tzinfo=tz)) == (True, '22:00')
+    assert opening_state(overnight, datetime(2026, 9, 22, 1, tzinfo=tz)) == (True, '22:00')
+    assert opening_state(overnight, datetime(2026, 9, 22, 3, tzinfo=tz)) == (False, '22:00')
