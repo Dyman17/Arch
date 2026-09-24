@@ -42,16 +42,18 @@ B9 stats → B10 feedback → B7/B8 LLM-ключ → B11 TTS → B12 памят�
 
 ```json
 {
-  "screen_id": "aktau-naberezhnaya-1",
-  "origin": { "lat": 43.6420, "lng": 51.1720, "heading_deg": 90 },
+  "screen_id": "AKTAU-EMB-01",
+  "origin": { "lat": 43.6582, "lng": 51.1352, "heading_deg": 45 },
   "languages": ["kk", "ru", "en"],
   "default_lang": "kk",
   "modes": { "voice": true, "tarihsky": true, "qr": true, "huskylens": false },
   "session": { "idle_timeout_sec": 90, "qr_timeout_sec": 60 },
-  "district": "aktau-centr",
-  "categories": ["park", "mall", "market", "history", "nature", "religion"]
+  "district": "aktau-15-mkr",
+  "categories": ["park", "mall", "market", "history", "nature", "religion", "culture"]
 }
 ```
+
+Точка: амфитеатр у набережной 15-го микрорайона (данные бэкендера, сверить на месте — 0.1).
 
 ### `GET /api/places` → 200
 
