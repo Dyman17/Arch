@@ -5,6 +5,9 @@ import {
   RotateCcw,
   Hand,
   HelpCircle,
+  Camera,
+  UserCheck,
+  UserX,
 } from 'lucide-react';
 
 import type {
@@ -26,6 +29,7 @@ import {
 } from './api';
 import { speakText, stopSpeaking } from './utils/tts';
 import { useVoiceListener } from './hooks/useVoiceListener';
+import { useCameraPresence } from './hooks/useCameraPresence';
 import { KioskMap } from './components/KioskMap';
 import { PlaceEditorialDrawer } from './components/PlaceEditorialDrawer';
 import { AtlasStrip } from './components/AtlasStrip';
@@ -37,7 +41,7 @@ export const App: React.FC = () => {
   // Config & Session
   const [config, setConfig] = useState<KioskConfig | null>(null);
   const [sessionId, setSessionId] = useState<string>(() => 'sess-' + Math.random().toString(36).substring(2, 10));
-  const [lang, setLang] = useState<string>('kk'); // Default to Kazakh as in config.default_lang
+  const [lang, setLang] = useState<string>('kk'); // Default to Kazakh
 
   // App States
   const [isAsleep, setIsAsleep] = useState<boolean>(true);
@@ -61,7 +65,6 @@ export const App: React.FC = () => {
 
   // Timers
   const idleTimerRef = useRef<number>(0);
-  const silenceCounterRef = useRef<number>(0);
 
   // 1. Initial Load
   useEffect(() => {
@@ -88,33 +91,11 @@ export const App: React.FC = () => {
     });
   }, [lang, activeCategory]);
 
-  // Inactivity tracking (90s sleep, 10s silence gesture alert)
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (isAsleep) return;
-
-      idleTimerRef.current += 1;
-      silenceCounterRef.current += 1;
-
-      if (silenceCounterRef.current === 10) {
-        setGestureAlert(true);
-      }
-
-      if (idleTimerRef.current >= 90) {
-        handleResetSession();
-      }
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [isAsleep, sessionId]);
-
   const touchActivity = useCallback(() => {
     idleTimerRef.current = 0;
-    silenceCounterRef.current = 0;
-    setGestureAlert(false);
   }, []);
 
-  // Wake up action
+  // Wake up action (triggered when camera detects person arriving)
   const handleWakeUp = useCallback(() => {
     setIsAsleep(false);
     touchActivity();
@@ -146,8 +127,31 @@ export const App: React.FC = () => {
     setAiSpeaking(false);
     setAiThinking(false);
     idleTimerRef.current = 0;
-    silenceCounterRef.current = 0;
   }, [sessionId]);
+
+  // 2. Camera Presence Hook (Optical Person Detection)
+  const {
+    isPersonPresent,
+    cameraActive,
+    simulatePersonApproach,
+    simulatePersonDeparture,
+  } = useCameraPresence({
+    onPersonArrived: () => {
+      // Rule: Camera detects person in front -> Kiosk wakes up automatically!
+      if (isAsleep) {
+        handleWakeUp();
+      }
+    },
+    onPersonDeparted: () => {
+      // Person stepped away from kiosk
+      setTimeout(() => {
+        if (!isPersonPresent) {
+          handleResetSession();
+        }
+      }, 5000);
+    },
+    enabled: true,
+  });
 
   // Select Place & Load Route
   const handleSelectPlace = useCallback(
@@ -202,10 +206,6 @@ export const App: React.FC = () => {
     async (rawText: string) => {
       const text = rawText.trim();
       if (!text) return;
-
-      if (isAsleep) {
-        setIsAsleep(false);
-      }
 
       touchActivity();
       setUserSpokenText(text);
@@ -279,7 +279,6 @@ export const App: React.FC = () => {
       }
     },
     [
-      isAsleep,
       sessionId,
       lang,
       places,
@@ -294,12 +293,16 @@ export const App: React.FC = () => {
     ]
   );
 
+  // Voice listener hook with sensitive unrecognized sound detection
   const { isListening, interimTranscript, volumeLevel, triggerManualUtterance } =
     useVoiceListener({
       onSpeechFinal: handleVoiceUtterance,
-      onSoundDetected: () => {
-        if (isAsleep) {
-          handleWakeUp();
+      onUnrecognizedSound: () => {
+        // EXACT USER REQUIREMENT:
+        // "если звук есть, а нормальной речи не распознается то только тогда спросить про язык жестов"
+        // Camera confirms person presence AND sound heard but no speech recognized -> offer sign language!
+        if (isPersonPresent) {
+          setGestureAlert(true);
         }
       },
       lang,
@@ -318,7 +321,15 @@ export const App: React.FC = () => {
   return (
     <div className="kiosk-app-viewport" onClick={touchActivity}>
       {/* 1. Lando Norris SOTY 2025 Style Idle Screensaver */}
-      {isAsleep && <SleepScreen onWake={handleWakeUp} lang={lang} />}
+      {isAsleep && (
+        <SleepScreen
+          onWake={handleWakeUp}
+          lang={lang}
+          isPersonPresent={isPersonPresent}
+          cameraActive={cameraActive}
+          onSimulateApproach={simulatePersonApproach}
+        />
+      )}
 
       {/* 2. Top Kiosk Navigation Header */}
       <header className="kiosk-editorial-header">
@@ -333,6 +344,32 @@ export const App: React.FC = () => {
             <span className="stele-coords-label">43.6582°N 51.1352°E</span>
             <span className="stele-pill-divider">/</span>
             <span className="stele-id-badge">AKTAU-EMB-01</span>
+          </div>
+
+          {/* Camera Presence Telemetry & Simulation Pill */}
+          <div
+            className={`camera-telemetry-badge ${isPersonPresent ? 'person-detected' : 'person-idle'}`}
+            title="Камера арқылы адамды анықтау / Обнаружение человека камерой"
+          >
+            <Camera size={13} className="cam-badge-icon" />
+            <span className="cam-badge-text">
+              {isPersonPresent
+                ? (lang === 'kk' ? 'АДАМ АЛДЫНДА' : lang === 'en' ? 'PERSON IN FRONT' : 'ЧЕЛОВЕК У СТЕЛЫ')
+                : (lang === 'kk' ? 'КАМЕРА: КҮТУДЕ' : lang === 'en' ? 'CAM: STANDBY' : 'КАМЕРА: ОЖИДАНИЕ')}
+            </span>
+
+            {/* Quick Toggle for demo / test without camera */}
+            <button
+              className="cam-sim-toggle"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (isPersonPresent) simulatePersonDeparture();
+                else simulatePersonApproach();
+              }}
+              title={isPersonPresent ? 'Имитировать уход' : 'Имитировать подход человека'}
+            >
+              {isPersonPresent ? <UserX size={12} /> : <UserCheck size={12} />}
+            </button>
           </div>
         </div>
 
@@ -544,9 +581,16 @@ export const App: React.FC = () => {
       </footer>
 
       {/* 6. Sign Language Gesture Notification Banner (Rule #7) */}
+      {/* TRIGGER: Sound detected + normal speech unrecognized + person present via camera */}
       {gestureAlert && (
         <div className="gesture-notification-overlay">
+          <div className="gesture-badge-cam">
+            <Camera size={14} />
+            <span>CV КАМЕРА</span>
+          </div>
+
           <Hand className="gesture-glow-icon" />
+
           <div className="gesture-copy">
             <strong className="gesture-strong">
               {lang === 'kk'
@@ -557,13 +601,34 @@ export const App: React.FC = () => {
             </strong>
             <span className="gesture-desc">
               {lang === 'kk'
-                ? 'Камераға қол белгілерін көрсетіңіз — стела сізді түсінеді!'
+                ? 'Камера алдында белгі көрсетіңіз (мысалы: «Иә», «Жоқ», «Амфитеатр») — стела сізді түсінеді!'
                 : lang === 'en'
-                ? 'Show gestures to the camera — our AI kiosk understands you!'
-                : 'Показывайте жесты перед камерой — стела вас поймёт!'}
+                ? 'Show gestures in front of the camera (e.g. "Yes", "No", "Amphitheater") — we understand!'
+                : 'Камера включена: показывайте жесты перед экраном — стела распознает ваш выбор!'}
             </span>
           </div>
-          <button className="gesture-dismiss-btn" onClick={() => setGestureAlert(false)}>✕</button>
+
+          <div className="gesture-action-pills">
+            <button
+              className="gesture-choice-btn"
+              onClick={() => {
+                triggerManualUtterance('Как пройти к Амфитеатру?');
+                setGestureAlert(false);
+              }}
+            >
+              👍 {lang === 'kk' ? 'Амфитеатр' : 'Амфитеатр'}
+            </button>
+            <button
+              className="gesture-choice-btn"
+              onClick={() => {
+                triggerManualUtterance('Что рядом?');
+                setGestureAlert(false);
+              }}
+            >
+              👌 {lang === 'kk' ? 'Жақын жерлер' : 'Что рядом'}
+            </button>
+            <button className="gesture-dismiss-btn" onClick={() => setGestureAlert(false)}>✕</button>
+          </div>
         </div>
       )}
 

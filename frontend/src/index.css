@@ -1527,13 +1527,135 @@ html, body, #root {
   color: rgba(255, 255, 255, 0.7);
 }
 
-.gesture-dismiss-btn {
-  background: transparent;
-  border: none;
+/* Camera Telemetry Badge */
+.camera-telemetry-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border-hairline);
+  background-color: var(--bg-subtle);
+  transition: all 0.2s ease;
+}
+
+.camera-telemetry-badge.person-detected {
+  background-color: var(--oasis-soft);
+  color: var(--oasis-emerald);
+  border-color: rgba(5, 150, 105, 0.3);
+}
+
+.camera-telemetry-badge.person-idle {
   color: var(--text-muted);
+}
+
+.cam-badge-icon {
+  flex-shrink: 0;
+}
+
+.cam-sim-toggle {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-hairline);
+  color: var(--text-secondary);
+  border-radius: 4px;
+  padding: 2px 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  font-size: 14px;
-  padding: 4px;
+  margin-left: 4px;
+  transition: all 0.15s ease;
+}
+
+.cam-sim-toggle:hover {
+  background: var(--border-light);
+  color: var(--text-primary);
+}
+
+/* Sleep Screen Camera Pill & Simulator */
+.sleep-camera-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--border-dark-hairline);
+  color: var(--caspian-cyan);
+}
+
+.cam-live-icon {
+  color: var(--oasis-emerald);
+  animation: pulse-dot 1.5s infinite;
+}
+
+.cam-idle-icon {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.sleep-simulate-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px dashed rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.85);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sleep-simulate-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: var(--caspian-cyan);
+  color: #FFFFFF;
+}
+
+/* Gesture Alert Updates */
+.gesture-badge-cam {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--steppe-sand);
+  background: rgba(224, 159, 62, 0.15);
+  padding: 3px 8px;
+  border-radius: 4px;
+  margin-right: 4px;
+}
+
+.gesture-action-pills {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gesture-choice-btn {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-family: var(--font-display);
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.gesture-choice-btn:hover {
+  background: var(--steppe-sand);
+  color: #090D16;
 }
 
 /* ==========================================================================

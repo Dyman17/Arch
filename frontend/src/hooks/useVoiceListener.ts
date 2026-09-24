@@ -2,14 +2,14 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 
 interface VoiceListenerOptions {
   onSpeechFinal: (text: string) => void;
-  onSoundDetected?: () => void;
+  onUnrecognizedSound?: () => void;
   lang?: string;
   enabled?: boolean;
 }
 
 export function useVoiceListener({
   onSpeechFinal,
-  onSoundDetected,
+  onUnrecognizedSound,
   lang = 'ru',
   enabled = true,
 }: VoiceListenerOptions) {
@@ -23,7 +23,9 @@ export function useVoiceListener({
   const analyserRef = useRef<AnalyserNode | null>(null);
   const animFrameRef = useRef<number | null>(null);
   const silenceTimerRef = useRef<any>(null);
+  const soundWithoutSpeechTimerRef = useRef<any>(null);
   const accumulatedTextRef = useRef<string>('');
+  const hasTranscribedRecentlyRef = useRef<boolean>(false);
 
   const startAudioMeter = async () => {
     try {
@@ -52,9 +54,24 @@ export function useVoiceListener({
         const normalized = Math.min(100, Math.round((avg / 128) * 100));
         setVolumeLevel(normalized);
 
-        // Sound detection threshold (approx -30 dBFS)
+        // Track when sound is present above threshold
         if (normalized > 18) {
-          onSoundDetected?.();
+          // If sound is heard continuously for 1.8s, but speech recognition produced NO text:
+          if (!soundWithoutSpeechTimerRef.current && !hasTranscribedRecentlyRef.current) {
+            soundWithoutSpeechTimerRef.current = setTimeout(() => {
+              if (!hasTranscribedRecentlyRef.current) {
+                // Sound present, but normal speech not recognized!
+                onUnrecognizedSound?.();
+              }
+              soundWithoutSpeechTimerRef.current = null;
+            }, 1800);
+          }
+        } else {
+          // Below threshold
+          if (soundWithoutSpeechTimerRef.current) {
+            clearTimeout(soundWithoutSpeechTimerRef.current);
+            soundWithoutSpeechTimerRef.current = null;
+          }
         }
 
         animFrameRef.current = requestAnimationFrame(checkVolume);
@@ -84,6 +101,12 @@ export function useVoiceListener({
       };
 
       recognition.onresult = (event: any) => {
+        hasTranscribedRecentlyRef.current = true;
+        if (soundWithoutSpeechTimerRef.current) {
+          clearTimeout(soundWithoutSpeechTimerRef.current);
+          soundWithoutSpeechTimerRef.current = null;
+        }
+
         let interim = '';
         let final = '';
 
@@ -116,12 +139,17 @@ export function useVoiceListener({
             accumulatedTextRef.current = '';
             setInterimTranscript('');
           }
+          hasTranscribedRecentlyRef.current = false;
         }, 1200);
       };
 
       recognition.onerror = (event: any) => {
         if (event.error !== 'no-speech') {
           console.warn('[VoiceListener] SpeechRecognition error:', event.error);
+        }
+        // If sound was heard but recognition errored out, signal unrecognized sound
+        if (event.error === 'no-speech' && volumeLevel > 18) {
+          onUnrecognizedSound?.();
         }
       };
 
@@ -149,6 +177,7 @@ export function useVoiceListener({
 
     return () => {
       if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+      if (soundWithoutSpeechTimerRef.current) clearTimeout(soundWithoutSpeechTimerRef.current);
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
       if (audioContextRef.current) audioContextRef.current.close().catch(() => {});
       if (recognitionRef.current) {

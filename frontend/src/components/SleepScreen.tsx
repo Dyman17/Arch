@@ -1,12 +1,21 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Wind, Compass, Sparkles, Volume2 } from 'lucide-react';
+import { Wind, Compass, Sparkles, Camera, Eye } from 'lucide-react';
 
 interface SleepScreenProps {
   onWake: () => void;
   lang: string;
+  isPersonPresent?: boolean;
+  cameraActive?: boolean;
+  onSimulateApproach?: () => void;
 }
 
-export const SleepScreen: React.FC<SleepScreenProps> = ({ onWake, lang }) => {
+export const SleepScreen: React.FC<SleepScreenProps> = ({
+  onWake,
+  lang,
+  isPersonPresent = false,
+  cameraActive = false,
+  onSimulateApproach,
+}) => {
   const [time, setTime] = useState(new Date());
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -16,7 +25,7 @@ export const SleepScreen: React.FC<SleepScreenProps> = ({ onWake, lang }) => {
     return () => clearInterval(timer);
   }, []);
 
-  // Ambient generative waves on canvas (Lando Norris immersive motion)
+  // Ambient generative waves on canvas
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -37,7 +46,6 @@ export const SleepScreen: React.FC<SleepScreenProps> = ({ onWake, lang }) => {
       step += 0.015;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Subtle Caspian wave curves
       const w = canvas.width;
       const h = canvas.height;
 
@@ -104,6 +112,16 @@ export const SleepScreen: React.FC<SleepScreenProps> = ({ onWake, lang }) => {
           <span className="stele-geo">15-ШАҒЫНАУДАН ЖАҒАЛАУЫ</span>
         </div>
 
+        {/* Optical Sensor Telemetry */}
+        <div className="sleep-camera-pill">
+          <Camera size={13} className={cameraActive ? 'cam-live-icon' : 'cam-idle-icon'} />
+          <span>
+            {isPersonPresent
+              ? (lang === 'kk' ? 'АДАМ АНЫҚТАЛДЫ' : lang === 'en' ? 'PERSON DETECTED' : 'ЧЕЛОВЕК В КАДРЕ')
+              : (lang === 'kk' ? 'CV КАМЕРА: КҮЗЕТТЕ' : lang === 'en' ? 'CV SENSOR: WATCHING' : 'CV КАМЕРА: СКАНИРОВАНИЕ')}
+          </span>
+        </div>
+
         <div className="sleep-weather-widget">
           <div className="weather-item">
             <Wind size={14} className="weather-icon" />
@@ -116,11 +134,11 @@ export const SleepScreen: React.FC<SleepScreenProps> = ({ onWake, lang }) => {
         </div>
       </header>
 
-      {/* Running Kinetic Marquee Ticker (Lando Norris Style) */}
+      {/* Running Kinetic Marquee Ticker */}
       <div className="sleep-ticker-container">
         <div className="sleep-ticker-track">
-          <span>BAĠDAR · SMART CASPIAN GUIDE · АҚТАУ МЕН МАҢҒЫСТАУ · OPEN AIR ARCHITECTURE · </span>
-          <span>BAĠDAR · SMART CASPIAN GUIDE · АҚТАУ МЕН МАҢҒЫСТАУ · OPEN AIR ARCHITECTURE · </span>
+          <span>BAĠDAR · SMART CASPIAN GUIDE · АҚТАУ МЕН МАҢҒЫСТАУ · COMPUTER VISION KIOSK · </span>
+          <span>BAĠDAR · SMART CASPIAN GUIDE · АҚТАУ МЕН МАҢҒЫСТАУ · COMPUTER VISION KIOSK · </span>
         </div>
       </div>
 
@@ -147,13 +165,13 @@ export const SleepScreen: React.FC<SleepScreenProps> = ({ onWake, lang }) => {
           <p className="clock-calendar-date">{dateString}</p>
         </div>
 
-        {/* Sensory Acoustic Wake Orb (Non-AI-troped, High-design) */}
+        {/* Optical Sensor Wake Callout (Camera Detection, not Sound) */}
         <div className="sleep-wake-sensory-orb">
           <div className="orb-soundwave-ring ring-1" />
           <div className="orb-soundwave-ring ring-2" />
           <div className="orb-soundwave-ring ring-3" />
           <div className="orb-core">
-            <Volume2 size={24} className="orb-core-icon" />
+            <Eye size={24} className="orb-core-icon" />
           </div>
 
           <div className="orb-callout-text">
@@ -161,21 +179,35 @@ export const SleepScreen: React.FC<SleepScreenProps> = ({ onWake, lang }) => {
               <Sparkles size={14} className="spark-accent" />
               <span>
                 {lang === 'kk'
-                  ? 'Сөйлеңіз немесе экранға жақындаңыз'
+                  ? 'Стелаға жақындаңыз (камера арқылы қосылады)'
                   : lang === 'en'
-                  ? 'Speak naturally or step closer'
-                  : 'Подойдите или заговорите'}
+                  ? 'Step in front of the kiosk (camera auto-wakes)'
+                  : 'Подойдите к стеле (камера разбудит экран)'}
               </span>
             </div>
             <p className="callout-hints">
               {lang === 'kk'
-                ? '«Амфитеатр қайда?», «Тарихты көрсет», «Не көруге болады?»'
+                ? 'Камера адамды көргенде стела оянып, сөйлесуді бастайды'
                 : lang === 'en'
-                ? '“Where is the Amphitheater?”, “Show history”, “What’s nearby?”'
-                : '«Как пройти к Амфитеатру?», «Что рядом?», «Покажи историю»'}
+                ? 'Camera detects your approach, kiosk greets you and listens'
+                : 'Камера обнаружит ваше появление, стела поздоровается и начнет диалог'}
             </p>
           </div>
         </div>
+
+        {/* Quick simulator chip for test/demo without camera */}
+        {onSimulateApproach && (
+          <button
+            className="sleep-simulate-btn"
+            onClick={(e) => {
+              e.stopPropagation();
+              onSimulateApproach();
+            }}
+          >
+            <Camera size={13} />
+            <span>{lang === 'kk' ? 'Демо: Адамның жақындауын тексеру' : 'Демо: Симуляция подхода человека к камере'}</span>
+          </button>
+        )}
       </main>
 
       {/* Bottom Telemetry Footer */}
@@ -186,7 +218,7 @@ export const SleepScreen: React.FC<SleepScreenProps> = ({ onWake, lang }) => {
         </div>
 
         <div className="footer-tap-hint">
-          <span>Экранды түртіңіз немесе кез келген тілде сөйлеңіз</span>
+          <span>Сенсорлық емес экран · Тек камера мен дауыспен басқарылады</span>
         </div>
 
         <div className="footer-languages-tag">
