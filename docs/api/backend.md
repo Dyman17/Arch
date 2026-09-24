@@ -1,6 +1,6 @@
 # ⚙️ API-контракт — Backend
 
-> 🔒 **ЗАМОРОЖЕНО.** Менять этот файл может только техлид (@Dyman17). Агентам запрещено править эндпоинты и поля — несоответствие → вопрос техлиду.
+> 🔒 **ЗАМОРОЖЕНО.** Менять этот файл может только техлид (@Dyman17). Изменение 24.09: по приказу техлида добавлены `q`/`categories` в `GET places` и `categories` в `config`.
 
 Что реализует бэк (@RKydyrali). Фронт читает [frontend.md](frontend.md), общий процесс — в [README.md](README.md).
 
@@ -42,18 +42,21 @@
 ```json
 {
   "screen_id": "aktau-naberezhnaya-1",
-  "origin": { "lat": 43.6500, "lng": 51.1900, "heading_deg": 90 },
+  "origin": { "lat": 43.6420, "lng": 51.1720, "heading_deg": 90 },
   "languages": ["ru", "en", "kk"],
   "default_lang": "ru",
   "modes": { "voice": true, "tarihsky": true, "qr": true, "huskylens": false },
   "session": { "idle_timeout_sec": 90, "qr_timeout_sec": 30 },
-  "district": "aktau-centr"
+  "district": "aktau-centr",
+  "categories": ["park", "mall", "market", "history", "nature", "religion"]
 }
 ```
 
 ### `GET /api/places`
 
-Query: `lang=ru`, `bbox=minLng,minLat,maxLng,maxLat` (опц.), `limit=50`
+Query: `lang=ru`, `bbox=` (опц.), `limit=50`, **`q=` (поиск по имени/описанию, выполняет бэк)**, **`categories=` («nature,religion» — мультифильтр, OR)**
+
+`total` — число после фильтров (до `limit`).
 
 ```json
 {
@@ -83,6 +86,8 @@ Query: `lang=ru`, `bbox=minLng,minLat,maxLng,maxLat` (опц.), `limit=50`
 ## Флоу 2. Карточка места + маршрут
 
 ### `GET /api/places/{id}`
+
+**`hours: null` = уличные места (открыто всегда).** `opens_next: null` при `hours: null`.
 
 ```json
 {

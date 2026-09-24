@@ -35,6 +35,10 @@
 | B4 | `GET scene`, `POST qr`, `POST session/end`, `GET health` | `feature/api-scene-qr` | ⬜ |
 | B5 | Seed 2–3 scenes + тексты + sources | `feature/seed-scenes` | ⬜ |
 | B6 | .env, ключи, rate-limit, единый error-format | `feature/ops-api` | ⬜ |
+| B7 | LLM: вставить ключ в `backend/.env` (`LLM_PROVIDER` + `GEMINI_API_KEY` / `OPENAI_API_KEY`), перезапустить, `GET health` → `"ai": true` | `feature/llm-key` | ⬜ |
+| B8 | LLM: проверить голос на 3 языках (ru/en + китайский), каталог на неродном языке, фоллбэк без ключа | `feature/llm-i18n` | ⬜ |
+| B9 | `GET /api/stats`: популярные места, языки, сессии (цифры для питча + акимат) | `feature/api-stats` | ⬜ |
+| B10 | `POST /api/feedback`: 👍/👎 на ответ (петля обучения) | `feature/api-feedback` | ⬜ |
 
 ## Интеграция / общее
 
@@ -62,6 +66,7 @@
 День 1:  B1 → B2        F1 → F2
          T1 параллельно  T3 черновик
 День 2 утро:  B3 → B4 → B5    F3 → F4 → F5 → F6 → F7
+           B7 → B8 (LLM: ключ + 3 языка) — как только готов voice
 День 2 день:  I1 + I2 → I3 → T4
 Опционально: I4, B6
 Питч: T3, репетиция T6
@@ -72,8 +77,22 @@
 ```bash
 feature/map | feature/ui-core | feature/voice-ui | feature/route-ui
 feature/seed | feature/api-places | feature/api-voice | feature/api-scene-qr
+feature/llm-key | feature/llm-i18n
 feature/integration | docs/pitch | chore/deploy
 ```
+
+## Как делать B7–B8 (LLM, бэкендер)
+
+Цель: стойка понимает и отвечает на любом языке (китайский и т.д.).
+
+1. Скопировать `backend/.env.example` → `backend/.env` (файл не коммитится)
+2. Выбрать провайдера: `LLM_PROVIDER=gemini` + `GEMINI_API_KEY` **или** `LLM_PROVIDER=openai` + `OPENAI_API_KEY` (модель по умолчанию `gpt-4o-mini`)
+3. Перезапустить бэк, проверить `GET /api/health` → `"ai": true`
+4. Проверить `POST /api/voice` с текстом на трёх языках (ru/en/zh): в ответе `place_id` + `answer` на языке запроса, в `debug` — `"via": "llm"`
+5. Проверить `GET /api/places?lang=zh` — названия/описания переведены
+6. Убрать ключ → убедиться, что всё падает на правила/русский без ошибок (деградация)
+
+Код уже готов: `backend/app/llm.py` (провайдеры + перевод), подключение в `voice` и `places`. Ключ только добавляешь.
 
 ---
 
