@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import {
-  QrCode,
   Timer,
   ArrowLeft,
+  Smartphone,
 } from 'lucide-react';
 import type { Place, QrResponse } from '../../types';
 
@@ -38,98 +38,81 @@ export const PageQr: React.FC<PageQrProps> = ({
     return () => clearInterval(interval);
   }, [onBackToPlace]);
 
-  // Generate fallback QR URL using SVG generator API or mock
   const qrUrl =
     qrData?.url ||
-    `https://bagdar.kz/route/${place.id}?origin=AKTAU-EMB-01&lat=${place.lat}&lng=${place.lng}`;
+    `https://bagdar.kz/route/${place.id}?origin=amphitheater&lat=${place.lat}&lng=${place.lng}`;
 
   const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=340x340&data=${encodeURIComponent(
     qrUrl
-  )}&bgcolor=FFFFFF&color=090D16&margin=1`;
+  )}&bgcolor=FFFFFF&color=1E293B&margin=1`;
 
   const progressPercent = (secondsLeft / 60) * 100;
 
   return (
     <div className="page-stage page-qr">
-      {/* Background Radiance */}
-      <div className="qr-radiance-backdrop" />
+      <div className="qr-warm-backdrop" />
 
       {/* Top Header */}
       <div className="qr-top-bar">
-        <button className="qr-back-btn" onClick={onBackToRoute}>
-          <ArrowLeft size={18} />
-          <span>К маршруту</span>
+        <button className="friendly-back-btn" onClick={onBackToRoute}>
+          <ArrowLeft size={16} />
+          <span>К карте маршрута</span>
         </button>
 
-        <div className="qr-badge">
-          <QrCode size={16} className="text-cyan-400" />
-          <span>МОБИЛЬНАЯ НАВИГАЦИЯ • ПЕРЕДАЧА НА СМАРТФОН</span>
+        <div className="qr-header-badge">
+          <Smartphone size={15} className="text-amber-300" />
+          <span>Маршрут с собой на телефон</span>
         </div>
 
-        {/* 60s Timer */}
-        <div className="qr-timer-pill">
-          <Timer size={16} className="text-amber-400 animate-pulse" />
+        {/* Timer */}
+        <div className="qr-timer-badge">
+          <Timer size={14} className="text-amber-300" />
           <span>{secondsLeft} сек</span>
         </div>
       </div>
 
       {/* Main QR Presentation Stage */}
       <div className="qr-center-container">
-        <div className="qr-card-hero">
-          {/* Left Side: Massive Crisp QR Code */}
-          <div className="qr-code-frame">
-            <div className="qr-code-wrapper">
+        <div className="qr-friendly-card">
+          {/* Left Side: Clean Crisp QR Code */}
+          <div className="qr-box-frame">
+            <div className="qr-image-wrapper">
               <img
                 src={qrImageUrl}
                 alt={`QR код для ${place.name}`}
                 className="qr-image"
               />
-              <div className="qr-scanner-line" />
             </div>
-            <div className="qr-code-caption">
-              <span>СКАНИРУЙТЕ КАМЕРОЙ ТЕЛЕФОНА</span>
-            </div>
+            <p className="qr-box-hint">Наведите камеру смартфона</p>
           </div>
 
-          {/* Right Side: Step-by-Step Instructions & Place Context */}
-          <div className="qr-details-frame">
-            <div className="qr-place-header">
-              <span className="qr-place-tag">ТОЧКА НАЗНАЧЕНИЯ</span>
-              <h2 className="qr-place-title">{place.name}</h2>
-              <p className="qr-place-summary">{place.summary}</p>
+          {/* Right Side: Simple Tourist Steps */}
+          <div className="qr-info-frame">
+            <div className="qr-destination-header">
+              <span className="qr-dest-tag">Место назначения:</span>
+              <h2 className="qr-dest-title">{place.name}</h2>
+              <p className="qr-dest-summary">{place.summary}</p>
             </div>
 
-            <div className="qr-steps-list">
-              <div className="qr-step">
-                <div className="qr-step-num">1</div>
-                <div className="qr-step-text">
-                  <strong>Откройте камеру смартфона</strong>
-                  <span>(или сканер QR в любом мессенджере)</span>
-                </div>
+            <div className="qr-friendly-steps">
+              <div className="friendly-step">
+                <span className="step-circle">1</span>
+                <p>Откройте фотокамеру на вашем смартфоне</p>
               </div>
-
-              <div className="qr-step">
-                <div className="qr-step-num">2</div>
-                <div className="qr-step-text">
-                  <strong>Наведите объектив на QR-код</strong>
-                  <span>Считывание происходит мгновенно с расстояния до 2 метров</span>
-                </div>
+              <div className="friendly-step">
+                <span className="step-circle">2</span>
+                <p>Направьте на QR-код с расстояния 1–2 метров</p>
               </div>
-
-              <div className="qr-step">
-                <div className="qr-step-num">3</div>
-                <div className="qr-step-text">
-                  <strong>Маршрут откроется в вашем телефоне</strong>
-                  <span>Пеший азимут, пошаговая карта и аудиогид будут с вами</span>
-                </div>
+              <div className="friendly-step">
+                <span className="step-circle">3</span>
+                <p>Маршрут и подсказки откроются в браузере телефона</p>
               </div>
             </div>
 
-            {/* Bottom Progress Bar */}
-            <div className="qr-timeout-progress">
+            {/* Bottom Progress */}
+            <div className="qr-timer-progress-block">
               <div className="progress-labels">
-                <span>Автозакрытие через {secondsLeft} сек</span>
-                <span>Сеанс защищён</span>
+                <span>Экран закроется через {secondsLeft} сек</span>
               </div>
               <div className="progress-track">
                 <div

@@ -5,7 +5,7 @@ import {
   Navigation,
   ThumbsUp,
   ArrowLeft,
-  Scan,
+  Camera,
 } from 'lucide-react';
 
 interface PageGesturesProps {
@@ -21,121 +21,111 @@ export const PageGestures: React.FC<PageGesturesProps> = ({
     {
       id: 'gesture-thumbs-up',
       name: 'Большой палец вверх (👍)',
-      meaning: '«Да / Подтвердить выбор»',
+      meaning: '«Да, показать подробнее»',
       icon: ThumbsUp,
-      color: 'text-emerald-400',
+      color: 'text-amber-300',
     },
     {
       id: 'gesture-palm',
       name: 'Открытая ладонь (✋)',
-      meaning: '«Стоп / Отмена / Назад»',
+      meaning: '«Стоп / Вернуться назад»',
       icon: Hand,
-      color: 'text-rose-400',
+      color: 'text-rose-300',
     },
     {
       id: 'gesture-one',
       name: 'Один палец (☝️)',
-      meaning: '«Выбрать 1-й вариант»',
+      meaning: '«Выбрать первое место»',
       icon: CheckCircle,
-      color: 'text-cyan-400',
+      color: 'text-cyan-300',
     },
     {
       id: 'gesture-two',
       name: 'Два пальца (✌️)',
-      meaning: '«Выбрать 2-й вариант»',
+      meaning: '«Выбрать второе место»',
       icon: CheckCircle,
-      color: 'text-amber-400',
+      color: 'text-emerald-300',
     },
     {
       id: 'gesture-route',
-      name: 'Жест Шаг / Путь (🤙)',
+      name: 'Жест пути (🤙)',
       meaning: '«Показать пеший маршрут»',
       icon: Navigation,
-      color: 'text-purple-400',
+      color: 'text-amber-200',
     },
   ];
 
   return (
     <div className="page-stage page-gestures">
-      {/* Background Cyber Laser Sweep */}
-      <div className="gesture-scan-laser" />
-      <div className="gesture-grid-backdrop" />
+      {/* Warm Ambient Backdrop */}
+      <div className="gestures-warm-backdrop" />
 
       {/* Top Header */}
       <div className="gestures-top-bar">
-        <button className="gestures-back-btn" onClick={onReturnToVoice}>
-          <ArrowLeft size={18} />
-          <span>Вернуться к голосовому вводу</span>
+        <button className="friendly-back-btn" onClick={onReturnToVoice}>
+          <ArrowLeft size={16} />
+          <span>Вернуться к голосу</span>
         </button>
 
-        <div className="gestures-badge">
-          <Scan size={16} className="text-cyan-400 animate-pulse" />
-          <span>СИСТЕМА ДОСТУПНОСТИ • РАСПОЗНАВАНИЕ ЯЗЫКА ЖЕСТОВ</span>
+        <div className="gestures-header-badge">
+          <Hand size={15} className="text-amber-300" />
+          <span>Управление жестами рук</span>
         </div>
       </div>
 
-      <div className="gestures-container">
-        {/* Strict User Required Alert Text */}
-        <div className="gestures-alert-banner">
-          <div className="alert-pulsing-icon">
-            <Hand size={32} className="text-amber-400 animate-bounce" />
+      <div className="gestures-content-container">
+        {/* User Required Alert Text: Exact specification */}
+        <div className="gestures-alert-card">
+          <div className="alert-hand-icon-wrap">
+            <Hand size={36} className="text-amber-300 animate-bounce" />
           </div>
           <div className="alert-text-block">
             <h1 className="alert-hero-title">Вы общаетесь жестами? Показывайте!</h1>
             <p className="alert-hero-sub">
-              Камера стелы сканирует 21 точку кисти руки (MediaPipe Hands). Покажите жест перед камерой.
+              Камера стелы считывает движения рук. Покажите нужный жест на расстоянии шага от экрана.
             </p>
           </div>
         </div>
 
-        {/* Center Stage: Camera Scanner HUD + Gesture Dictionary */}
-        <div className="gestures-split-cockpit">
-          {/* Left: Camera Scanner HUD Frame */}
-          <div className="gesture-camera-frame">
-            <div className="camera-hud-overlay">
-              {/* Corner crosshairs */}
-              <div className="hud-corner top-left" />
-              <div className="hud-corner top-right" />
-              <div className="hud-corner bottom-left" />
-              <div className="hud-corner bottom-right" />
-
-              {/* Hand landmark simulation wireframe */}
-              <div className="hud-hand-skeleton">
-                <div className="hand-center-palm">
-                  <Hand size={110} className="text-cyan-400 stroke-1 opacity-70 animate-pulse" />
-                </div>
+        {/* Center Stage: Friendly Camera Frame + Gestures List */}
+        <div className="gestures-friendly-layout">
+          {/* Left: Clean Friendly Camera Box */}
+          <div className="gesture-camera-box">
+            <div className="camera-view-window">
+              <div className="camera-soft-illustration">
+                <Hand size={90} className="text-amber-200/50 stroke-1 animate-pulse" />
               </div>
 
-              <div className="hud-status-line">
-                <span className="hud-live-tag">● КАМЕРА АКТИВНА</span>
-                <span className="hud-fps-tag">30 FPS • 21 КЛЮЧЕВАЯ ТОЧКА</span>
+              <div className="camera-bottom-badge">
+                <Camera size={13} className="text-emerald-400" />
+                <span>Камера активна • Держите руку перед экраном</span>
               </div>
             </div>
-            <p className="camera-subhint">
-              Держите руку на расстоянии 0.5–1.5 м перед экраном
+            <p className="camera-guide-text">
+              Удобно на расстоянии 0.5 – 1.5 метра от стелы
             </p>
           </div>
 
-          {/* Right: Recognized Gesture Quick Actions */}
-          <div className="gesture-actions-panel">
-            <h3 className="panel-title">Доступные жестовые команды:</h3>
-            <div className="gestures-list">
+          {/* Right: Gesture Cards */}
+          <div className="gesture-options-panel">
+            <h3 className="options-headline">Понятные жесты для управления:</h3>
+            <div className="options-list">
               {gestures.map((g) => {
                 const Icon = g.icon;
                 return (
                   <button
                     key={g.id}
-                    className="gesture-card-btn"
+                    className="gesture-choice-btn"
                     onClick={() => onSelectGesture(g.meaning)}
                   >
-                    <div className="gesture-icon-frame">
-                      <Icon size={24} className={g.color} />
+                    <div className="choice-icon-wrap">
+                      <Icon size={22} className={g.color} />
                     </div>
-                    <div className="gesture-text-frame">
-                      <span className="gesture-title">{g.name}</span>
-                      <span className="gesture-meaning">{g.meaning}</span>
+                    <div className="choice-text-wrap">
+                      <span className="choice-title">{g.name}</span>
+                      <span className="choice-meaning">{g.meaning}</span>
                     </div>
-                    <div className="gesture-click-tag">Имитировать</div>
+                    <span className="choice-tap-hint">Выбрать</span>
                   </button>
                 );
               })}

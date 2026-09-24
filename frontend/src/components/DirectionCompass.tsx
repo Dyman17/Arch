@@ -52,7 +52,7 @@ export const DirectionCompass: React.FC<DirectionCompassProps> = ({
           </div>
 
           <div className="kiosk-screen-marker">
-            <span>ЭКРАН</span>
+            <span>{lang === 'kk' ? 'Сіз осындасыз' : 'Вы здесь'}</span>
           </div>
 
           <div

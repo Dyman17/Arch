@@ -49,28 +49,28 @@ export const PageRoute: React.FC<PageRouteProps> = ({
         />
       </div>
 
-      {/* Floating HUD Header */}
-      <div className="route-hud-header">
+      {/* Warm Floating Navigation Header */}
+      <div className="route-nav-header">
         <button className="route-back-btn" onClick={onGoToPlace}>
           <ArrowLeft size={18} />
-          <span>К карточке места</span>
+          <span>{lang === 'kk' ? 'Орынға оралу' : 'К описанию'}</span>
         </button>
 
         <div className="route-destination-tag">
           <span className="dest-dot" />
-          <span className="dest-label">МАРШРУТ:</span>
+          <span className="dest-label">{lang === 'kk' ? 'БАҒЫТ:' : 'МАРШРУТ:'}</span>
           <span className="dest-title">{place.name}</span>
         </div>
 
         <div className="route-origin-tag">
-          <span>ОТ: СТЕЛА 15 МКР (АМФИТЕАТР)</span>
+          <span>{lang === 'kk' ? 'Басталуы: 15-ш/а Амфитеатр' : 'Старт: 15 мкр (Амфитеатр)'}</span>
         </div>
       </div>
 
-      {/* Floating Left Panel: Turn-by-Turn Guide & Compass */}
-      <div className="route-floating-cockpit">
+      {/* Floating Side Guide: Compass & Turn-by-Turn Card */}
+      <div className="route-floating-guide">
         {/* Direction Compass */}
-        <div className="cockpit-compass-box">
+        <div className="guide-compass-box">
           <DirectionCompass
             bearingDeg={bearingDeg}
             kioskHeadingDeg={origin.heading_deg}
@@ -82,21 +82,21 @@ export const PageRoute: React.FC<PageRouteProps> = ({
         </div>
 
         {/* Turn-by-Turn Card */}
-        <div className="cockpit-guide-card">
+        <div className="guide-summary-card">
           <div className="guide-metrics-row">
             <div className="metric-pill">
-              <Footprints size={18} className="text-amber-400" />
+              <Footprints size={18} className="text-sand" />
               <div className="metric-texts">
                 <span className="metric-num">{distanceM} м</span>
-                <span className="metric-desc">пешком</span>
+                <span className="metric-desc">{lang === 'kk' ? 'жаяу' : 'пешком'}</span>
               </div>
             </div>
 
             <div className="metric-pill">
-              <Clock size={18} className="text-cyan-400" />
+              <Clock size={18} className="text-sand" />
               <div className="metric-texts">
                 <span className="metric-num">~{durationMin} мин</span>
-                <span className="metric-desc">время в пути</span>
+                <span className="metric-desc">{lang === 'kk' ? 'уақыт' : 'в пути'}</span>
               </div>
             </div>
           </div>
@@ -115,17 +115,17 @@ export const PageRoute: React.FC<PageRouteProps> = ({
             )}
           </div>
 
-          {/* Quick Voice Handover Bar */}
-          <div className="cockpit-action-buttons">
-            <button className="cockpit-btn qr-btn" onClick={onGoToQr}>
+          {/* Voice Prompt Buttons */}
+          <div className="guide-action-buttons">
+            <button className="guide-btn qr-btn" onClick={onGoToQr}>
               <QrCode size={18} />
-              <span>«Отправь на телефон»</span>
+              <span>{lang === 'kk' ? 'Телефонға жүктеу' : 'Отправить на телефон'}</span>
             </button>
 
             {place.has_scene && (
-              <button className="cockpit-btn scene-btn" onClick={onGoToHistory}>
+              <button className="guide-btn scene-btn" onClick={onGoToHistory}>
                 <History size={18} />
-                <span>«Покажи историю»</span>
+                <span>{lang === 'kk' ? 'Тарихын көру' : 'Показать историю'}</span>
               </button>
             )}
           </div>

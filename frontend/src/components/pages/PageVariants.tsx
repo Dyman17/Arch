@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles, MapPin, Compass, ArrowRight, Mic } from 'lucide-react';
+import { MapPin, ArrowRight, Mic, Sun } from 'lucide-react';
 import type { Place } from '../../types';
 
 interface PageVariantsProps {
@@ -13,23 +13,22 @@ export const PageVariants: React.FC<PageVariantsProps> = ({
   lang,
   onSelectPlace,
 }) => {
-  // Take up to 3 or 4 places
   const displayPlaces = places.slice(0, 3);
 
   const prompts: Record<string, { title: string; subtitle: string; voiceHint: string }> = {
     kk: {
-      title: 'Бірнеше қолайлы орын табылды',
+      title: 'Бірнеше қызықты орын табылды',
       subtitle: 'Қайсысын көрсету керек? Нөмірін немесе атауын айтыңыз',
       voiceHint: '«Біріншісі», «Екіншісі» немесе «Үшіншісі» деп айтыңыз',
     },
     ru: {
       title: 'Найдено несколько мест рядом',
-      subtitle: 'Какое место показать подробнее? Назовите номер или имя',
-      voiceHint: 'Скажите: «Первое», «Второе» или «Третье»',
+      subtitle: 'Какое место вас интересует? Назовите номер или название',
+      voiceHint: 'Скажите вслух: «Первое», «Второе» или «Третье»',
     },
     en: {
-      title: 'Several matching locations found',
-      subtitle: 'Which place would you like to explore? Say number or name',
+      title: 'Several places found nearby',
+      subtitle: 'Which one would you like to see? Say the number or name',
       voiceHint: 'Say: "First one", "Second one" or "Third one"',
     },
   };
@@ -38,45 +37,46 @@ export const PageVariants: React.FC<PageVariantsProps> = ({
 
   return (
     <div className="page-stage page-variants">
+      <div className="variants-warm-backdrop" />
+
       <div className="variants-top-header">
         <div className="variants-badge">
-          <Sparkles size={16} className="text-amber-400" />
-          <span>ПОДБОРКА ИИ BAGDAR • ВАРИАНТЫ ДЛЯ ВАС</span>
+          <Sun size={14} className="text-amber-300" />
+          <span>Подборка для прогулки</span>
         </div>
 
         <h1 className="variants-title">{text.title}</h1>
         <p className="variants-subtitle">{text.subtitle}</p>
 
         <div className="variants-voice-hint">
-          <Mic size={16} className="text-cyan-400 animate-pulse" />
+          <Mic size={15} className="text-amber-300 animate-pulse" />
           <span>{text.voiceHint}</span>
         </div>
       </div>
 
-      {/* 3 Large Luxury Cards */}
+      {/* 3 Large Natural Cards */}
       <div className="variants-cards-grid">
         {displayPlaces.map((place, idx) => (
           <div
             key={place.id}
             className="variant-card"
             onClick={() => onSelectPlace(place)}
-            style={{ animationDelay: `${idx * 120}ms` }}
+            style={{ animationDelay: `${idx * 100}ms` }}
           >
             {/* Card Index Badge (1, 2, 3) */}
             <div className="variant-num-badge">
               <span>{idx + 1}</span>
             </div>
 
-            {/* Photo with zoom effect */}
+            {/* Photo */}
             <div className="variant-photo-box">
               <img
                 src={place.thumb_url}
                 alt={place.name}
                 className="variant-photo"
               />
-              <div className="variant-photo-gradient" />
               <span className="variant-category-tag">
-                {place.category.toUpperCase()}
+                {place.category}
               </span>
             </div>
 
@@ -87,18 +87,14 @@ export const PageVariants: React.FC<PageVariantsProps> = ({
 
               <div className="variant-specs">
                 <div className="spec-item">
-                  <MapPin size={14} className="text-cyan-400" />
+                  <MapPin size={13} className="text-amber-300" />
                   <span>~{(idx + 1) * 350 + 400} м от стелы</span>
-                </div>
-                <div className="spec-item">
-                  <Compass size={14} className="text-amber-400" />
-                  <span>{place.has_scene ? 'TarihSky архив' : 'Пеший путь'}</span>
                 </div>
               </div>
 
               <div className="variant-cta">
-                <span>Выбрать место</span>
-                <ArrowRight size={16} />
+                <span>Выбрать это место</span>
+                <ArrowRight size={15} />
               </div>
             </div>
           </div>

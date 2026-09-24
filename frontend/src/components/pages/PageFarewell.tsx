@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Heart, Sparkles } from 'lucide-react';
+import { Sun } from 'lucide-react';
 
 interface PageFarewellProps {
   lang: string;
@@ -27,18 +27,18 @@ export const PageFarewell: React.FC<PageFarewellProps> = ({ lang, onFinishFarewe
   const farewellTexts: Record<string, { title: string; subtitle: string; blessing: string }> = {
     kk: {
       title: 'Рахмет! Көріскенше!',
-      subtitle: 'Ақтау қаласы мен Маңғыстауда саяхатыңыз сәтті өтсін!',
-      blessing: 'Ақ жол! Жақсы демалыңыз!',
+      subtitle: 'Ақтау қаласы мен Каспий жағалауында демалысыңыз жақсы өтсін!',
+      blessing: 'Ақ жол! Сапарыңыз сәтті болсын!',
     },
     ru: {
-      title: 'Спасибо за обращение! До свидания!',
-      subtitle: 'Приятной прогулки по побережью Каспийского моря и Актау!',
+      title: 'Спасибо! Приятной прогулки!',
+      subtitle: 'Желаем вам теплого дня на побережье Каспийского моря!',
       blessing: 'Ақ жол! Счастливого пути!',
     },
     en: {
-      title: 'Thank you! Safe travels!',
-      subtitle: 'Enjoy your journey along the Caspian Sea and Aktau!',
-      blessing: 'Have a wonderful exploration!',
+      title: 'Thank you! Enjoy your day!',
+      subtitle: 'Have a wonderful walk along the Caspian Sea in Aktau!',
+      blessing: 'Safe travels and warm memories!',
     },
   };
 
@@ -46,11 +46,11 @@ export const PageFarewell: React.FC<PageFarewellProps> = ({ lang, onFinishFarewe
 
   return (
     <div className="page-stage page-farewell">
-      <div className="farewell-backdrop" />
+      <div className="farewell-warm-backdrop" />
 
       <div className="farewell-content">
         <div className="farewell-icon-box">
-          <Heart size={48} className="text-rose-400 animate-pulse" />
+          <Sun size={44} className="text-amber-300 animate-spin-slow" />
         </div>
 
         <h1 className="farewell-title">{text.title}</h1>
@@ -58,12 +58,7 @@ export const PageFarewell: React.FC<PageFarewellProps> = ({ lang, onFinishFarewe
         <p className="farewell-blessing">«{text.blessing}»</p>
 
         <div className="farewell-timer-badge">
-          <Sparkles size={14} className="text-amber-400" />
-          <span>Переход в режим ожидания через {countdown} сек...</span>
-        </div>
-
-        <div className="farewell-privacy-note">
-          <span>Сеанс завершён • Персональные данные очищены • Память диалога сброшена</span>
+          <span>Стелла переходит в режим ожидания через {countdown} сек...</span>
         </div>
       </div>
     </div>

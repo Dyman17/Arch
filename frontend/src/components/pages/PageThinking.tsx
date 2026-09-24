@@ -1,5 +1,5 @@
 import React from 'react';
-import { Cpu, Sparkles, Compass, Layers } from 'lucide-react';
+import { Compass, MapPin, Footprints } from 'lucide-react';
 
 interface PageThinkingProps {
   userSpokenText: string;
@@ -9,16 +9,16 @@ interface PageThinkingProps {
 export const PageThinking: React.FC<PageThinkingProps> = ({ userSpokenText, lang }) => {
   const statusTexts: Record<string, { main: string; sub: string }> = {
     kk: {
-      main: 'Сұранысыңызды өңдеп, ақпаратты іздеудемін...',
-      sub: 'Каспий білім базасы және навигациялық граф қосылды',
+      main: 'Бір сәт, ең ыңғайлы жолды қарастырудамын...',
+      sub: 'Ақтау мен Маңғыстаудың нақты бағыттарын тексеремін',
     },
     ru: {
-      main: 'Осмысливаю запрос и рассчитываю маршрут...',
-      sub: 'Поиск по каталогу Мангистау и расчет пешего азимута',
+      main: 'Секунду, подбираю для вас лучший маршрут...',
+      sub: 'Сверяю расстояние по набережной и время пешей прогулки',
     },
     en: {
-      main: 'Processing query and calculating trajectory...',
-      sub: 'Scanning Mangystau cultural atlas & azimuth bearings',
+      main: 'One moment, finding the best route for you...',
+      sub: 'Checking walking paths along the Caspian shoreline',
     },
   };
 
@@ -26,51 +26,41 @@ export const PageThinking: React.FC<PageThinkingProps> = ({ userSpokenText, lang
 
   return (
     <div className="page-stage page-thinking">
-      {/* Dynamic Cosmic Glow Backdrop */}
-      <div className="thinking-radiance-aura" />
+      <div className="thinking-warm-radiance" />
 
       <div className="thinking-center-stage">
-        {/* Hypnotic Multi-Ring Gyroscope */}
-        <div className="thinking-gyro-wrapper">
-          <div className="gyro-ring gyro-1" />
-          <div className="gyro-ring gyro-2" />
-          <div className="gyro-ring gyro-3" />
-          <div className="gyro-core">
-            <Cpu size={56} className="text-cyan-300 animate-pulse" />
+        {/* Warm lighthouse beacon pulse */}
+        <div className="thinking-beacon-wrapper">
+          <div className="beacon-breathing-ring r1" />
+          <div className="beacon-breathing-ring r2" />
+          <div className="thinking-compass-center">
+            <Compass size={48} className="text-amber-200 animate-spin-slow" />
           </div>
         </div>
 
-        {/* Query Echo Block */}
+        {/* User query card */}
         {userSpokenText && (
-          <div className="thinking-query-pill">
-            <span className="query-pill-tag">ВАШ ЗАПРОС</span>
-            <span className="query-pill-text">«{userSpokenText}»</span>
+          <div className="thinking-query-bubble">
+            <span className="query-subtext">Ваш вопрос:</span>
+            <p className="query-text">«{userSpokenText}»</p>
           </div>
         )}
 
         {/* Status text */}
-        <div className="thinking-text-block">
-          <div className="thinking-hero-label">
-            <Sparkles size={18} className="text-amber-400 animate-spin-slow" />
-            <span>AI DIALOG SYSTEM 2026</span>
-          </div>
+        <div className="thinking-status-block">
           <h2 className="thinking-title">{status.main}</h2>
           <p className="thinking-subtitle">{status.sub}</p>
         </div>
 
-        {/* Floating Semantic Tags */}
-        <div className="thinking-tags-stream">
-          <span className="stream-tag">
-            <Compass size={13} />
-            <span>Азимут стелы (45°)</span>
+        {/* Natural friendly tags */}
+        <div className="thinking-friendly-badges">
+          <span className="friendly-badge">
+            <MapPin size={13} className="text-amber-300" />
+            <span>Побережье Актау</span>
           </span>
-          <span className="stream-tag">
-            <Layers size={13} />
-            <span>Каталог мест Актау</span>
-          </span>
-          <span className="stream-tag">
-            <Sparkles size={13} />
-            <span>TarihSky Архивы</span>
+          <span className="friendly-badge">
+            <Footprints size={13} className="text-cyan-300" />
+            <span>Пешая доступность</span>
           </span>
         </div>
       </div>

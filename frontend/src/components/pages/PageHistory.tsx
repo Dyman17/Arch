@@ -37,22 +37,22 @@ export const PageHistory: React.FC<PageHistoryProps> = ({
 
   return (
     <div className="page-stage page-history">
-      {/* Top Header */}
+      {/* Top Warm Header */}
       <div className="history-top-bar">
         <button className="history-back-btn" onClick={onBackToPlace}>
           <ArrowLeft size={18} />
-          <span>К карточке места</span>
+          <span>{lang === 'kk' ? 'Орынға оралу' : 'К описанию'}</span>
         </button>
 
         <div className="history-title-badge">
-          <History size={16} className="text-amber-400" />
-          <span>TARIHSKY • ИСТОРИЧЕСКИЙ РЕЖИМ • {place.name.toUpperCase()}</span>
+          <History size={16} className="text-sand" />
+          <span>{lang === 'kk' ? `TarihSky · Тарих пен бүгін · ${place.name}` : `TarihSky · История и современность · ${place.name}`}</span>
         </div>
 
         <div className="history-year-pills">
-          <span className="year-pill past">1968 г. ШЕВЧЕНКО</span>
+          <span className="year-pill past">{lang === 'kk' ? '1968 ж. Шевченко қаласы' : '1968 г. Город Шевченко'}</span>
           <span className="year-separator">⟷</span>
-          <span className="year-pill present">2026 г. АҚТАУ</span>
+          <span className="year-pill present">{lang === 'kk' ? '2026 ж. Ақтау қаласы' : '2026 г. Современный Актау'}</span>
         </div>
       </div>
 
@@ -61,7 +61,9 @@ export const PageHistory: React.FC<PageHistoryProps> = ({
         {/* Modern Image (Background) */}
         <div className="split-layer modern-layer">
           <img src={modernUrl} alt="Современный вид" className="split-img" />
-          <div className="split-label modern-tag">2026: СОВРЕМЕННЫЙ ВИД</div>
+          <div className="split-label modern-tag">
+            {lang === 'kk' ? '2026 ж. Қазіргі көрініс' : '2026 г. Современный вид'}
+          </div>
         </div>
 
         {/* Historic Image (Clipped Overlay) */}
@@ -70,7 +72,9 @@ export const PageHistory: React.FC<PageHistoryProps> = ({
           style={{ clipPath: `inset(0 ${100 - sliderPos}% 0 0)` }}
         >
           <img src={historicUrl} alt="Исторический архив" className="split-img sepia-toned" />
-          <div className="split-label historic-tag">1968: АРХИВ ШЕВЧЕНКО</div>
+          <div className="split-label historic-tag">
+            {lang === 'kk' ? '1968 ж. Тарихи мұрағат' : '1968 г. Архивное фото'}
+          </div>
         </div>
 
         {/* Vertical Divider Line & Handle */}
@@ -82,7 +86,7 @@ export const PageHistory: React.FC<PageHistoryProps> = ({
           </div>
         </div>
 
-        {/* Invisible Range Input for Dragging */}
+        {/* Range Input for Dragging */}
         <input
           type="range"
           min="0"
@@ -97,10 +101,10 @@ export const PageHistory: React.FC<PageHistoryProps> = ({
       {/* Bottom Historical Information Card */}
       <div className="history-bottom-card">
         <div className="history-card-header">
-          <BookOpen size={20} className="text-amber-400" />
+          <BookOpen size={20} className="text-sand" />
           <h3 className="history-card-title">{texts.title}</h3>
           <span className="history-archive-attribution">
-            {scene?.attribution || 'Архивные фотохроники Мангистауского областного музея'}
+            {scene?.attribution || (lang === 'kk' ? 'Маңғыстау облыстық музейінің мұрағаттық фотоқұжаттары' : 'Архивные фотохроники Мангистауского областного краеведческого музея')}
           </span>
         </div>
 
@@ -110,11 +114,11 @@ export const PageHistory: React.FC<PageHistoryProps> = ({
         <div className="history-actions-row">
           <button className="history-action-btn" onClick={onGoToRoute}>
             <Navigation size={18} />
-            <span>«Как пройти туда сейчас?»</span>
+            <span>{lang === 'kk' ? 'Қазір қалай баруға болады?' : 'Как пройти туда сейчас?'}</span>
           </button>
           <button className="history-action-btn" onClick={onGoToQr}>
             <QrCode size={18} />
-            <span>«Отправь на телефон»</span>
+            <span>{lang === 'kk' ? 'Телефонға жіберу (QR)' : 'Отправить на телефон (QR)'}</span>
           </button>
         </div>
       </div>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Wind, Compass, Sparkles, Camera, Eye } from 'lucide-react';
+import { Wind, Compass, Sparkles, MessageCircle, MapPin } from 'lucide-react';
 
 interface SleepScreenProps {
   onWake: () => void;
@@ -12,8 +12,6 @@ interface SleepScreenProps {
 export const SleepScreen: React.FC<SleepScreenProps> = ({
   onWake,
   lang,
-  isPersonPresent = false,
-  cameraActive = false,
   onSimulateApproach,
 }) => {
   const [time, setTime] = useState(new Date());
@@ -25,7 +23,7 @@ export const SleepScreen: React.FC<SleepScreenProps> = ({
     return () => clearInterval(timer);
   }, []);
 
-  // Ambient generative waves on canvas
+  // Ambient gentle sea waves on canvas
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -43,7 +41,7 @@ export const SleepScreen: React.FC<SleepScreenProps> = ({
     window.addEventListener('resize', resize);
 
     const render = () => {
-      step += 0.015;
+      step += 0.012;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       const w = canvas.width;
@@ -52,15 +50,15 @@ export const SleepScreen: React.FC<SleepScreenProps> = ({
       ctx.save();
       for (let j = 0; j < 3; j++) {
         ctx.beginPath();
-        const opacity = 0.04 + j * 0.02;
-        ctx.strokeStyle = `rgba(0, 168, 255, ${opacity})`;
-        ctx.lineWidth = 1.5;
+        const opacity = 0.035 + j * 0.02;
+        ctx.strokeStyle = `rgba(227, 204, 169, ${opacity})`;
+        ctx.lineWidth = 1.8;
 
-        for (let x = 0; x < w; x += 10) {
+        for (let x = 0; x < w; x += 12) {
           const y =
-            h * 0.65 +
-            Math.sin(x * 0.003 + step + j * 1.5) * 35 +
-            Math.cos(x * 0.001 - step) * 25;
+            h * 0.62 +
+            Math.sin(x * 0.0025 + step + j * 1.6) * 32 +
+            Math.cos(x * 0.001 - step) * 20;
           if (x === 0) ctx.moveTo(x, y);
           else ctx.lineTo(x, y);
         }
@@ -103,56 +101,44 @@ export const SleepScreen: React.FC<SleepScreenProps> = ({
       {/* Background Interactive Ambient Canvas */}
       <canvas ref={canvasRef} className="sleep-ambient-canvas" />
 
-      {/* Top Telemetry Header */}
+      {/* Top Natural Header */}
       <header className="sleep-header">
-        <div className="sleep-stele-tag">
-          <span className="live-indicator-dot" />
-          <span className="stele-code">AKTAU-EMB-01</span>
-          <span className="stele-divider">/</span>
-          <span className="stele-geo">15-ШАҒЫНАУДАН ЖАҒАЛАУЫ</span>
-        </div>
-
-        {/* Optical Sensor Telemetry */}
-        <div className="sleep-camera-pill">
-          <Camera size={13} className={cameraActive ? 'cam-live-icon' : 'cam-idle-icon'} />
-          <span>
-            {isPersonPresent
-              ? (lang === 'kk' ? 'АДАМ АНЫҚТАЛДЫ' : lang === 'en' ? 'PERSON DETECTED' : 'ЧЕЛОВЕК В КАДРЕ')
-              : (lang === 'kk' ? 'CV КАМЕРА: КҮЗЕТТЕ' : lang === 'en' ? 'CV SENSOR: WATCHING' : 'CV КАМЕРА: СКАНИРОВАНИЕ')}
-          </span>
+        <div className="sleep-location-badge">
+          <MapPin size={15} className="text-sand" />
+          <span className="location-city">Ақтау</span>
+          <span className="location-separator">·</span>
+          <span className="location-spot">Каспий жағалауы (15-ш/а)</span>
         </div>
 
         <div className="sleep-weather-widget">
           <div className="weather-item">
-            <Wind size={14} className="weather-icon" />
-            <span>Каспий самалы: 4.2 м/с СШ</span>
+            <Wind size={15} className="weather-icon" />
+            <span>Каспий желі: 4 м/с</span>
           </div>
           <div className="weather-divider" />
           <div className="weather-item">
-            <span>Су: +21°C · Ауа: +26°C</span>
+            <span>Ауа: +26°C · Теңіз суы: +21°C</span>
           </div>
         </div>
       </header>
 
-      {/* Running Kinetic Marquee Ticker */}
-      <div className="sleep-ticker-container">
-        <div className="sleep-ticker-track">
-          <span>BAĠDAR · SMART CASPIAN GUIDE · АҚТАУ МЕН МАҢҒЫСТАУ · COMPUTER VISION KIOSK · </span>
-          <span>BAĠDAR · SMART CASPIAN GUIDE · АҚТАУ МЕН МАҢҒЫСТАУ · COMPUTER VISION KIOSK · </span>
-        </div>
-      </div>
-
       {/* Monumental Hero Centerpiece */}
       <main className="sleep-hero-center">
         <div className="sleep-brand-emblem">
-          <span className="brand-super-label">INTERACTIVE URBAN STELE</span>
+          <span className="brand-super-label">
+            {lang === 'kk'
+              ? 'МАҢҒЫСТАУ САЯХАТЫ МЕН ҚАЛА БАҒДАРЫ'
+              : lang === 'en'
+              ? 'EXPLORE AKTAU & MANGYSTAU'
+              : 'ПУТЕВОДИТЕЛЬ ПО АКТАУ И МАНГИСТАУ'}
+          </span>
           <h1 className="sleep-monumental-title">BAĠDAR</h1>
           <p className="sleep-editorial-sub">
             {lang === 'kk'
-              ? 'Каспий жағалауының цифрлық гиді'
+              ? 'Каспий жағасындағы жайлы цифрлық серігіңіз'
               : lang === 'en'
-              ? 'Digital Guide to the Caspian Coast & Mangystau'
-              : 'Цифровой навигатор по побережью Каспия'}
+              ? 'Your hospitable digital companion on the Caspian shore'
+              : 'Ваш дружелюбный спутник на побережье Каспия'}
           </p>
         </div>
 
@@ -165,37 +151,34 @@ export const SleepScreen: React.FC<SleepScreenProps> = ({
           <p className="clock-calendar-date">{dateString}</p>
         </div>
 
-        {/* Optical Sensor Wake Callout (Camera Detection, not Sound) */}
+        {/* Hospitable Wake Callout */}
         <div className="sleep-wake-sensory-orb">
           <div className="orb-soundwave-ring ring-1" />
           <div className="orb-soundwave-ring ring-2" />
-          <div className="orb-soundwave-ring ring-3" />
           <div className="orb-core">
-            <Eye size={24} className="orb-core-icon" />
+            <MessageCircle size={22} className="orb-core-icon" />
           </div>
 
           <div className="orb-callout-text">
             <div className="callout-heading">
-              <Sparkles size={14} className="spark-accent" />
+              <Sparkles size={15} className="spark-accent" />
               <span>
                 {lang === 'kk'
-                  ? 'Стелаға жақындаңыз (камера арқылы қосылады)'
+                  ? 'Стелаға жақындап, сұрағыңызды қойыңыз'
                   : lang === 'en'
-                  ? 'Step in front of the kiosk (camera auto-wakes)'
-                  : 'Подойдите к стеле (камера разбудит экран)'}
+                  ? 'Approach the kiosk and ask anything'
+                  : 'Подойдите к стеле и спросите голосom'}
               </span>
             </div>
-            <p className="callout-hints">
-              {lang === 'kk'
-                ? 'Камера адамды көргенде стела оянып, сөйлесуді бастайды'
-                : lang === 'en'
-                ? 'Camera detects your approach, kiosk greets you and listens'
-                : 'Камера обнаружит ваше появление, стела поздоровается и начнет диалог'}
-            </p>
+            <div className="sleep-sample-prompts">
+              <span className="sample-prompt-pill">«Жартасты соқпақ қайда?»</span>
+              <span className="sample-prompt-pill">«Ақтау маягы»</span>
+              <span className="sample-prompt-pill">«Қайда тамақтануға болады?»</span>
+            </div>
           </div>
         </div>
 
-        {/* Quick simulator chip for test/demo without camera */}
+        {/* Quick approach button for manual click/testing */}
         {onSimulateApproach && (
           <button
             className="sleep-simulate-btn"
@@ -204,21 +187,21 @@ export const SleepScreen: React.FC<SleepScreenProps> = ({
               onSimulateApproach();
             }}
           >
-            <Camera size={13} />
-            <span>{lang === 'kk' ? 'Демо: Адамның жақындауын тексеру' : 'Демо: Симуляция подхода человека к камере'}</span>
+            <Sparkles size={13} />
+            <span>{lang === 'kk' ? 'Сынақ: Жақындауды бастау' : 'Нажмите, чтобы подойти'}</span>
           </button>
         )}
       </main>
 
-      {/* Bottom Telemetry Footer */}
+      {/* Bottom Humane Footer */}
       <footer className="sleep-footer">
         <div className="footer-kiosk-spec">
-          <Compass size={14} className="spec-compass" />
-          <span>Ориентация стелы: 45° NE (вдоль набережной 15 мкр)</span>
+          <Compass size={15} className="spec-compass" />
+          <span>Амфитеатр жанында орналасқан · Набережная 15-го микрорайона</span>
         </div>
 
         <div className="footer-tap-hint">
-          <span>Сенсорлық емес экран · Тек камера мен дауыспен басқарылады</span>
+          <span>Дауыспен немесе қол қимылымен сөйлесуге болады</span>
         </div>
 
         <div className="footer-languages-tag">
