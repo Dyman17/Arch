@@ -292,16 +292,15 @@ export const EmbankmentMasterScreen: React.FC<EmbankmentMasterScreenProps> = ({
         })}
       </nav>
 
-      {/* 3. CENTER HERO MONOGRAPH (Contrasting Underlay & Functional Action Buttons) */}
+      {/* 3. CENTER HERO MONOGRAPH (Clean Architectural Monograph Card) */}
       <main className="embankment-hero-stage">
-        <div className="embankment-card-underlay">
-          <motion.div
-            key={activePlace.id}
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.25, ease: 'easeOut' }}
-            className="embankment-monograph-card"
-          >
+        <motion.div
+          key={activePlace.id}
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25, ease: 'easeOut' }}
+          className="embankment-monograph-card"
+        >
             {/* Left Column: Authentic Photography with Dark Contours */}
             <div className="monograph-photo-column">
               <div className="monograph-photo-wrapper">
@@ -411,7 +410,6 @@ export const EmbankmentMasterScreen: React.FC<EmbankmentMasterScreenProps> = ({
               </div>
             </div>
           </motion.div>
-        </div>
       </main>
 
       {/* 4. BOTTOM DOCK — VOICE CONTROL & QUICK ACTION CHIPS */}

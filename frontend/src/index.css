@@ -1929,25 +1929,16 @@ html, body, #root {
   overflow-y: auto;
 }
 
-/* Distinct Clean Underlay Plate */
-.embankment-card-underlay {
-  width: 100%;
-  max-width: 1180px;
-  background: var(--eb-bg-underlay);
-  border: 1.5px solid var(--eb-border);
-  border-radius: 26px;
-  padding: 10px;
-  box-shadow: var(--eb-shadow);
-}
-
 .embankment-monograph-card {
   width: 100%;
+  max-width: 1180px;
   background: var(--eb-surface);
   border: 1.5px solid var(--eb-border);
-  border-radius: 18px;
+  border-radius: 24px;
   display: grid;
   grid-template-columns: 46% 54%;
   overflow: hidden;
+  box-shadow: var(--eb-shadow);
 }
 
 /* Photo column */
