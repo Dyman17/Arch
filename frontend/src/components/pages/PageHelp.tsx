@@ -45,25 +45,25 @@ export const PageHelp: React.FC<PageHelpProps> = ({ lang, onBack, onStartListeni
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Kazakh */}
           <Card className="p-5">
-            <div className="flex items-center gap-2 mb-4 pb-2 border-b border-zinc-800">
-              <span className="font-mono text-xs text-zinc-400 font-bold">[ KZ ]</span>
-              <h3 className="font-serif text-white text-base">Қазақ тілінде</h3>
+            <div className="flex items-center gap-2 mb-4 pb-2 border-b border-zinc-200">
+              <span className="font-mono text-xs text-zinc-500 font-bold">[ KZ ]</span>
+              <h3 className="font-serif text-zinc-900 text-base">Қазақ тілінде</h3>
             </div>
-            <div className="space-y-2 text-xs text-zinc-300 font-mono">
+            <div className="space-y-2 text-xs text-zinc-700 font-mono">
               <div className="clean-help-pill">
-                <Mic size={12} className="text-zinc-400 shrink-0" />
+                <Mic size={12} className="text-zinc-500 shrink-0" />
                 <span>«Жартасты соқпақ қайда?»</span>
               </div>
               <div className="clean-help-pill">
-                <Navigation size={12} className="text-zinc-400 shrink-0" />
+                <Navigation size={12} className="text-zinc-500 shrink-0" />
                 <span>«Жақын маңда не бар?»</span>
               </div>
               <div className="clean-help-pill">
-                <History size={12} className="text-zinc-400 shrink-0" />
+                <History size={12} className="text-zinc-500 shrink-0" />
                 <span>«Тарихын көрсетші»</span>
               </div>
               <div className="clean-help-pill">
-                <QrCode size={12} className="text-zinc-400 shrink-0" />
+                <QrCode size={12} className="text-zinc-500 shrink-0" />
                 <span>«Телефонға жібер»</span>
               </div>
             </div>
@@ -71,25 +71,25 @@ export const PageHelp: React.FC<PageHelpProps> = ({ lang, onBack, onStartListeni
 
           {/* Russian */}
           <Card className="p-5">
-            <div className="flex items-center gap-2 mb-4 pb-2 border-b border-zinc-800">
-              <span className="font-mono text-xs text-zinc-400 font-bold">[ RU ]</span>
-              <h3 className="font-serif text-white text-base">На русском</h3>
+            <div className="flex items-center gap-2 mb-4 pb-2 border-b border-zinc-200">
+              <span className="font-mono text-xs text-zinc-500 font-bold">[ RU ]</span>
+              <h3 className="font-serif text-zinc-900 text-base">На русском</h3>
             </div>
-            <div className="space-y-2 text-xs text-zinc-300 font-mono">
+            <div className="space-y-2 text-xs text-zinc-700 font-mono">
               <div className="clean-help-pill">
-                <Mic size={12} className="text-zinc-400 shrink-0" />
+                <Mic size={12} className="text-zinc-500 shrink-0" />
                 <span>«Как пройти к Скальной тропе?»</span>
               </div>
               <div className="clean-help-pill">
-                <Navigation size={12} className="text-zinc-400 shrink-0" />
+                <Navigation size={12} className="text-zinc-500 shrink-0" />
                 <span>«Где маяк на крыше?»</span>
               </div>
               <div className="clean-help-pill">
-                <History size={12} className="text-zinc-400 shrink-0" />
+                <History size={12} className="text-zinc-500 shrink-0" />
                 <span>«Покажи историю места»</span>
               </div>
               <div className="clean-help-pill">
-                <QrCode size={12} className="text-zinc-400 shrink-0" />
+                <QrCode size={12} className="text-zinc-500 shrink-0" />
                 <span>«Отправь на телефон»</span>
               </div>
             </div>
@@ -97,25 +97,25 @@ export const PageHelp: React.FC<PageHelpProps> = ({ lang, onBack, onStartListeni
 
           {/* English */}
           <Card className="p-5">
-            <div className="flex items-center gap-2 mb-4 pb-2 border-b border-zinc-800">
-              <span className="font-mono text-xs text-zinc-400 font-bold">[ EN ]</span>
-              <h3 className="font-serif text-white text-base">In English</h3>
+            <div className="flex items-center gap-2 mb-4 pb-2 border-b border-zinc-200">
+              <span className="font-mono text-xs text-zinc-500 font-bold">[ EN ]</span>
+              <h3 className="font-serif text-zinc-900 text-base">In English</h3>
             </div>
-            <div className="space-y-2 text-xs text-zinc-300 font-mono">
+            <div className="space-y-2 text-xs text-zinc-700 font-mono">
               <div className="clean-help-pill">
-                <Mic size={12} className="text-zinc-400 shrink-0" />
+                <Mic size={12} className="text-zinc-500 shrink-0" />
                 <span>"Where is the Rock Trail?"</span>
               </div>
               <div className="clean-help-pill">
-                <Navigation size={12} className="text-zinc-400 shrink-0" />
+                <Navigation size={12} className="text-zinc-500 shrink-0" />
                 <span>"What places are nearby?"</span>
               </div>
               <div className="clean-help-pill">
-                <History size={12} className="text-zinc-400 shrink-0" />
+                <History size={12} className="text-zinc-500 shrink-0" />
                 <span>"Show historic archive"</span>
               </div>
               <div className="clean-help-pill">
-                <QrCode size={12} className="text-zinc-400 shrink-0" />
+                <QrCode size={12} className="text-zinc-500 shrink-0" />
                 <span>"Send route to mobile"</span>
               </div>
             </div>

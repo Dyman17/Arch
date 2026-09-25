@@ -52,8 +52,8 @@ export const SleepScreen: React.FC<SleepScreenProps> = ({
       // Architectural horizon hairlines
       for (let j = 0; j < 3; j++) {
         ctx.beginPath();
-        const opacity = 0.03 + j * 0.025;
-        ctx.strokeStyle = `rgba(245, 242, 235, ${opacity})`;
+        const opacity = 0.04 + j * 0.03;
+        ctx.strokeStyle = `rgba(18, 18, 20, ${opacity})`;
         ctx.lineWidth = 1;
 
         for (let x = 0; x < w; x += 24) {
@@ -148,10 +148,10 @@ export const SleepScreen: React.FC<SleepScreenProps> = ({
           className="clean-approach-pill"
         >
           <div className="clean-approach-icon">
-            <Eye size={18} className="text-zinc-300" />
+            <Eye size={18} className="text-zinc-600" />
           </div>
           <div className="text-left">
-            <div className="text-xs font-semibold text-white uppercase tracking-widest flex items-center gap-2">
+            <div className="text-xs font-semibold text-zinc-900 uppercase tracking-widest flex items-center gap-2">
               <span>
                 {lang === 'kk'
                   ? 'Стелаға жақындаңыз немесе экранды түртіңіз'

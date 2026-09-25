@@ -108,10 +108,10 @@ export const PageHistory: React.FC<PageHistoryProps> = ({
         <div className="flex items-start justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <BookOpen size={15} className="text-zinc-400" />
-              <h3 className="font-serif text-lg text-white font-semibold">{texts.title}</h3>
+              <BookOpen size={15} className="text-zinc-500" />
+              <h3 className="font-serif text-lg text-zinc-900 font-semibold">{texts.title}</h3>
             </div>
-            <p className="text-zinc-300 text-sm leading-relaxed max-w-3xl">{texts.body}</p>
+            <p className="text-zinc-600 text-sm leading-relaxed max-w-3xl">{texts.body}</p>
             <span className="text-zinc-500 font-mono text-xs block mt-2 uppercase tracking-wider">
               {scene?.attribution || 'Архивные фотохроники Мангистауского музея'}
             </span>

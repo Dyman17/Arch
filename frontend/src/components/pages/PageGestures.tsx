@@ -123,13 +123,13 @@ export const PageGestures: React.FC<PageGesturesProps> = ({
                   className="clean-gesture-row"
                 >
                   <div className="clean-gesture-icon-wrap">
-                    <Icon size={16} className="text-stone-300" />
+                    <Icon size={16} className="text-zinc-700" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-xs font-mono text-white uppercase">{g.name}</div>
-                    <div className="text-xs text-zinc-400 mt-0.5">{g.meaning}</div>
+                    <div className="text-xs font-mono text-zinc-900 uppercase font-semibold">{g.name}</div>
+                    <div className="text-xs text-zinc-500 mt-0.5">{g.meaning}</div>
                   </div>
-                  <span className="text-xs font-mono text-zinc-500">[{g.code}]</span>
+                  <span className="text-xs font-mono text-zinc-400">[{g.code}]</span>
                 </Card>
               );
             })}

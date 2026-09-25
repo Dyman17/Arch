@@ -96,13 +96,13 @@ export const PageRoute: React.FC<PageRouteProps> = ({
         <div className="clean-guide-card">
           <div className="flex items-center gap-2 mb-4">
             <div className="clean-metric-badge">
-              <Footprints size={14} className="text-zinc-400" />
-              <span className="font-semibold text-white">{distanceM} М</span>
+              <Footprints size={14} className="text-zinc-600" />
+              <span className="font-semibold text-zinc-900">{distanceM} М</span>
               <span className="text-zinc-500 text-xs">ПЕШКОМ</span>
             </div>
             <div className="clean-metric-badge">
-              <Clock size={14} className="text-zinc-400" />
-              <span className="font-semibold text-white">~{durationMin} МИН</span>
+              <Clock size={14} className="text-zinc-600" />
+              <span className="font-semibold text-zinc-900">~{durationMin} МИН</span>
               <span className="text-zinc-500 text-xs">В ПУТИ</span>
             </div>
           </div>

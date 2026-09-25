@@ -57,7 +57,7 @@ export const PageNearby: React.FC<PageNearbyProps> = ({ places, lang, onSelectPl
 
               <div className="mt-4 pt-2 border-t border-zinc-900 flex items-center justify-between text-xs font-mono uppercase">
                 <span className="text-zinc-500">БЕРЕГОВАЯ ЛИНИЯ</span>
-                <span className="text-white font-medium flex items-center gap-1">
+                <span className="text-zinc-900 font-medium flex items-center gap-1">
                   ИНФО <ArrowRight size={11} />
                 </span>
               </div>

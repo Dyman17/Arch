@@ -90,7 +90,7 @@ export const PageVariants: React.FC<PageVariantsProps> = ({
                   <MapPin size={11} className="text-zinc-500" />
                   ~{(idx + 1) * 350 + 400} М
                 </span>
-                <span className="text-white font-medium flex items-center gap-1">
+                <span className="text-zinc-900 font-medium flex items-center gap-1">
                   ВЫБРАТЬ <ArrowRight size={12} />
                 </span>
               </div>

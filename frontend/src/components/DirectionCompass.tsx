@@ -65,10 +65,10 @@ export const DirectionCompass: React.FC<DirectionCompassProps> = ({
       {/* Compass Text Guidance */}
       <div className="clean-compass-info">
         <span className="clean-compass-rel-heading">{relativeDescription}</span>
-        <div className="flex items-center gap-2 mt-1 text-xs text-zinc-400">
-          <span className="font-semibold text-white">{distanceM} м</span>
+        <div className="flex items-center gap-2 mt-1 text-xs text-zinc-500">
+          <span className="font-semibold text-zinc-900">{distanceM} м</span>
           <span>·</span>
-          <span className="font-semibold text-white">~{durationMin} мин</span>
+          <span className="font-semibold text-zinc-900">~{durationMin} мин</span>
           <span>пешком</span>
         </div>
         <p className="clean-compass-sub-step mt-2">{directionText}</p>
