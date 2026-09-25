@@ -27,19 +27,19 @@ export const PageFarewell: React.FC<PageFarewellProps> = ({ lang, onFinishFarewe
 
   const farewellTexts: Record<string, { title: string; subtitle: string; blessing: string }> = {
     kk: {
-      title: 'Рахмет. Көріскенше.',
-      subtitle: 'Маңғыстау мен Каспий жағалауында сапарыңыз сәтті өтсін.',
+      title: 'Рахмет! Көріскенше!',
+      subtitle: 'Ақтау қаласы мен Каспий жағалауында демалысыңыз жақсы өтсін!',
       blessing: 'Ақ жол! Сапарыңыз сәтті болсын!',
     },
     ru: {
-      title: 'Счастливого пути',
-      subtitle: 'Приятной прогулки по побережью Каспия и земле Мангистау.',
+      title: 'Приятной прогулки!',
+      subtitle: 'Желаем отличного отдыха на побережье Каспия.',
       blessing: 'Ақ жол! Счастливого пути!',
     },
     en: {
-      title: 'Safe Travels',
-      subtitle: 'Have a peaceful journey along the Caspian coast.',
-      blessing: 'Aq zhol! May your voyage be blessed.',
+      title: 'Enjoy your walk!',
+      subtitle: 'Have a peaceful and pleasant day by the Caspian Sea.',
+      blessing: 'Safe travels and warm memories!',
     },
   };
 
@@ -55,7 +55,7 @@ export const PageFarewell: React.FC<PageFarewellProps> = ({ lang, onFinishFarewe
       >
         <div className="flex-center mb-5">
           <div className="clean-farewell-icon-box">
-            <Compass size={32} className="text-stone-300" />
+            <Compass size={28} className="text-zinc-700" />
           </div>
         </div>
 
@@ -66,8 +66,8 @@ export const PageFarewell: React.FC<PageFarewellProps> = ({ lang, onFinishFarewe
           <span>«{text.blessing}»</span>
         </div>
 
-        <div className="mt-8 text-xs font-mono text-zinc-500 uppercase tracking-widest">
-          Режим ожидания через {countdown} сек...
+        <div className="mt-8 text-xs text-zinc-400">
+          Стела переходит в режим ожидания через {countdown} сек...
         </div>
       </motion.div>
     </div>

@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { motion } from 'motion/react';
-import { Wind, MapPin, Eye } from 'lucide-react';
-import { Badge } from './ui/Badge';
+import { MessageCircle } from 'lucide-react';
 
 interface SleepScreenProps {
   onWake: () => void;
@@ -24,7 +23,7 @@ export const SleepScreen: React.FC<SleepScreenProps> = ({
     return () => clearInterval(timer);
   }, []);
 
-  // Subtle architectural sea-depth oscillation in bone-ivory hairline
+  // Subtle gentle sea waves
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -42,25 +41,24 @@ export const SleepScreen: React.FC<SleepScreenProps> = ({
     window.addEventListener('resize', resize);
 
     const render = () => {
-      step += 0.006;
+      step += 0.005;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       const w = canvas.width;
       const h = canvas.height;
 
       ctx.save();
-      // Architectural horizon hairlines
-      for (let j = 0; j < 3; j++) {
+      for (let j = 0; j < 2; j++) {
         ctx.beginPath();
-        const opacity = 0.04 + j * 0.03;
-        ctx.strokeStyle = `rgba(18, 18, 20, ${opacity})`;
-        ctx.lineWidth = 1;
+        const opacity = 0.03 + j * 0.02;
+        ctx.strokeStyle = `rgba(28, 28, 30, ${opacity})`;
+        ctx.lineWidth = 1.5;
 
-        for (let x = 0; x < w; x += 24) {
+        for (let x = 0; x < w; x += 30) {
           const y =
-            h * 0.58 +
-            Math.sin(x * 0.0018 + step + j * 1.8) * 22 +
-            Math.cos(x * 0.0008 - step * 0.8) * 14;
+            h * 0.6 +
+            Math.sin(x * 0.0015 + step + j * 1.5) * 20 +
+            Math.cos(x * 0.0008 - step * 0.8) * 12;
           if (x === 0) ctx.moveTo(x, y);
           else ctx.lineTo(x, y);
         }
@@ -94,7 +92,6 @@ export const SleepScreen: React.FC<SleepScreenProps> = ({
       weekday: 'long',
       day: 'numeric',
       month: 'long',
-      year: 'numeric',
     }
   );
 
@@ -102,38 +99,30 @@ export const SleepScreen: React.FC<SleepScreenProps> = ({
     <div className="clean-sleep-screen" onClick={onWake}>
       <canvas ref={canvasRef} className="clean-sleep-canvas" />
 
-      {/* Top Monumental Header */}
+      {/* Clean Top Bar */}
       <header className="clean-sleep-header">
-        <div className="flex items-center gap-2">
-          <Badge variant="neutral">
-            <MapPin size={11} className="mr-1 inline text-zinc-400" />
-            43°39′11″ N · 51°09′00″ E · АҚТАУ
-          </Badge>
-        </div>
-
+        <span className="text-sm font-medium text-zinc-600">
+          Ақтау · Каспий жағалауы
+        </span>
         <div className="clean-sleep-weather">
-          <Wind size={13} className="text-zinc-400" />
-          <span>САМАЛ: 4 М/С</span>
-          <span className="text-zinc-700">·</span>
-          <span>АУА: +26°C</span>
-          <span className="text-zinc-700">·</span>
-          <span>КАСПИЙ: +21°C</span>
+          <span>+26°C</span>
+          <span className="text-zinc-400">·</span>
+          <span>Жел: 4 м/с</span>
         </div>
       </header>
 
-      {/* Monumental Architectural Center */}
+      {/* Centerpiece */}
       <main className="clean-sleep-center">
         <div className="clean-brand-tag">
-          <span className="clean-brand-super">ARCHIVUM MANĠYSTAÝ · CASPIUM</span>
-          <h1 className="clean-brand-logo">BAĠDAR</h1>
+          <h1 className="clean-brand-logo">BaGdar</h1>
           <p className="clean-brand-sub">
             {lang === 'kk'
-              ? 'Ақтау мен Маңғыстау түбегінің цифрлық стеласы'
-              : 'Интерактивная стела города Актау и побережья Каспия'}
+              ? 'Қала мен жағалаудың цифрлық гиді'
+              : 'Интерактивный цифровой гид по городу'}
           </p>
         </div>
 
-        {/* Monumental Clock */}
+        {/* Calm Clock */}
         <div className="clean-sleep-clock">
           <div className="flex items-baseline justify-center">
             <span className="clean-clock-main">{timeString}</span>
@@ -142,26 +131,24 @@ export const SleepScreen: React.FC<SleepScreenProps> = ({
           <p className="clean-clock-date">{dateString}</p>
         </div>
 
-        {/* Approach Callout Monolith */}
+        {/* Approach Callout */}
         <motion.div
           whileHover={{ y: -2 }}
           className="clean-approach-pill"
         >
           <div className="clean-approach-icon">
-            <Eye size={18} className="text-zinc-600" />
+            <MessageCircle size={20} className="text-zinc-700" />
           </div>
           <div className="text-left">
-            <div className="text-xs font-semibold text-zinc-900 uppercase tracking-widest flex items-center gap-2">
-              <span>
-                {lang === 'kk'
-                  ? 'Стелаға жақындаңыз немесе экранды түртіңіз'
-                  : 'Подойдите к стеле или коснитесь экрана'}
-              </span>
+            <div className="text-sm font-medium text-zinc-900">
+              {lang === 'kk'
+                ? 'Сұрағыңызды дауыстап айтыңыз немесе экранды түртіңіз'
+                : 'Спросите голосом или коснитесь экрана'}
             </div>
             <div className="flex flex-wrap gap-2 mt-2">
               <span className="clean-mini-chip">«Скальная тропа»</span>
               <span className="clean-mini-chip">«Маяк»</span>
-              <span className="clean-mini-chip">«Маршрут»</span>
+              <span className="clean-mini-chip">«Где погулять?»</span>
             </div>
           </div>
         </motion.div>
@@ -174,21 +161,18 @@ export const SleepScreen: React.FC<SleepScreenProps> = ({
               onSimulateApproach();
             }}
           >
-            <span>[ Нажмите для пробуждения стелы ]</span>
+            <span>Разбудить стелу</span>
           </button>
         )}
       </main>
 
-      {/* Footer */}
+      {/* Clean Minimal Footer */}
       <footer className="clean-sleep-footer">
-        <span className="text-zinc-500 text-xs font-mono tracking-wider uppercase">
-          15-шағынаудан · Амфитеатр жағалауы
+        <span className="text-xs text-zinc-400">
+          15-шағынаудан · Амфитеатр
         </span>
-        <span className="text-zinc-500 text-xs font-mono tracking-wider uppercase">
-          Оптикалық камера &amp; Дауыс датчигі
-        </span>
-        <span className="text-zinc-500 text-xs font-mono tracking-widest">
-          ҚАЗ · РУС · ENG
+        <span className="text-xs text-zinc-400">
+          Қазақша · Русский · English
         </span>
       </footer>
     </div>

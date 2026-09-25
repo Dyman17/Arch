@@ -12,7 +12,6 @@ import {
 } from 'lucide-react';
 import type { Place } from '../../types';
 import { Button } from '../ui/Button';
-import { Badge } from '../ui/Badge';
 
 interface PagePlaceProps {
   place: Place;
@@ -44,7 +43,7 @@ export const PagePlace: React.FC<PagePlaceProps> = ({
   return (
     <div className="clean-page-root flex-center p-8">
       <motion.div
-        initial={{ opacity: 0, y: 12 }}
+        initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
         className="clean-place-bento"
@@ -56,23 +55,16 @@ export const PagePlace: React.FC<PagePlaceProps> = ({
               variant="ghost"
               size="sm"
               onClick={onBackToNearby}
-              icon={<ArrowLeft size={14} />}
+              icon={<ArrowLeft size={15} />}
             >
               {lang === 'kk' ? 'Барлық орындар' : 'Каталог мест'}
             </Button>
           ) : (
-            <div className="font-mono text-xs text-zinc-500 uppercase tracking-widest">
-              MONOGRAPH · № {place.id < 10 ? `0${place.id}` : place.id}
-            </div>
+            <div />
           )}
 
-          <div className="flex items-center gap-2">
-            <Badge variant="neutral">
-              {place.category.toUpperCase()}
-            </Badge>
-            <Badge variant="neutral">
-              {place.is_open_now !== false ? 'ОТКРЫТО · 24/7' : 'ЗАКРЫТО'}
-            </Badge>
+          <div className="text-xs text-zinc-500 font-medium">
+            {place.is_open_now !== false ? 'Открыто для прогулок' : 'Закрыто'}
           </div>
         </div>
 
@@ -92,19 +84,19 @@ export const PagePlace: React.FC<PagePlaceProps> = ({
             <h1 className="clean-place-title">{localized.name}</h1>
             <p className="clean-place-desc">{localized.summary}</p>
 
-            {/* Architectural Specs */}
+            {/* Soft Specs */}
             <div className="clean-specs-row">
               <div className="clean-spec-pill">
-                <Footprints size={14} className="text-zinc-400" />
-                <span>~850 М · 10–12 МИН</span>
+                <Footprints size={15} className="text-zinc-500" />
+                <span>~850 м (10-12 мин)</span>
               </div>
               <div className="clean-spec-pill">
-                <MapPin size={14} className="text-zinc-400" />
+                <MapPin size={15} className="text-zinc-500" />
                 <span>{localized.address}</span>
               </div>
               <div className="clean-spec-pill">
-                <Clock size={14} className="text-zinc-400" />
-                <span>24/7 ДОСТУП</span>
+                <Clock size={15} className="text-zinc-500" />
+                <span>Круглосуточно</span>
               </div>
             </div>
 
@@ -117,7 +109,7 @@ export const PagePlace: React.FC<PagePlaceProps> = ({
                 icon={<Navigation size={16} />}
               >
                 {lang === 'kk' ? 'Бағытты көрсету' : 'Как пройти?'}
-                <ArrowRight size={14} className="ml-2 inline" />
+                <ArrowRight size={15} className="ml-1 inline" />
               </Button>
 
               {place.has_scene && (
@@ -127,12 +119,12 @@ export const PagePlace: React.FC<PagePlaceProps> = ({
                   onClick={onGoToHistory}
                   icon={<History size={16} />}
                 >
-                  {lang === 'kk' ? 'Тарихы (TarihSky)' : 'История TarihSky'}
+                  {lang === 'kk' ? 'Тарихы' : 'История'}
                 </Button>
               )}
 
               <Button
-                variant="outline"
+                variant="secondary"
                 size="lg"
                 onClick={onGoToQr}
                 icon={<QrCode size={16} />}

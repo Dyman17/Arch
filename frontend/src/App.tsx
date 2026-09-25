@@ -309,22 +309,22 @@ export const App: React.FC = () => {
     },
   });
 
-  // Storyboard Tabs Configuration (14 Pages — Gothic Roman Sequence)
+  // Storyboard Tabs Configuration (14 Pages)
   const storyboardTabs: TabItem[] = [
-    { id: 'sleep', num: 'I', label: 'Сон' },
-    { id: 'greeting', num: 'II', label: 'Привет' },
-    { id: 'listening', num: 'III', label: 'Слушаю' },
-    { id: 'thinking', num: 'IV', label: 'Думаю' },
-    { id: 'place', num: 'V', label: 'Место' },
-    { id: 'route', num: 'VI', label: 'Маршрут' },
-    { id: 'history', num: 'VII', label: 'История' },
-    { id: 'qr', num: 'VIII', label: 'QR' },
-    { id: 'variants', num: 'IX', label: 'Варианты' },
-    { id: 'nearby', num: 'X', label: 'Рядом' },
-    { id: 'help', num: 'XI', label: 'Помощь' },
-    { id: 'farewell', num: 'XII', label: 'Прощание' },
-    { id: 'error', num: 'XIII', label: 'Ошибка' },
-    { id: 'gestures', num: 'XIV', label: 'Жесты' },
+    { id: 'sleep', label: 'Сон' },
+    { id: 'greeting', label: 'Привет' },
+    { id: 'listening', label: 'Слушаю' },
+    { id: 'thinking', label: 'Думаю' },
+    { id: 'place', label: 'Место' },
+    { id: 'route', label: 'Маршрут' },
+    { id: 'history', label: 'История' },
+    { id: 'qr', label: 'QR' },
+    { id: 'variants', label: 'Варианты' },
+    { id: 'nearby', label: 'Рядом' },
+    { id: 'help', label: 'Помощь' },
+    { id: 'farewell', label: 'Прощание' },
+    { id: 'error', label: 'Ошибка' },
+    { id: 'gestures', label: 'Жесты' },
   ];
 
   const handleTabChange = (pageId: string) => {
@@ -543,12 +543,11 @@ export const App: React.FC = () => {
         </AnimatePresence>
       </div>
 
-      {/* Gothic Minimal Tabs Floating Dock at Bottom */}
+      {/* Soft Minimal Tabs Floating Dock at Bottom */}
       <footer className="clean-app-dock" role="navigation" aria-label="14 Экранов BaGdar">
         <div className="clean-dock-inner">
           <div className="clean-dock-brand">
-            <span className="clean-dock-logo">BAĠDAR</span>
-            <span className="clean-dock-version">ARCHIVUM · XIV</span>
+            <span className="clean-dock-logo">BaGdar</span>
           </div>
 
           <Tabs

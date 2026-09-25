@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { motion } from 'motion/react';
 import { ArrowRight, Mic } from 'lucide-react';
-import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
 
 interface PageGreetingProps {
@@ -17,28 +16,25 @@ export const PageGreeting: React.FC<PageGreetingProps> = ({
   useEffect(() => {
     const timer = setTimeout(() => {
       onProceedToListening();
-    }, 4200);
+    }, 4000);
     return () => clearTimeout(timer);
   }, [onProceedToListening]);
 
-  const greetings: Record<string, { welcome: string; title: string; subtitle: string; hint: string }> = {
+  const greetings: Record<string, { title: string; subtitle: string; hint: string }> = {
     kk: {
-      welcome: 'КАСПИЙ ЖАҒАЛАУЫ · АҚТАУ',
-      title: 'Қош келдіңіз',
-      subtitle: 'BaGdar — Маңғыстау мен қаланың архитектуралық сандық гиді',
-      hint: 'Қай орынды көрсету керек? Сұрағыңызды дауыстап айтыңыз',
+      title: 'Қош келдіңіз!',
+      subtitle: 'Мен BaGdar цифрлық гидімін. Қай орынға барғыңыз келеді?',
+      hint: 'Сұрағыңызды дауыстап айтыңыз',
     },
     ru: {
-      welcome: 'ПОБЕРЕЖЬЕ КАСПИЯ · АКТАУ',
-      title: 'Добро пожаловать',
-      subtitle: 'BaGdar — цифровой архитектурный путеводитель по городу и побережью',
-      hint: 'Какое место вас интересует? Просто задайте вопрос вслух',
+      title: 'Добро пожаловать в Актау!',
+      subtitle: 'Я помогу найти интересные места и проложить удобный пеший маршрут.',
+      hint: 'Задайте вопрос вслух или выберите опрос касанием',
     },
     en: {
-      welcome: 'CASPIAN SHORELINE · AKTAU',
-      title: 'Welcome',
-      subtitle: 'BaGdar — digital architectural guide to Aktau and Mangystau',
-      hint: 'Where would you like to explore? Feel free to speak aloud',
+      title: 'Welcome to Aktau!',
+      subtitle: 'I can guide you through the best scenic walking paths and places.',
+      hint: 'Ask a question aloud or select with touch',
     },
   };
 
@@ -47,35 +43,28 @@ export const PageGreeting: React.FC<PageGreetingProps> = ({
   return (
     <div className="clean-page-root flex-center">
       <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35, ease: 'easeOut' }}
+        initial={{ opacity: 0, scale: 0.98 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.3, ease: 'easeOut' }}
         className="clean-greeting-card"
       >
-        <div className="flex-center mb-6">
-          <Badge variant="accent">
-            {text.welcome}
-          </Badge>
-        </div>
-
-        {/* Monolithic Voice Resonator */}
+        {/* Soft Voice Resonator */}
         <div className="clean-voice-orb-wrapper">
           <motion.div
             className="clean-voice-orb-pulse"
-            animate={{ scale: [1, 1.15, 1], opacity: [0.3, 0.7, 0.3] }}
-            transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
+            animate={{ scale: [1, 1.15, 1], opacity: [0.2, 0.5, 0.2] }}
+            transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
           />
           <div className="clean-voice-orb-core">
-            <Mic size={28} className="text-stone-200" />
+            <Mic size={28} className="text-zinc-700" />
           </div>
         </div>
 
         <h1 className="clean-hero-heading mt-6">{text.title}</h1>
-        <p className="clean-sub-heading mt-3">{text.subtitle}</p>
+        <p className="clean-sub-heading mt-3 max-w-md mx-auto">{text.subtitle}</p>
 
-        {/* Clean Prompt Slab */}
+        {/* Clean Soft Prompt */}
         <div className="clean-prompt-pill mt-6">
-          <span className="font-mono text-xs text-stone-400">✦</span>
           <span>{text.hint}</span>
         </div>
 
@@ -86,7 +75,7 @@ export const PageGreeting: React.FC<PageGreetingProps> = ({
             onClick={onProceedToListening}
             icon={<ArrowRight size={15} />}
           >
-            {lang === 'kk' ? 'Дауыспен сұрау' : lang === 'en' ? 'Start speaking' : 'Спросить голосом'}
+            {lang === 'kk' ? 'Дауыспен бастау' : lang === 'en' ? 'Start speaking' : 'Спросить голосом'}
           </Button>
         </div>
       </motion.div>

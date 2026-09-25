@@ -24,19 +24,16 @@ export const PageListening: React.FC<PageListeningProps> = ({
       'Жартасты соқпақ қайда?',
       'Маякты көрсетші',
       'Жақын маңда не бар?',
-      'Телефонға жібер',
     ],
     ru: [
       'Как пройти к Скальной тропе?',
       'Где находится маяк?',
       'Что интересного есть рядом?',
-      'Отправь маршрут на телефон',
     ],
     en: [
       'How to get to the Rock Trail?',
       'Where is the Lighthouse?',
       'What places are nearby?',
-      'Send route to my phone',
     ],
   };
 
@@ -51,7 +48,7 @@ export const PageListening: React.FC<PageListeningProps> = ({
             variant="ghost"
             size="sm"
             onClick={onCancel}
-            icon={<ArrowLeft size={14} />}
+            icon={<ArrowLeft size={15} />}
           >
             {lang === 'kk' ? 'Артқа' : 'Назад'}
           </Button>
@@ -60,8 +57,8 @@ export const PageListening: React.FC<PageListeningProps> = ({
         )}
 
         <Badge variant="accent">
-          <span className="w-1.5 h-1.5 bg-stone-300 inline-block mr-1.5" />
-          {lang === 'kk' ? 'Тыңдап тұрмын...' : lang === 'en' ? 'Listening...' : 'Слушаю вас...'}
+          <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block mr-1.5 animate-pulse" />
+          {lang === 'kk' ? 'Тыңдаудамын...' : lang === 'en' ? 'Listening...' : 'Слушаю вас...'}
         </Badge>
       </div>
 
@@ -73,32 +70,28 @@ export const PageListening: React.FC<PageListeningProps> = ({
         className="clean-listening-box"
       >
         <div className="clean-mic-circle">
-          <Mic size={32} className="text-stone-200" />
+          <Mic size={32} className="text-zinc-800" />
         </div>
 
-        {/* Razor Acoustic Waveform */}
+        {/* Soft Waveform */}
         <div className="my-6">
-          <VoiceWave active={true} bars={32} />
+          <VoiceWave active={true} bars={24} />
         </div>
 
         {/* Live Speech Caption Box */}
         <div className="clean-caption-card">
           <span className="clean-caption-label">
             {userSpokenText
-              ? (lang === 'kk' ? 'СІЗ АЙТТЫҢЫЗ:' : 'ВЫ ГОВОРИТЕ:')
-              : (lang === 'kk' ? 'СӨЙЛЕҢІЗ:' : 'ГОВОРИТЕ ВСЛУХ:')}
+              ? (lang === 'kk' ? 'Сіз айттыңыз:' : 'Вы говорите:')
+              : (lang === 'kk' ? 'Сөйлеңіз:' : 'Говорите:')}
           </span>
           <p className={`clean-caption-text ${userSpokenText ? 'active' : 'placeholder'}`}>
-            {userSpokenText ? `«${userSpokenText}»` : '«Как пройти к Скальной тропе?» · «Где погулять?»'}
+            {userSpokenText ? `«${userSpokenText}»` : '«Как пройти к Скальной тропе?»'}
           </p>
         </div>
 
         {/* Quick Suggestion Chips */}
         <div className="clean-suggestions-block mt-8">
-          <div className="clean-suggestions-title">
-            <span>{lang === 'kk' ? 'СҰРАҚ ҮЛГІЛЕРІ:' : 'ПРИМЕРЫ ВОПРОСОВ:'}</span>
-          </div>
-
           <div className="clean-chips-wrap">
             {sampleChips.map((chip, i) => (
               <button
@@ -107,7 +100,7 @@ export const PageListening: React.FC<PageListeningProps> = ({
                 onClick={() => onSimulateUtterance(chip)}
                 className="clean-prompt-chip"
               >
-                <span>[ {chip} ]</span>
+                <span>{chip}</span>
               </button>
             ))}
           </div>

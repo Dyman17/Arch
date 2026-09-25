@@ -8,7 +8,6 @@ import {
   Camera,
 } from 'lucide-react';
 import { Button } from '../ui/Button';
-import { Badge } from '../ui/Badge';
 import { Card } from '../ui/Card';
 
 interface PageGesturesProps {
@@ -23,35 +22,30 @@ export const PageGestures: React.FC<PageGesturesProps> = ({
   const gestures = [
     {
       id: 'gesture-thumbs-up',
-      code: 'I',
       name: 'Большой палец вверх (👍)',
       meaning: '«Да, показать подробнее»',
       icon: ThumbsUp,
     },
     {
       id: 'gesture-palm',
-      code: 'II',
       name: 'Открытая ладонь (✋)',
       meaning: '«Стоп / Вернуться назад»',
       icon: Hand,
     },
     {
       id: 'gesture-one',
-      code: 'III',
       name: 'Один палец (☝️)',
       meaning: '«Выбрать первое место»',
       icon: CheckCircle,
     },
     {
       id: 'gesture-two',
-      code: 'IV',
       name: 'Два пальца (✌️)',
       meaning: '«Выбрать второе место»',
       icon: CheckCircle,
     },
     {
       id: 'gesture-route',
-      code: 'V',
       name: 'Жест пути (🤙)',
       meaning: '«Показать пеший маршрут»',
       icon: Navigation,
@@ -66,53 +60,48 @@ export const PageGestures: React.FC<PageGesturesProps> = ({
           variant="ghost"
           size="sm"
           onClick={onReturnToVoice}
-          icon={<ArrowLeft size={14} />}
+          icon={<ArrowLeft size={15} />}
         >
           Вернуться к голосу
         </Button>
 
-        <Badge variant="accent">
-          <Hand size={12} className="mr-1 inline text-zinc-300" />
-          ЖЕСТОВОЕ УПРАВЛЕНИЕ
-        </Badge>
+        <span className="text-sm font-medium text-zinc-600">
+          Жестовое управление
+        </span>
       </div>
 
       {/* Main Container */}
       <div className="max-w-4xl mx-auto w-full my-auto">
-        {/* Exact Alert Requirement in Monumental Architectural Serif */}
+        {/* Exact Alert Requirement */}
         <div className="clean-gestures-alert mb-8">
           <div className="clean-gesture-alert-icon">
-            <Hand size={24} className="text-stone-200" />
+            <Hand size={24} className="text-zinc-700" />
           </div>
           <div>
-            <h1 className="clean-hero-heading text-2xl tracking-wide">
+            <h1 className="clean-hero-heading text-2xl">
               Вы общаетесь жестами? Показывайте!
             </h1>
             <p className="clean-sub-heading mt-1 text-sm">
-              Оптическая камера стелы распознает движения рук на расстоянии до 1.5 метров.
+              Камера стелы считывает движения рук. Покажите жест перед экраном.
             </p>
           </div>
         </div>
 
-        {/* 2-Column Monolith Layout */}
+        {/* 2-Column Soft Layout */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-          {/* Camera Frame with Viewfinder Crosshairs */}
+          {/* Camera Frame */}
           <div className="clean-camera-view">
             <div className="clean-camera-inner">
-              <Hand size={72} className="text-zinc-600 stroke-1 animate-pulse" />
+              <Hand size={72} className="text-zinc-300 stroke-1 animate-pulse" />
             </div>
             <div className="clean-camera-status">
-              <Camera size={12} className="text-zinc-400" />
-              <span>Оптический сенсор активен · Держите руку перед экраном</span>
+              <Camera size={14} className="text-zinc-500" />
+              <span>Камера активна · Держите руку перед экраном</span>
             </div>
           </div>
 
           {/* Gestures List */}
-          <div className="space-y-2">
-            <span className="text-xs font-mono text-zinc-400 uppercase tracking-widest block mb-2">
-              Реестр жестов:
-            </span>
-
+          <div className="space-y-2.5">
             {gestures.map((g) => {
               const Icon = g.icon;
               return (
@@ -123,13 +112,12 @@ export const PageGestures: React.FC<PageGesturesProps> = ({
                   className="clean-gesture-row"
                 >
                   <div className="clean-gesture-icon-wrap">
-                    <Icon size={16} className="text-zinc-700" />
+                    <Icon size={18} className="text-zinc-700" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-xs font-mono text-zinc-900 uppercase font-semibold">{g.name}</div>
+                    <div className="text-sm font-medium text-zinc-900">{g.name}</div>
                     <div className="text-xs text-zinc-500 mt-0.5">{g.meaning}</div>
                   </div>
-                  <span className="text-xs font-mono text-zinc-400">[{g.code}]</span>
                 </Card>
               );
             })}

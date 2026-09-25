@@ -1,7 +1,6 @@
 import React from 'react';
-import { MapPin, ArrowRight, Mic } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import type { Place } from '../../types';
-import { Badge } from '../ui/Badge';
 import { Card } from '../ui/Card';
 
 interface PageVariantsProps {
@@ -16,23 +15,19 @@ export const PageVariants: React.FC<PageVariantsProps> = ({
   onSelectPlace,
 }) => {
   const displayPlaces = places.slice(0, 3);
-  const romanNumbers = ['I', 'II', 'III'];
 
-  const prompts: Record<string, { title: string; subtitle: string; voiceHint: string }> = {
+  const prompts: Record<string, { title: string; subtitle: string }> = {
     kk: {
-      title: 'Бірнеше орын табылды',
-      subtitle: 'Қайсысын көрсетейін? Нөмірін немесе атауын айтыңыз',
-      voiceHint: '«Біріншісі», «Екіншісі» немесе «Үшіншісі» деп айтыңыз',
+      title: 'Қай орынды таңдайсыз?',
+      subtitle: 'Атауын немесе нөмірін айтыңыз, немесе басып таңдаңыз',
     },
     ru: {
-      title: 'Найдено несколько мест',
-      subtitle: 'Какое вас интересует? Назовите номер или выберите касанием',
-      voiceHint: 'Скажите: «Первое», «Второе» или «Третье»',
+      title: 'Какое место вас интересует?',
+      subtitle: 'Назовите нужное место или выберите касанием',
     },
     en: {
-      title: 'Several places found',
-      subtitle: 'Which one would you like to view? Say the number or tap',
-      voiceHint: 'Say: "First", "Second" or "Third"',
+      title: 'Which place would you like to explore?',
+      subtitle: 'Say the name or tap to select',
     },
   };
 
@@ -42,19 +37,11 @@ export const PageVariants: React.FC<PageVariantsProps> = ({
     <div className="clean-page-root flex flex-col justify-center items-center p-8">
       {/* Header */}
       <div className="text-center mb-8 max-w-xl">
-        <Badge variant="accent" className="mb-3">
-          {lang === 'kk' ? 'ТАҢДАУ' : 'ВЫБОР ОБЪЕКТА'}
-        </Badge>
         <h1 className="clean-hero-heading text-3xl">{text.title}</h1>
         <p className="clean-sub-heading mt-2">{text.subtitle}</p>
-
-        <div className="clean-voice-hint-pill mt-4">
-          <Mic size={13} className="text-zinc-300" />
-          <span>{text.voiceHint}</span>
-        </div>
       </div>
 
-      {/* 3 Architectural Monolith Cards */}
+      {/* 3 Soft Cards */}
       <div className="clean-variants-grid">
         {displayPlaces.map((place, idx) => (
           <Card
@@ -63,9 +50,9 @@ export const PageVariants: React.FC<PageVariantsProps> = ({
             onClick={() => onSelectPlace(place)}
             className="clean-variant-card"
           >
-            {/* Roman Numeral */}
+            {/* Number Pill */}
             <div className="clean-card-num-badge">
-              <span>{romanNumbers[idx]}</span>
+              <span>{idx + 1}</span>
             </div>
 
             {/* Photo */}
@@ -75,7 +62,6 @@ export const PageVariants: React.FC<PageVariantsProps> = ({
                 alt={place.name}
                 className="clean-card-thumb"
               />
-              <span className="clean-card-category">{place.category}</span>
             </div>
 
             {/* Body */}
@@ -85,13 +71,12 @@ export const PageVariants: React.FC<PageVariantsProps> = ({
                 <p className="clean-card-desc">{place.summary}</p>
               </div>
 
-              <div className="mt-4 pt-3 border-t border-zinc-800 flex items-center justify-between text-xs font-mono uppercase">
-                <span className="text-zinc-400 flex items-center gap-1">
-                  <MapPin size={11} className="text-zinc-500" />
-                  ~{(idx + 1) * 350 + 400} М
+              <div className="mt-4 pt-3 border-t border-zinc-100 flex items-center justify-between text-xs">
+                <span className="text-zinc-500">
+                  ~{(idx + 1) * 350 + 400} м от стелы
                 </span>
                 <span className="text-zinc-900 font-medium flex items-center gap-1">
-                  ВЫБРАТЬ <ArrowRight size={12} />
+                  Выбрать <ArrowRight size={13} />
                 </span>
               </div>
             </div>

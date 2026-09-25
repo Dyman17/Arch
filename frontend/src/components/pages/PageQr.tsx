@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
-import { Timer, ArrowLeft, Smartphone, Check } from 'lucide-react';
+import { ArrowLeft, Smartphone } from 'lucide-react';
 import type { Place, QrResponse } from '../../types';
 import { Button } from '../ui/Button';
-import { Badge } from '../ui/Badge';
 import { Progress } from '../ui/Progress';
 
 interface PageQrProps {
@@ -43,7 +42,7 @@ export const PageQr: React.FC<PageQrProps> = ({
 
   const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=320x320&data=${encodeURIComponent(
     qrUrl
-  )}&bgcolor=FFFFFF&color=030304&margin=1`;
+  )}&bgcolor=FFFFFF&color=1C1C1E&margin=1`;
 
   const progressPercent = (secondsLeft / 60) * 100;
 
@@ -55,21 +54,14 @@ export const PageQr: React.FC<PageQrProps> = ({
           variant="ghost"
           size="sm"
           onClick={onBackToRoute}
-          icon={<ArrowLeft size={14} />}
+          icon={<ArrowLeft size={15} />}
         >
           К карте маршрута
         </Button>
 
-        <div className="flex items-center gap-2">
-          <Badge variant="accent">
-            <Smartphone size={12} className="mr-1 inline text-zinc-300" />
-            СИНХРОНИЗАЦИЯ С ТЕЛЕФОНОМ
-          </Badge>
-          <Badge variant="neutral">
-            <Timer size={12} className="mr-1 inline text-zinc-400" />
-            ТАЙМЕР: {secondsLeft} СЕК
-          </Badge>
-        </div>
+        <span className="text-sm font-medium text-zinc-600">
+          Синхронизация
+        </span>
       </div>
 
       {/* Main QR Card */}
@@ -89,37 +81,24 @@ export const PageQr: React.FC<PageQrProps> = ({
           <span className="clean-qr-caption">Наведите камеру смартфона</span>
         </div>
 
-        {/* Right: Instructions & Destination */}
+        {/* Right: Destination info */}
         <div className="clean-qr-info">
           <div>
-            <Badge variant="neutral" className="mb-2">
-              ТОЧКА НАЗНАЧЕНИЯ
-            </Badge>
             <h2 className="clean-qr-title">{place.name}</h2>
             <p className="clean-qr-summary">{place.summary}</p>
           </div>
 
-          <div className="clean-qr-steps">
-            <div className="clean-qr-step">
-              <span className="clean-step-dot">I</span>
-              <p>Откройте штатную камеру на смартфоне</p>
-            </div>
-            <div className="clean-qr-step">
-              <span className="clean-step-dot">II</span>
-              <p>Наведите объектив на QR-код на экране</p>
-            </div>
-            <div className="clean-qr-step">
-              <span className="clean-step-dot">
-                <Check size={11} />
-              </span>
-              <p>Маршрут откроется в браузере телефона без установки приложений</p>
+          <div className="p-4 bg-zinc-50 rounded-2xl border border-zinc-100 flex items-center gap-3">
+            <Smartphone size={24} className="text-zinc-600 shrink-0" />
+            <div className="text-xs text-zinc-600 leading-relaxed">
+              Маршрут откроется в браузере вашего телефона без установки приложений.
             </div>
           </div>
 
           {/* Progress bar */}
           <div className="mt-4">
-            <div className="flex justify-between text-xs font-mono text-zinc-500 mb-1.5 uppercase">
-              <span>Автозакрытие сессии</span>
+            <div className="flex justify-between text-xs text-zinc-500 mb-1.5">
+              <span>Автозакрытие</span>
               <span>{secondsLeft} с</span>
             </div>
             <Progress value={progressPercent} />
