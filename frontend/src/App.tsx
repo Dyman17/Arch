@@ -42,7 +42,13 @@ import { PageFarewell } from './components/pages/PageFarewell';
 import { PageError } from './components/pages/PageError';
 import { PageGestures } from './components/pages/PageGestures';
 
+// Flagship Aktau Embankment Master Screen
+import { EmbankmentMasterScreen } from './components/EmbankmentMasterScreen';
+
 export const App: React.FC = () => {
+  // Mode: 'master' is default for polishing the flagship Aktau embankment screen to perfection
+  const [viewMode, setViewMode] = useState<'master' | 'storyboard'>('master');
+
   // Config & Session
   const [config, setConfig] = useState<KioskConfig | null>(null);
   const [sessionId, setSessionId] = useState<string>(() => 'sess-' + Math.random().toString(36).substring(2, 10));
@@ -525,6 +531,43 @@ export const App: React.FC = () => {
     }
   };
 
+  // 1. DEFAULT VIEW: Flagship Aktau Embankment Master Screen
+  if (viewMode === 'master') {
+    return (
+      <div className="w-screen h-screen overflow-hidden relative">
+        <EmbankmentMasterScreen
+          places={places}
+          currentLang={lang}
+          onLanguageChange={setLang}
+          onVoicePrompt={handleVoiceUtterance}
+        />
+
+        {/* Subtle bottom-right floating pill to switch views if needed */}
+        <div style={{ position: 'fixed', bottom: 12, right: 16, zIndex: 9999 }}>
+          <button
+            type="button"
+            onClick={() => setViewMode('storyboard')}
+            style={{
+              fontSize: '11px',
+              padding: '4px 12px',
+              borderRadius: '999px',
+              background: 'rgba(26, 29, 32, 0.06)',
+              border: '1px solid rgba(26, 29, 32, 0.12)',
+              color: '#555A64',
+              cursor: 'pointer',
+              backdropFilter: 'blur(8px)',
+              fontWeight: 500,
+            }}
+            title="Открыть все 14 экранов стелы"
+          >
+            📍 Набережная Актау · [14 экранов]
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // 2. STORYBOARD VIEW: 14 Dedicated Presentation Pages
   return (
     <div className="clean-app-shell">
       {/* Animated Page Stage */}
@@ -546,6 +589,24 @@ export const App: React.FC = () => {
       {/* Soft Minimal Tabs Floating Dock at Bottom */}
       <footer className="clean-app-dock" role="navigation" aria-label="14 Экранов BaGdar">
         <div className="clean-dock-inner">
+          <button
+            type="button"
+            onClick={() => setViewMode('master')}
+            style={{
+              fontSize: '11px',
+              padding: '4px 10px',
+              borderRadius: '999px',
+              background: '#1A1D20',
+              color: '#FFF',
+              border: 'none',
+              cursor: 'pointer',
+              fontWeight: 600,
+              marginRight: 6,
+            }}
+          >
+            ← Мастер-экран
+          </button>
+
           <div className="clean-dock-brand">
             <span className="clean-dock-logo">BaGdar</span>
           </div>
