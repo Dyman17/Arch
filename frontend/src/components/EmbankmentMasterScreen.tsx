@@ -9,11 +9,13 @@ import {
   MapPin,
   Mic,
   ArrowRight,
-  Sparkles,
   Volume2,
   Clock,
   Compass,
   Check,
+  Sun,
+  Moon,
+  Globe,
 } from 'lucide-react';
 import type { Place, RouteResponse, SceneResponse, QrResponse } from '../types';
 import { fetchRoute, fetchScene, fetchQr } from '../api';
@@ -33,6 +35,9 @@ export const EmbankmentMasterScreen: React.FC<EmbankmentMasterScreenProps> = ({
   onLanguageChange,
   onVoicePrompt,
 }) => {
+  // Theme: Light (Limestone & Sand) or Dark (Caspian Basalt & Slate)
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+
   // Current active place on the embankment
   const [selectedPlaceId, setSelectedPlaceId] = useState<number>(() => places[0]?.id || 1);
 
@@ -55,7 +60,7 @@ export const EmbankmentMasterScreen: React.FC<EmbankmentMasterScreenProps> = ({
     hours: null,
   };
 
-  // Local state for modals & sub-panels
+  // Modals & sub-panels
   const [activeOverlay, setActiveOverlay] = useState<'none' | 'route' | 'history' | 'qr'>('none');
   const [routeData, setRouteData] = useState<RouteResponse | null>(null);
   const [sceneData, setSceneData] = useState<SceneResponse | null>(null);
@@ -93,7 +98,7 @@ export const EmbankmentMasterScreen: React.FC<EmbankmentMasterScreenProps> = ({
     address: activePlace.address || 'Ақтау, 15-шағынаудан жағалауы',
   };
 
-  // Load Route on demand
+  // Actions
   const handleOpenRoute = async () => {
     try {
       const r = await fetchRoute(activePlace.id, currentLang);
@@ -104,7 +109,6 @@ export const EmbankmentMasterScreen: React.FC<EmbankmentMasterScreenProps> = ({
     }
   };
 
-  // Load Scene on demand
   const handleOpenHistory = async () => {
     try {
       const s = await fetchScene(activePlace.id);
@@ -115,7 +119,6 @@ export const EmbankmentMasterScreen: React.FC<EmbankmentMasterScreenProps> = ({
     }
   };
 
-  // Load QR on demand
   const handleOpenQr = async () => {
     try {
       const q = await fetchQr(activePlace.id, currentLang, 'sess-master');
@@ -133,7 +136,6 @@ export const EmbankmentMasterScreen: React.FC<EmbankmentMasterScreenProps> = ({
       setIsListeningActive(false);
       onVoicePrompt?.(promptText);
 
-      // Auto-match place
       const matched = places.find(
         (p) =>
           p.name.toLowerCase().includes(promptText.toLowerCase()) ||
@@ -153,56 +155,112 @@ export const EmbankmentMasterScreen: React.FC<EmbankmentMasterScreenProps> = ({
     speakText(textToSpeak, currentLang);
   };
 
+  // Cycle language on click (single index display)
+  const handleCycleLang = () => {
+    const nextLang = currentLang === 'kk' ? 'ru' : currentLang === 'ru' ? 'en' : 'kk';
+    onLanguageChange(nextLang);
+  };
+
   return (
-    <div className="embankment-screen-root">
-      {/* 1. TOP STATUS BAR (Набережная Актау · Барометр Каспия · Время · Язык) */}
+    <div className={`embankment-screen-root theme-${theme}`}>
+      {/* 0. COASTAL TOPOGRAPHY & MARITIME ISOLINES BACKGROUND */}
+      <div className="embankment-bg-topography" aria-hidden="true">
+        <svg className="topography-svg" viewBox="0 0 1440 900" fill="none" preserveAspectRatio="none">
+          {/* Coastal Bathymetric Contours */}
+          <path
+            d="M-50 200 C 280 140, 560 300, 1020 160 C 1220 110, 1380 230, 1500 200"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeDasharray="4 6"
+            className="topo-path-subtle"
+          />
+          <path
+            d="M-50 340 C 220 270, 700 450, 1000 290 C 1300 170, 1480 340, 1550 310"
+            stroke="currentColor"
+            strokeWidth="2"
+            className="topo-path-main"
+          />
+          <path
+            d="M-50 500 C 300 400, 620 580, 1140 430 C 1340 370, 1480 490, 1550 460"
+            stroke="currentColor"
+            strokeWidth="2"
+            className="topo-path-bold"
+          />
+          <path
+            d="M-50 670 C 180 570, 750 750, 1100 580 C 1300 480, 1480 610, 1550 600"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeDasharray="8 6"
+            className="topo-path-subtle"
+          />
+
+          {/* Grid Latitude / Longitude lines */}
+          <line x1="220" y1="0" x2="220" y2="900" stroke="currentColor" strokeWidth="1" strokeDasharray="3 7" className="topo-grid-line" />
+          <line x1="720" y1="0" x2="720" y2="900" stroke="currentColor" strokeWidth="1" strokeDasharray="3 7" className="topo-grid-line" />
+          <line x1="1220" y1="0" x2="1220" y2="900" stroke="currentColor" strokeWidth="1" strokeDasharray="3 7" className="topo-grid-line" />
+
+          {/* Aktau Waterfront Coordinates Mark */}
+          <text x="36" y="865" className="topo-coord-mark">
+            43°39'41"N · 51°09'18"E · AKTAU CASPIAN PROMENADE
+          </text>
+        </svg>
+      </div>
+
+      {/* 1. TOP STATUS BAR (High-contrast plate with dark outlines) */}
       <header className="embankment-header">
+        {/* Brand & Location */}
         <div className="embankment-brand-block">
           <span className="embankment-brand-name">BAĠDAR</span>
-          <span className="embankment-brand-dot">·</span>
-          <span className="embankment-brand-location">
-            15-шағынаудан жағалауы · Амфитеатр
-          </span>
+          <span className="embankment-brand-sep">/</span>
+          <span className="embankment-brand-location">АКТАУ · НАБЕРЕЖНАЯ</span>
         </div>
 
         {/* Caspian Marine Weather & Current Local Time */}
         <div className="embankment-marine-weather">
           <div className="weather-pill">
-            <Wind size={14} className="text-stone-500" />
-            <span>Каспий самалы: 4 м/с</span>
+            <Wind size={15} />
+            <span>4 м/с</span>
             <span className="divider">·</span>
-            <span>Су: +21°C</span>
+            <span>Су +21°C</span>
             <span className="divider">·</span>
-            <span>Ауа: +26°C</span>
+            <span>Ауа +26°C</span>
           </div>
 
           <div className="clock-pill">
-            <Clock size={13} className="text-stone-500" />
+            <Clock size={14} />
             <span className="clock-time">{timeStr}</span>
             <span className="clock-date">{dateStr}</span>
           </div>
         </div>
 
-        {/* Multilingual Switcher */}
-        <div className="embankment-lang-selector" role="group" aria-label="Тіл таңдау / Выбор языка">
-          {[
-            { code: 'kk', label: 'ҚАЗ' },
-            { code: 'ru', label: 'РУС' },
-            { code: 'en', label: 'ENG' },
-          ].map((l) => (
-            <button
-              key={l.code}
-              type="button"
-              onClick={() => onLanguageChange(l.code)}
-              className={`lang-btn ${currentLang === l.code ? 'is-active' : ''}`}
-            >
-              {l.label}
-            </button>
-          ))}
+        {/* Controls: Single AI Language Index Badge & Theme Switcher */}
+        <div className="embankment-top-controls">
+          {/* Single AI Speech Language Badge */}
+          <button
+            type="button"
+            onClick={handleCycleLang}
+            className="ai-lang-badge"
+            title="AI сөйлесу тілі (басып ауыстыру) / Язык речи ИИ"
+          >
+            <Globe size={14} />
+            <span className="ai-lang-label">AI ТІЛ:</span>
+            <span className="ai-lang-code">{currentLang.toUpperCase()}</span>
+          </button>
+
+          {/* Theme Toggle (Light / Dark) */}
+          <button
+            type="button"
+            onClick={() => setTheme((t) => (t === 'light' ? 'dark' : 'light'))}
+            className="theme-toggle-btn"
+            title={theme === 'light' ? 'Қараңғы тақырыпқа ауысу' : 'Жарық тақырыпқа ауысу'}
+          >
+            {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
+            <span className="theme-toggle-text">{theme === 'light' ? 'ТҮН' : 'КҮН'}</span>
+          </button>
         </div>
       </header>
 
-      {/* 2. MAIN HORIZONTAL PROMENADE SLIDER (Лента ключевых объектов набережной) */}
+      {/* 2. PROMENADE PLACES SELECTOR (Architectural Plate with Dark Contours) */}
       <nav className="embankment-places-strip" aria-label="Орындар тізімі">
         {places.slice(0, 6).map((p) => {
           const isSelected = p.id === activePlace.id;
@@ -218,15 +276,15 @@ export const EmbankmentMasterScreen: React.FC<EmbankmentMasterScreenProps> = ({
               }}
               className={`strip-place-tab ${isSelected ? 'is-selected' : ''}`}
             >
-              <span className="strip-tab-thumb-wrap">
+              <div className="strip-tab-thumb-wrap">
                 <img src={p.thumb_url} alt={pName} className="strip-tab-thumb" />
-              </span>
+              </div>
               <span className="strip-tab-title">{pName}</span>
               {isSelected && (
                 <motion.div
                   layoutId="active-strip-indicator"
                   className="strip-tab-indicator"
-                  transition={{ type: 'spring', stiffness: 400, damping: 32 }}
+                  transition={{ type: 'spring', stiffness: 450, damping: 35 }}
                 />
               )}
             </button>
@@ -234,173 +292,174 @@ export const EmbankmentMasterScreen: React.FC<EmbankmentMasterScreenProps> = ({
         })}
       </nav>
 
-      {/* 3. CENTER HERO MONOGRAPH (Главный блок: Аутентичное фото, описание, расстояние, действия) */}
+      {/* 3. CENTER HERO MONOGRAPH (Contrasting Underlay & Functional Action Buttons) */}
       <main className="embankment-hero-stage">
-        <motion.div
-          key={activePlace.id}
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.35, ease: 'easeOut' }}
-          className="embankment-monograph-card"
-        >
-          {/* Left Column: Authentic Photography of Embankment Landmark */}
-          <div className="monograph-photo-column">
-            <div className="monograph-photo-wrapper">
-              <img
-                src={activePlace.thumb_url}
-                alt={localized.name}
-                className="monograph-photo"
-              />
+        <div className="embankment-card-underlay">
+          <motion.div
+            key={activePlace.id}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
+            className="embankment-monograph-card"
+          >
+            {/* Left Column: Authentic Photography with Dark Contours */}
+            <div className="monograph-photo-column">
+              <div className="monograph-photo-wrapper">
+                <img
+                  src={activePlace.thumb_url}
+                  alt={localized.name}
+                  className="monograph-photo"
+                />
 
-              {/* Natural Coastal Badge */}
-              <div className="monograph-photo-badge">
-                <MapPin size={12} className="text-stone-700" />
-                <span>{activePlace.category === 'culture' ? 'Мәдени мұра' : 'Табиғи жағалау'}</span>
+                {/* Direct Functional Navigation Badge */}
+                <button
+                  type="button"
+                  onClick={handleOpenRoute}
+                  className="monograph-photo-badge"
+                  title="Бағытты көру"
+                >
+                  <MapPin size={13} />
+                  <span>{activePlace.category === 'culture' ? 'Мәдени орын' : 'Жағалау'}</span>
+                </button>
+              </div>
+
+              {/* Functional Clickable Metrics (Opens Route) */}
+              <div className="monograph-metrics-row">
+                <button
+                  type="button"
+                  onClick={handleOpenRoute}
+                  className="meta-action-pill"
+                  title="Қашықтықты көру"
+                >
+                  <Footprints size={14} />
+                  <span>~850 м · 11 мин жаяу</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleOpenRoute}
+                  className="meta-action-pill"
+                  title="Бағытты қарау"
+                >
+                  <Compass size={14} />
+                  <span>СҚО бағыты</span>
+                </button>
               </div>
             </div>
 
-            {/* Quick coastal context tags */}
-            <div className="monograph-photo-footer">
-              <div className="meta-tag">
-                <Footprints size={13} className="text-stone-500" />
-                <span>~850 м (10–12 мин жаяу)</span>
-              </div>
-              <div className="meta-tag">
-                <Compass size={13} className="text-stone-500" />
-                <span>Солтүстік-шығыс бағыт</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Column: Narrative, Walking Context, and Primary Actions */}
-          <div className="monograph-details-column">
-            <div className="monograph-header-row">
-              <div>
-                <span className="monograph-kicker">
-                  {currentLang === 'kk'
-                    ? 'Ақтау қаласының көрнекті орны'
-                    : 'Достопримечательность набережной Актау'}
-                </span>
+            {/* Right Column: Title, Functional Narrative, and Core Buttons */}
+            <div className="monograph-details-column">
+              {/* Header: Title & Audio Narration Trigger */}
+              <div className="monograph-header-row">
                 <h1 className="monograph-title">{localized.name}</h1>
+
+                <button
+                  type="button"
+                  onClick={handleSpeakSummary}
+                  className="audio-read-btn"
+                  title="Дыбыстап оқу / Озвучить"
+                >
+                  <Volume2 size={20} />
+                </button>
               </div>
 
-              {/* Audio reading trigger */}
-              <button
-                type="button"
-                onClick={handleSpeakSummary}
-                className="audio-read-btn"
-                title="Озвучить описание"
-              >
-                <Volume2 size={18} />
-              </button>
-            </div>
+              {/* Direct Concise Summary (No generic marketing filler) */}
+              <p className="monograph-summary">{localized.summary}</p>
 
-            {/* Narrative Paragraph */}
-            <p className="monograph-summary">{localized.summary}</p>
-            {localized.description && (
-              <p className="monograph-description">{localized.description}</p>
-            )}
-
-            {/* Street Address */}
-            <div className="monograph-address-pill">
-              <MapPin size={14} className="text-stone-400 shrink-0" />
-              <span>{localized.address}</span>
-            </div>
-
-            {/* The 3 Core Kiosk Action Buttons */}
-            <div className="monograph-actions-row">
+              {/* Functional Address Button (Opens Route) */}
               <button
                 type="button"
                 onClick={handleOpenRoute}
-                className="monograph-btn-primary"
+                className="monograph-address-btn"
+                title="Орналасқан жерін картадан көру"
               >
-                <Navigation size={17} />
-                <span>
-                  {currentLang === 'kk' ? 'Бағытты көру' : 'Как пройти?'}
-                </span>
-                <ArrowRight size={15} className="ml-1 opacity-70" />
+                <MapPin size={15} className="shrink-0" />
+                <span>{localized.address}</span>
               </button>
 
-              {activePlace.has_scene && (
+              {/* The 3 Core Functional Buttons (High Contrast & Clear Purpose) */}
+              <div className="monograph-actions-row">
                 <button
                   type="button"
-                  onClick={handleOpenHistory}
-                  className="monograph-btn-secondary"
+                  onClick={handleOpenRoute}
+                  className="btn-action-primary"
                 >
-                  <History size={17} />
-                  <span>
-                    {currentLang === 'kk' ? 'Тарихы (TarihSky)' : 'История места'}
-                  </span>
+                  <Navigation size={18} />
+                  <span>Бағытты көру</span>
+                  <ArrowRight size={16} className="ml-1 opacity-80" />
                 </button>
-              )}
 
-              <button
-                type="button"
-                onClick={handleOpenQr}
-                className="monograph-btn-outline"
-              >
-                <QrCode size={17} />
-                <span>
-                  {currentLang === 'kk' ? 'Телефонға алу' : 'QR на телефон'}
-                </span>
-              </button>
+                {activePlace.has_scene && (
+                  <button
+                    type="button"
+                    onClick={handleOpenHistory}
+                    className="btn-action-secondary"
+                  >
+                    <History size={18} />
+                    <span>TarihSky 1968</span>
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  onClick={handleOpenQr}
+                  className="btn-action-outline"
+                >
+                  <QrCode size={18} />
+                  <span>Телефонға алу</span>
+                </button>
+              </div>
             </div>
-          </div>
-        </motion.div>
+          </motion.div>
+        </div>
       </main>
 
-      {/* 4. BOTTOM DOCK — VOICE ASSISTANT & QUICK SUGGESTIONS (Голосовой диалог на набережной) */}
+      {/* 4. BOTTOM DOCK — VOICE CONTROL & QUICK ACTION CHIPS */}
       <footer className="embankment-voice-dock">
         <div className="voice-dock-inner">
-          {/* Tactile Mic Button */}
+          {/* Tactile Mic Trigger */}
           <button
             type="button"
             onClick={() => handleTriggerVoice()}
             className={`voice-mic-trigger ${isListeningActive ? 'is-active' : ''}`}
-            title="Голосовой ввод"
+            title="Дауыспен басқару"
           >
-            <Mic size={20} />
+            <Mic size={22} />
           </button>
 
-          {/* Voice Prompt & Status */}
+          {/* Voice Status & Active Input */}
           <div className="voice-status-block">
             {isListeningActive ? (
               <div className="flex items-center gap-3">
                 <VoiceWave active={true} bars={16} />
                 <span className="voice-status-text active">
-                  {currentLang === 'kk' ? 'Тыңдап тұрмын, айтыңыз...' : 'Слушаю вас, говорите...'}
+                  {currentLang === 'kk' ? 'Тыңдап тұрмын...' : 'Слушаю вас...'}
                 </span>
               </div>
             ) : (
               <div className="voice-status-content">
                 <span className="voice-hint-title">
-                  {speechTranscript ? `«${speechTranscript}»` : (currentLang === 'kk' ? 'Стеладан дауыспен сұраңыз:' : 'Спросите стелу голосом:')}
-                </span>
-                <span className="voice-hint-subtitle">
-                  {currentLang === 'kk'
-                    ? '«Жартасты соқпаққа қалай барады?» · «Жақын жерде не бар?»'
-                    : '«Как пройти к Скальной тропе?» · «Где встретить закат?»'}
+                  {speechTranscript ? `«${speechTranscript}»` : (currentLang === 'kk' ? 'Дауыспен сұраңыз:' : 'Спросите голосом:')}
                 </span>
               </div>
             )}
           </div>
 
-          {/* Quick Promenade Topic Chips */}
+          {/* Quick Action Destination Chips */}
           <div className="voice-quick-chips">
             {[
-              { kk: 'Жартасты соқпақ', ru: 'Скальная тропа', en: 'Rock Trail' },
-              { kk: 'Маяк', ru: 'Маяк на крыше', en: 'Lighthouse' },
-              { kk: 'Жақын маңда', ru: 'Что рядом?', en: 'Nearby' },
-            ].map((chip, idx) => {
+              { id: 'rock', kk: 'Скальная тропа', ru: 'Скальная тропа', en: 'Rock Trail' },
+              { id: 'light', kk: 'Маяк', ru: 'Маяк', en: 'Lighthouse' },
+              { id: 'sunset', kk: 'Күн батуы', ru: 'Закат на море', en: 'Sunset' },
+            ].map((chip) => {
               const chipLabel = chip[currentLang as keyof typeof chip] || chip.ru;
               return (
                 <button
-                  key={idx}
+                  key={chip.id}
                   type="button"
                   onClick={() => handleTriggerVoice(chipLabel)}
-                  className="voice-mini-chip"
+                  className="voice-quick-chip"
                 >
-                  <Sparkles size={11} className="text-stone-400" />
                   <span>{chipLabel}</span>
                 </button>
               );
@@ -409,7 +468,7 @@ export const EmbankmentMasterScreen: React.FC<EmbankmentMasterScreenProps> = ({
         </div>
       </footer>
 
-      {/* 5. SLIDE-OVER OVERLAY MODAL (Route / TarihSky / QR) — Clean & Integrated */}
+      {/* 5. INTEGRATED MODAL DIALOGS (Route / TarihSky / QR) */}
       <AnimatePresence>
         {activeOverlay !== 'none' && (
           <motion.div
@@ -423,19 +482,19 @@ export const EmbankmentMasterScreen: React.FC<EmbankmentMasterScreenProps> = ({
               initial={{ y: 24, scale: 0.98 }}
               animate={{ y: 0, scale: 1 }}
               exit={{ y: 16, scale: 0.98 }}
-              transition={{ duration: 0.25 }}
+              transition={{ duration: 0.22 }}
               className="embankment-modal-dialog"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Overlay Top Bar */}
+              {/* Header */}
               <div className="modal-dialog-header">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
                   <span className="modal-type-badge">
                     {activeOverlay === 'route'
                       ? 'МАРШРУТ'
                       : activeOverlay === 'history'
-                      ? 'TARIHSKY · ИСТОРИЯ'
-                      : 'QR НА СМАРТФОН'}
+                      ? 'TARIHSKY · 1968'
+                      : 'QR КОД'}
                   </span>
                   <h3 className="modal-title">{localized.name}</h3>
                 </div>
@@ -449,24 +508,24 @@ export const EmbankmentMasterScreen: React.FC<EmbankmentMasterScreenProps> = ({
                 </button>
               </div>
 
-              {/* Modal Body Content */}
+              {/* Body */}
               <div className="modal-dialog-body">
                 {activeOverlay === 'route' && (
                   <div className="modal-route-layout">
                     <div className="route-summary-box">
                       <div className="route-metric">
-                        <Footprints size={18} className="text-stone-600" />
+                        <Footprints size={20} />
                         <div>
                           <div className="metric-value">{routeData?.distance_m || 850} м</div>
-                          <div className="metric-label">пешая прогулка</div>
+                          <div className="metric-label">қашықтық</div>
                         </div>
                       </div>
 
                       <div className="route-metric">
-                        <Clock size={18} className="text-stone-600" />
+                        <Clock size={20} />
                         <div>
                           <div className="metric-value">~{routeData?.duration_min || 11} мин</div>
-                          <div className="metric-label">время в пути</div>
+                          <div className="metric-label">жаяу уақыт</div>
                         </div>
                       </div>
                     </div>
@@ -483,10 +542,10 @@ export const EmbankmentMasterScreen: React.FC<EmbankmentMasterScreenProps> = ({
                       <button
                         type="button"
                         onClick={handleOpenQr}
-                        className="monograph-btn-primary"
+                        className="btn-action-primary"
                       >
                         <QrCode size={16} />
-                        <span>Открыть маршрут на смартфоне</span>
+                        <span>Телефонға жіберу</span>
                       </button>
                     </div>
                   </div>
@@ -494,7 +553,6 @@ export const EmbankmentMasterScreen: React.FC<EmbankmentMasterScreenProps> = ({
 
                 {activeOverlay === 'history' && (
                   <div className="modal-history-layout">
-                    {/* Split comparison */}
                     <div className="modal-split-box">
                       <div className="split-img-layer modern">
                         <img
@@ -502,7 +560,7 @@ export const EmbankmentMasterScreen: React.FC<EmbankmentMasterScreenProps> = ({
                           alt="Сегодня"
                           className="split-img"
                         />
-                        <span className="split-tag right">Бүгін · Сегодня</span>
+                        <span className="split-tag right">Бүгін</span>
                       </div>
 
                       <div
@@ -517,7 +575,7 @@ export const EmbankmentMasterScreen: React.FC<EmbankmentMasterScreenProps> = ({
                           alt="1968"
                           className="split-img grayscale"
                         />
-                        <span className="split-tag left">1968 жыл · Мұрағат</span>
+                        <span className="split-tag left">1968 жыл</span>
                       </div>
 
                       <div className="split-handle-line" style={{ left: `${historySlider}%` }}>
@@ -536,7 +594,7 @@ export const EmbankmentMasterScreen: React.FC<EmbankmentMasterScreenProps> = ({
 
                     <p className="modal-history-text">
                       {sceneData?.texts?.[currentLang]?.body ||
-                        'В 1968 году город Шевченко (ныне Актау) закладывался на побережье Каспия. Уникальная архитектура белого ракушечника и каскадные спуски к морю стали визитной карточкой города первопроходцев.'}
+                        '1968 жылы Ақтау қаласының Каспий жағалауында ақ ұлутастан (ракушечник) жасалған бірегей сәулеттік кешендер мен теңізге түсетін каскадты баспалдақтар салынды.'}
                     </p>
                   </div>
                 )}
@@ -547,19 +605,19 @@ export const EmbankmentMasterScreen: React.FC<EmbankmentMasterScreenProps> = ({
                       <img
                         src={`https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(
                           qrData?.url || `https://bagdar.kz/route/${activePlace.id}`
-                        )}&bgcolor=FFFFFF&color=1C1C1E&margin=1`}
+                        )}&bgcolor=FFFFFF&color=111315&margin=1`}
                         alt="QR код"
                         className="modal-qr-code"
                       />
-                      <span className="qr-caption">Наведите камеру смартфона</span>
+                      <span className="qr-caption">Смартфон камерасын бағыттаңыз</span>
                     </div>
 
                     <div className="modal-qr-desc">
                       <h4>{localized.name}</h4>
-                      <p>Маршрут откроется в браузере телефона без установки приложений.</p>
-                      <div className="flex items-center gap-2 mt-4 text-xs text-stone-500">
-                        <Check size={14} className="text-emerald-600" />
-                        <span>Геолокация и пошаговая навигация</span>
+                      <p>Маршрут телефон браузерінде қосымшасыз ашылады.</p>
+                      <div className="flex items-center gap-2 mt-4 text-xs font-semibold">
+                        <Check size={16} className="text-emerald-500" />
+                        <span>Навигация мен қадамдық бағыт</span>
                       </div>
                     </div>
                   </div>
