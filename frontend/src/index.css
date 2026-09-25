@@ -1605,10 +1605,10 @@ html, body, #root {
 }
 
 /* ==========================================================================
-   AKTAU EMBANKMENT MASTER SCREEN — ARCHITECTURAL HIGH-CONTRAST DESIGN SYSTEM
+   AKTAU EMBANKMENT MASTER SCREEN — ARCHITECTURAL FLAT PRECISION DESIGN
    - Fonts: Unbounded (Bold Architectural Grotesk) & Golos Text
-   - Strong dark contours (#14171A) over bright limestone & sand surfaces
-   - Explicit architectural underlay plates separating every section
+   - Clean dark hairline contours (1.5px) without comic-book extrusions or hard shadows
+   - Solid architectural underlay plates with subtle ambient depth
    - Caspian coastal topography and nautical coordinate lines on background
    - Full Light / Dark Theme switching
    - Zero filler text: strictly functional, interactive elements
@@ -1621,19 +1621,19 @@ html, body, #root {
 
 /* 1. THEME VARIABLES */
 .embankment-screen-root.theme-light {
-  --eb-bg: #F5F2E9;
-  --eb-bg-underlay: #EAE4D4;
+  --eb-bg: #F5F2EA;
+  --eb-bg-underlay: #EAE5D8;
   --eb-surface: #FFFFFF;
-  --eb-surface-subtle: #F0ECE0;
+  --eb-surface-subtle: #F7F5EE;
   --eb-border: #14171A;
-  --eb-border-subtle: rgba(20, 23, 26, 0.25);
+  --eb-border-subtle: rgba(20, 23, 26, 0.16);
   --eb-text: #14171A;
   --eb-text-secondary: #4A515E;
   --eb-text-muted: #747C8B;
   --eb-topo: #14171A;
-  --eb-topo-opacity: 0.16;
-  --eb-shadow: 4px 4px 0px #14171A;
-  --eb-shadow-sm: 2px 2px 0px #14171A;
+  --eb-topo-opacity: 0.10;
+  --eb-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  --eb-shadow-sm: none;
   --eb-btn-bg: #14171A;
   --eb-btn-text: #FFFFFF;
   --eb-accent: #E5484D;
@@ -1641,18 +1641,18 @@ html, body, #root {
 
 .embankment-screen-root.theme-dark {
   --eb-bg: #0D1013;
-  --eb-bg-underlay: #161A20;
+  --eb-bg-underlay: #15181E;
   --eb-surface: #191E25;
-  --eb-surface-subtle: #222933;
-  --eb-border: #E5E7EB;
-  --eb-border-subtle: rgba(229, 231, 235, 0.25);
+  --eb-surface-subtle: #212731;
+  --eb-border: #3A4250;
+  --eb-border-subtle: rgba(255, 255, 255, 0.12);
   --eb-text: #FFFFFF;
   --eb-text-secondary: #D1D5DB;
   --eb-text-muted: #9CA3AF;
   --eb-topo: #9CA3AF;
-  --eb-topo-opacity: 0.12;
-  --eb-shadow: 4px 4px 0px #000000;
-  --eb-shadow-sm: 2px 2px 0px #000000;
+  --eb-topo-opacity: 0.07;
+  --eb-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --eb-shadow-sm: none;
   --eb-btn-bg: #FFFFFF;
   --eb-btn-text: #0D1013;
   --eb-accent: #EF4444;
@@ -1720,11 +1720,10 @@ html, body, #root {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 2px solid var(--eb-border);
+  border-bottom: 1.5px solid var(--eb-border);
   background: var(--eb-surface);
   z-index: 30;
   flex-shrink: 0;
-  box-shadow: 0 2px 0px rgba(0, 0, 0, 0.04);
 }
 
 .embankment-brand-block {
@@ -1772,7 +1771,6 @@ html, body, #root {
   font-size: 0.775rem;
   font-weight: 600;
   color: var(--eb-text);
-  box-shadow: var(--eb-shadow-sm);
 }
 
 .weather-pill .divider {
@@ -1802,16 +1800,15 @@ html, body, #root {
   gap: 7px;
   padding: 6px 13px;
   background: var(--eb-surface);
-  border: 2px solid var(--eb-border);
+  border: 1.5px solid var(--eb-border);
   border-radius: var(--radius-pill);
   color: var(--eb-text);
   cursor: pointer;
-  box-shadow: var(--eb-shadow-sm);
-  transition: transform 0.15s ease;
+  transition: opacity 0.15s ease, background 0.15s ease;
 }
 
 .ai-lang-badge:hover {
-  transform: translateY(-1px);
+  background: var(--eb-surface-subtle);
 }
 
 .ai-lang-label {
@@ -1838,16 +1835,15 @@ html, body, #root {
   gap: 6px;
   padding: 6px 13px;
   background: var(--eb-surface);
-  border: 2px solid var(--eb-border);
+  border: 1.5px solid var(--eb-border);
   border-radius: var(--radius-pill);
   color: var(--eb-text);
   cursor: pointer;
-  box-shadow: var(--eb-shadow-sm);
-  transition: transform 0.15s ease;
+  transition: opacity 0.15s ease, background 0.15s ease;
 }
 
 .theme-toggle-btn:hover {
-  transform: translateY(-1px);
+  background: var(--eb-surface-subtle);
 }
 
 .theme-toggle-text {
@@ -1866,7 +1862,7 @@ html, body, #root {
   overflow-x: auto;
   scrollbar-width: none;
   background: var(--eb-bg-underlay);
-  border-bottom: 2px solid var(--eb-border);
+  border-bottom: 1.5px solid var(--eb-border);
   z-index: 20;
   flex-shrink: 0;
 }
@@ -1882,17 +1878,16 @@ html, body, #root {
   gap: 10px;
   padding: 6px 16px 6px 8px;
   background: var(--eb-surface);
-  border: 2px solid var(--eb-border);
+  border: 1.5px solid var(--eb-border);
   border-radius: var(--radius-pill);
   cursor: pointer;
   white-space: nowrap;
-  box-shadow: var(--eb-shadow-sm);
-  transition: transform 0.15s ease, background 0.15s ease;
+  transition: background 0.15s ease, color 0.15s ease;
   color: var(--eb-text);
 }
 
 .strip-place-tab:hover {
-  transform: translateY(-2px);
+  background: var(--eb-surface-subtle);
 }
 
 .strip-place-tab.is-selected {
@@ -1905,7 +1900,7 @@ html, body, #root {
   height: 32px;
   border-radius: 50%;
   overflow: hidden;
-  border: 1.5px solid var(--eb-border);
+  border: 1px solid var(--eb-border);
   flex-shrink: 0;
 }
 
@@ -1934,12 +1929,12 @@ html, body, #root {
   overflow-y: auto;
 }
 
-/* Distinct Underlay Plate */
+/* Distinct Clean Underlay Plate */
 .embankment-card-underlay {
   width: 100%;
   max-width: 1180px;
   background: var(--eb-bg-underlay);
-  border: 2px solid var(--eb-border);
+  border: 1.5px solid var(--eb-border);
   border-radius: 26px;
   padding: 10px;
   box-shadow: var(--eb-shadow);
@@ -1948,7 +1943,7 @@ html, body, #root {
 .embankment-monograph-card {
   width: 100%;
   background: var(--eb-surface);
-  border: 2px solid var(--eb-border);
+  border: 1.5px solid var(--eb-border);
   border-radius: 18px;
   display: grid;
   grid-template-columns: 46% 54%;
@@ -1962,7 +1957,7 @@ html, body, #root {
   flex-direction: column;
   gap: 12px;
   background: var(--eb-surface-subtle);
-  border-right: 2px solid var(--eb-border);
+  border-right: 1.5px solid var(--eb-border);
 }
 
 .monograph-photo-wrapper {
@@ -1971,7 +1966,7 @@ html, body, #root {
   height: 340px;
   border-radius: 14px;
   overflow: hidden;
-  border: 2px solid var(--eb-border);
+  border: 1.5px solid var(--eb-border);
 }
 
 .monograph-photo {
@@ -1990,14 +1985,18 @@ html, body, #root {
   gap: 6px;
   padding: 6px 12px;
   background: var(--eb-surface);
-  border: 1.5px solid var(--eb-border);
+  border: 1px solid var(--eb-border);
   border-radius: var(--radius-pill);
   font-family: var(--font-display);
   font-size: 0.675rem;
   font-weight: 800;
   color: var(--eb-text);
-  box-shadow: var(--eb-shadow-sm);
   cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.monograph-photo-badge:hover {
+  opacity: 0.85;
 }
 
 .monograph-metrics-row {
@@ -2019,12 +2018,11 @@ html, body, #root {
   font-weight: 700;
   color: var(--eb-text);
   cursor: pointer;
-  box-shadow: var(--eb-shadow-sm);
-  transition: transform 0.15s ease;
+  transition: background 0.15s ease;
 }
 
 .meta-action-pill:hover {
-  transform: translateY(-1px);
+  background: var(--eb-surface-subtle);
 }
 
 /* Details column */
@@ -2056,20 +2054,20 @@ html, body, #root {
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  border: 2px solid var(--eb-border);
+  border: 1.5px solid var(--eb-border);
   background: var(--eb-surface-subtle);
   color: var(--eb-text);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: var(--eb-shadow-sm);
-  transition: transform 0.15s ease;
+  transition: background 0.15s ease;
   flex-shrink: 0;
 }
 
 .audio-read-btn:hover {
-  transform: scale(1.06);
+  background: var(--eb-border);
+  color: var(--eb-surface);
 }
 
 .monograph-summary {
@@ -2093,12 +2091,11 @@ html, body, #root {
   color: var(--eb-text);
   cursor: pointer;
   width: fit-content;
-  box-shadow: var(--eb-shadow-sm);
-  transition: transform 0.15s ease;
+  transition: background 0.15s ease;
 }
 
 .monograph-address-btn:hover {
-  transform: translateY(-1px);
+  background: var(--eb-surface);
 }
 
 /* 3 Core Functional Buttons */
@@ -2116,19 +2113,18 @@ html, body, #root {
   padding: 13px 24px;
   background: var(--eb-btn-bg);
   color: var(--eb-btn-text);
-  border: 2px solid var(--eb-border);
+  border: 1.5px solid var(--eb-border);
   border-radius: var(--radius-pill);
   font-family: var(--font-display);
   font-size: 0.825rem;
   font-weight: 800;
   letter-spacing: 0.02em;
   cursor: pointer;
-  box-shadow: var(--eb-shadow);
-  transition: transform 0.15s ease;
+  transition: opacity 0.15s ease;
 }
 
 .btn-action-primary:hover {
-  transform: translateY(-2px);
+  opacity: 0.88;
 }
 
 .btn-action-secondary {
@@ -2138,18 +2134,17 @@ html, body, #root {
   padding: 13px 20px;
   background: var(--eb-surface-subtle);
   color: var(--eb-text);
-  border: 2px solid var(--eb-border);
+  border: 1.5px solid var(--eb-border);
   border-radius: var(--radius-pill);
   font-family: var(--font-display);
   font-size: 0.825rem;
   font-weight: 800;
   cursor: pointer;
-  box-shadow: var(--eb-shadow-sm);
-  transition: transform 0.15s ease;
+  transition: background 0.15s ease;
 }
 
 .btn-action-secondary:hover {
-  transform: translateY(-1px);
+  background: var(--eb-surface);
 }
 
 .btn-action-outline {
@@ -2159,18 +2154,17 @@ html, body, #root {
   padding: 13px 20px;
   background: var(--eb-surface);
   color: var(--eb-text);
-  border: 2px solid var(--eb-border);
+  border: 1.5px solid var(--eb-border);
   border-radius: var(--radius-pill);
   font-family: var(--font-display);
   font-size: 0.825rem;
   font-weight: 800;
   cursor: pointer;
-  box-shadow: var(--eb-shadow-sm);
-  transition: transform 0.15s ease;
+  transition: background 0.15s ease;
 }
 
 .btn-action-outline:hover {
-  transform: translateY(-1px);
+  background: var(--eb-surface-subtle);
 }
 
 /* 6. BOTTOM VOICE DOCK */
@@ -2181,7 +2175,7 @@ html, body, #root {
   align-items: center;
   justify-content: center;
   background: var(--eb-surface);
-  border-top: 2px solid var(--eb-border);
+  border-top: 1.5px solid var(--eb-border);
   z-index: 25;
   flex-shrink: 0;
 }
@@ -2198,27 +2192,25 @@ html, body, #root {
   width: 46px;
   height: 46px;
   border-radius: 50%;
-  border: 2px solid var(--eb-border);
+  border: 1.5px solid var(--eb-border);
   background: var(--eb-border);
   color: var(--eb-surface);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: var(--eb-shadow-sm);
-  transition: transform 0.15s ease;
+  transition: opacity 0.15s ease;
   flex-shrink: 0;
 }
 
 .voice-mic-trigger:hover {
-  transform: scale(1.06);
+  opacity: 0.88;
 }
 
 .voice-mic-trigger.is-active {
   background: var(--eb-accent);
   border-color: var(--eb-accent);
   color: #FFFFFF;
-  box-shadow: 0 0 16px var(--eb-accent);
 }
 
 .voice-status-block {
@@ -2256,12 +2248,11 @@ html, body, #root {
   font-weight: 700;
   color: var(--eb-text);
   cursor: pointer;
-  box-shadow: var(--eb-shadow-sm);
-  transition: transform 0.15s ease;
+  transition: background 0.15s ease;
 }
 
 .voice-quick-chip:hover {
-  transform: translateY(-1px);
+  background: var(--eb-surface);
 }
 
 /* 7. MODALS (Route / TarihSky / QR) */
@@ -2282,15 +2273,15 @@ html, body, #root {
   max-width: 680px;
   background: var(--eb-surface);
   border-radius: 24px;
-  border: 2.5px solid var(--eb-border);
-  box-shadow: 8px 8px 0px var(--eb-border);
+  border: 1.5px solid var(--eb-border);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
   overflow: hidden;
   color: var(--eb-text);
 }
 
 .modal-dialog-header {
   padding: 18px 24px;
-  border-bottom: 2px solid var(--eb-border);
+  border-bottom: 1.5px solid var(--eb-border);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -2326,12 +2317,11 @@ html, body, #root {
   justify-content: center;
   cursor: pointer;
   font-weight: 800;
-  box-shadow: var(--eb-shadow-sm);
-  transition: transform 0.15s ease;
+  transition: opacity 0.15s ease;
 }
 
 .modal-close-btn:hover {
-  transform: scale(1.08);
+  opacity: 0.8;
 }
 
 .modal-dialog-body {
@@ -2359,7 +2349,6 @@ html, body, #root {
   background: var(--eb-surface-subtle);
   border: 1.5px solid var(--eb-border);
   border-radius: 16px;
-  box-shadow: var(--eb-shadow-sm);
 }
 
 .metric-value {
@@ -2419,8 +2408,8 @@ html, body, #root {
   height: 320px;
   border-radius: 16px;
   overflow: hidden;
-  border: 2px solid var(--eb-border);
-  box-shadow: var(--eb-shadow);
+  border: 1.5px solid var(--eb-border);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
 }
 
 .split-img-layer {
@@ -2469,8 +2458,8 @@ html, body, #root {
   height: 38px;
   border-radius: 50%;
   background: #FFFFFF;
-  border: 2px solid #14171A;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  border: 1.5px solid #14171A;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2510,9 +2499,8 @@ html, body, #root {
   gap: 8px;
   padding: 16px;
   background: var(--eb-surface-subtle);
-  border: 2px solid var(--eb-border);
+  border: 1.5px solid var(--eb-border);
   border-radius: 20px;
-  box-shadow: var(--eb-shadow);
 }
 
 .modal-qr-code {
@@ -2541,4 +2529,5 @@ html, body, #root {
   font-weight: 500;
   opacity: 0.85;
 }
+
 
