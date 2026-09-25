@@ -35,14 +35,21 @@ export const EmbankmentMasterScreen: React.FC<EmbankmentMasterScreenProps> = ({
 }) => {
   // Current active place on the embankment
   const [selectedPlaceId, setSelectedPlaceId] = useState<number>(() => places[0]?.id || 1);
+
+  useEffect(() => {
+    if (places.length > 0 && !places.some((p) => p.id === selectedPlaceId)) {
+      setSelectedPlaceId(places[0].id);
+    }
+  }, [places, selectedPlaceId]);
+
   const activePlace: Place = places.find((p) => p.id === selectedPlaceId) || places[0] || {
     id: 1,
-    name: 'Скальная тропа',
-    category: 'walking',
-    lat: 43.642,
-    lng: 51.155,
+    name: 'Амфитеатр',
+    category: 'culture',
+    lat: 43.661365,
+    lng: 51.132965,
     thumb_url: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=85',
-    summary: 'Пешеходная освещенная тропа вдоль скального берега Каспия протяженностью 1.5 км.',
+    summary: 'Каспий жағасындағы ашық сахна және басты мәдени алаң.',
     has_scene: true,
     access: 'walk',
     hours: null,
