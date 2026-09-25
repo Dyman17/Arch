@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Mic, ArrowLeft, Sparkles } from 'lucide-react';
+import { Mic, ArrowLeft } from 'lucide-react';
 import { VoiceWave } from '../ui/VoiceWave';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
@@ -51,7 +51,7 @@ export const PageListening: React.FC<PageListeningProps> = ({
             variant="ghost"
             size="sm"
             onClick={onCancel}
-            icon={<ArrowLeft size={15} />}
+            icon={<ArrowLeft size={14} />}
           >
             {lang === 'kk' ? 'Артқа' : 'Назад'}
           </Button>
@@ -59,57 +59,56 @@ export const PageListening: React.FC<PageListeningProps> = ({
           <div />
         )}
 
-        <Badge variant="accent" dot>
+        <Badge variant="accent">
+          <span className="w-1.5 h-1.5 bg-stone-300 inline-block mr-1.5" />
           {lang === 'kk' ? 'Тыңдап тұрмын...' : lang === 'en' ? 'Listening...' : 'Слушаю вас...'}
         </Badge>
       </div>
 
       {/* Main Voice Centerpiece */}
       <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
+        initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.3 }}
+        transition={{ duration: 0.25 }}
         className="clean-listening-box"
       >
         <div className="clean-mic-circle">
-          <Mic size={36} className="text-sky-400" />
+          <Mic size={32} className="text-stone-200" />
         </div>
 
-        {/* Clean Voice Waveform */}
+        {/* Razor Acoustic Waveform */}
         <div className="my-6">
-          <VoiceWave active={true} bars={28} />
+          <VoiceWave active={true} bars={32} />
         </div>
 
         {/* Live Speech Caption Box */}
         <div className="clean-caption-card">
           <span className="clean-caption-label">
             {userSpokenText
-              ? (lang === 'kk' ? 'Сіз айттыңыз:' : 'Вы говорите:')
-              : (lang === 'kk' ? 'Сөйлеңіз:' : 'Говорите вслух:')}
+              ? (lang === 'kk' ? 'СІЗ АЙТТЫҢЫЗ:' : 'ВЫ ГОВОРИТЕ:')
+              : (lang === 'kk' ? 'СӨЙЛЕҢІЗ:' : 'ГОВОРИТЕ ВСЛУХ:')}
           </span>
           <p className={`clean-caption-text ${userSpokenText ? 'active' : 'placeholder'}`}>
-            {userSpokenText ? `«${userSpokenText}»` : '«Как пройти к морю?» • «Где погулять?»'}
+            {userSpokenText ? `«${userSpokenText}»` : '«Как пройти к Скальной тропе?» · «Где погулять?»'}
           </p>
         </div>
 
         {/* Quick Suggestion Chips */}
         <div className="clean-suggestions-block mt-8">
           <div className="clean-suggestions-title">
-            <Sparkles size={13} className="text-zinc-400" />
-            <span>{lang === 'kk' ? 'Сұрақ үлгілері:' : 'Примеры вопросов:'}</span>
+            <span>{lang === 'kk' ? 'СҰРАҚ ҮЛГІЛЕРІ:' : 'ПРИМЕРЫ ВОПРОСОВ:'}</span>
           </div>
 
           <div className="clean-chips-wrap">
-            {sampleChips.map((chip, idx) => (
-              <motion.button
-                key={idx}
-                whileHover={{ y: -1 }}
-                whileTap={{ scale: 0.98 }}
+            {sampleChips.map((chip, i) => (
+              <button
+                key={i}
+                type="button"
                 onClick={() => onSimulateUtterance(chip)}
                 className="clean-prompt-chip"
               >
-                <span>«{chip}»</span>
-              </motion.button>
+                <span>[ {chip} ]</span>
+              </button>
             ))}
           </div>
         </div>

@@ -38,11 +38,11 @@ export const PageRoute: React.FC<PageRouteProps> = ({
   const bearingDeg = route?.bearing_deg ?? 42;
   const distanceM = route?.distance_m ?? 850;
   const durationMin = route?.duration_min ?? 11;
-  const directionText = route?.direction_text ?? 'Идите на северо-восток вдоль набережной';
+  const directionText = route?.direction_text ?? 'Идите вдоль набережной на северо-восток';
 
   return (
     <div className="clean-page-root relative overflow-hidden">
-      {/* Interactive Map Viewport */}
+      {/* Dark Architectural Map Viewport */}
       <div className="absolute inset-0 z-0">
         <KioskMap
           places={places}
@@ -58,24 +58,24 @@ export const PageRoute: React.FC<PageRouteProps> = ({
           variant="glass"
           size="sm"
           onClick={onGoToPlace}
-          icon={<ArrowLeft size={16} />}
+          icon={<ArrowLeft size={14} />}
         >
           {lang === 'kk' ? 'Орынға қайту' : 'К описанию'}
         </Button>
 
         <div className="flex items-center gap-2">
           <Badge variant="accent">
-            {lang === 'kk' ? 'БАҒЫТ:' : 'МАРШРУТ:'} {place.name}
+            {lang === 'kk' ? 'БАҒЫТ:' : 'АЗИМУТ:'} {place.name.toUpperCase()}
           </Badge>
           <Badge variant="neutral">
-            15-ш/а Амфитеатр
+            43°39′N · ИСХОДНАЯ ТОЧКА
           </Badge>
         </div>
       </div>
 
       {/* Floating Guidance Card */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
         className="clean-route-floating-panel"
@@ -94,27 +94,27 @@ export const PageRoute: React.FC<PageRouteProps> = ({
 
         {/* Turn-by-turn guidance card */}
         <div className="clean-guide-card">
-          <div className="flex items-center gap-3 mb-4">
+          <div className="flex items-center gap-2 mb-4">
             <div className="clean-metric-badge">
-              <Footprints size={15} className="text-sky-400" />
-              <span className="font-semibold text-white">{distanceM} м</span>
-              <span className="text-zinc-400 text-xs">пешком</span>
+              <Footprints size={14} className="text-zinc-400" />
+              <span className="font-semibold text-white">{distanceM} М</span>
+              <span className="text-zinc-500 text-xs">ПЕШКОМ</span>
             </div>
             <div className="clean-metric-badge">
-              <Clock size={15} className="text-emerald-400" />
-              <span className="font-semibold text-white">~{durationMin} мин</span>
-              <span className="text-zinc-400 text-xs">в пути</span>
+              <Clock size={14} className="text-zinc-400" />
+              <span className="font-semibold text-white">~{durationMin} МИН</span>
+              <span className="text-zinc-500 text-xs">В ПУТИ</span>
             </div>
           </div>
 
           <div className="clean-steps-box mb-4">
             <div className="clean-step-item">
-              <span className="clean-step-index">1</span>
+              <span className="clean-step-index">I</span>
               <p className="clean-step-instruction">{directionText}</p>
             </div>
             {route?.steps && route.steps.length > 0 && (
               <div className="clean-step-item">
-                <span className="clean-step-index">2</span>
+                <span className="clean-step-index">II</span>
                 <p className="clean-step-instruction">{route.steps[0].instruction}</p>
               </div>
             )}
@@ -125,10 +125,10 @@ export const PageRoute: React.FC<PageRouteProps> = ({
               variant="primary"
               size="md"
               onClick={onGoToQr}
-              icon={<QrCode size={16} />}
+              icon={<QrCode size={15} />}
               className="flex-1"
             >
-              {lang === 'kk' ? 'Телефонға алу' : 'Маршрут на телефон'}
+              {lang === 'kk' ? 'Телефонға алу' : 'QR на телефон'}
             </Button>
 
             {place.has_scene && (
@@ -136,9 +136,9 @@ export const PageRoute: React.FC<PageRouteProps> = ({
                 variant="secondary"
                 size="md"
                 onClick={onGoToHistory}
-                icon={<History size={16} />}
+                icon={<History size={15} />}
               >
-                {lang === 'kk' ? 'Тарихы' : 'История'}
+                {lang === 'kk' ? 'Тарихы' : 'TarihSky'}
               </Button>
             )}
           </div>

@@ -25,8 +25,8 @@ export const PageHistory: React.FC<PageHistoryProps> = ({
   const [sliderPos, setSliderPos] = useState<number>(50);
 
   const texts = scene?.texts?.[lang] || {
-    title: 'Тогда и сейчас — Архивы Актау',
-    body: 'В 1968 году город Шевченко (ныне Актау) закладывался на побережье Каспия. Уникальная архитектура белого ракушечника и каскадные спуски к морю стали визитной карточкой города первопроходцев.',
+    title: 'Тогда и сейчас — Архивы Мангистау',
+    body: 'В 1968 году город Шевченко (ныне Актау) закладывался на известняковом плато Каспия. Уникальная монументальная архитектура белого ракушечника и каскадные спуски к воде стали визитной карточкой города первопроходцев.',
   };
 
   const modernUrl = scene?.modern_url || place.thumb_url;
@@ -46,18 +46,18 @@ export const PageHistory: React.FC<PageHistoryProps> = ({
           variant="glass"
           size="sm"
           onClick={onBackToPlace}
-          icon={<ArrowLeft size={16} />}
+          icon={<ArrowLeft size={14} />}
         >
           {lang === 'kk' ? 'Орынға қайту' : 'К описанию'}
         </Button>
 
         <div className="flex items-center gap-2">
           <Badge variant="accent">
-            <History size={13} className="mr-1 inline text-sky-400" />
-            TarihSky · {place.name}
+            <History size={12} className="mr-1 inline text-zinc-300" />
+            TARIHSKY · {place.name.toUpperCase()}
           </Badge>
           <Badge variant="neutral">
-            1968 Шевченко ⟷ 2026 Ақтау
+            1968 ШЕВЧЕНКО ⟷ 2026 АҚТАУ
           </Badge>
         </div>
       </div>
@@ -67,7 +67,7 @@ export const PageHistory: React.FC<PageHistoryProps> = ({
         {/* Modern Image */}
         <div className="clean-split-layer">
           <img src={modernUrl} alt="2026" className="clean-split-img" />
-          <div className="clean-split-badge right">2026 · Қазіргі көрініс</div>
+          <div className="clean-split-badge right">2026 · ҚАЗІРГІ КӨРІНІС</div>
         </div>
 
         {/* Historic Image */}
@@ -76,13 +76,13 @@ export const PageHistory: React.FC<PageHistoryProps> = ({
           style={{ clipPath: `inset(0 ${100 - sliderPos}% 0 0)` }}
         >
           <img src={historicUrl} alt="1968" className="clean-split-img sepia-toned" />
-          <div className="clean-split-badge left">1968 · Мұрағат фотосы</div>
+          <div className="clean-split-badge left">1968 · МҰРАҒАТ ФОТОСЫ</div>
         </div>
 
         {/* Split Divider */}
         <div className="clean-split-divider" style={{ left: `${sliderPos}%` }}>
           <div className="clean-split-handle">
-            <span>◀ ▶</span>
+            <span>◇</span>
           </div>
         </div>
 
@@ -100,20 +100,20 @@ export const PageHistory: React.FC<PageHistoryProps> = ({
 
       {/* Bottom Information Card */}
       <motion.div
-        initial={{ opacity: 0, y: 16 }}
+        initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
+        transition={{ duration: 0.25 }}
         className="clean-history-bottom-card"
       >
         <div className="flex items-start justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <BookOpen size={16} className="text-sky-400" />
-              <h3 className="font-semibold text-white text-base">{texts.title}</h3>
+              <BookOpen size={15} className="text-zinc-400" />
+              <h3 className="font-serif text-lg text-white font-semibold">{texts.title}</h3>
             </div>
             <p className="text-zinc-300 text-sm leading-relaxed max-w-3xl">{texts.body}</p>
-            <span className="text-zinc-500 text-xs block mt-2">
-              {scene?.attribution || 'Архивные фотохроники Мангистауского областного музея'}
+            <span className="text-zinc-500 font-mono text-xs block mt-2 uppercase tracking-wider">
+              {scene?.attribution || 'Архивные фотохроники Мангистауского музея'}
             </span>
           </div>
 
@@ -122,7 +122,7 @@ export const PageHistory: React.FC<PageHistoryProps> = ({
               variant="primary"
               size="md"
               onClick={onGoToRoute}
-              icon={<Navigation size={16} />}
+              icon={<Navigation size={15} />}
             >
               {lang === 'kk' ? 'Қазір бару' : 'Как пройти?'}
             </Button>
@@ -130,7 +130,7 @@ export const PageHistory: React.FC<PageHistoryProps> = ({
               variant="outline"
               size="md"
               onClick={onGoToQr}
-              icon={<QrCode size={16} />}
+              icon={<QrCode size={15} />}
             >
               {lang === 'kk' ? 'QR' : 'QR на телефон'}
             </Button>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapPin, ArrowRight, Mic, Sparkles } from 'lucide-react';
+import { MapPin, ArrowRight, Mic } from 'lucide-react';
 import type { Place } from '../../types';
 import { Badge } from '../ui/Badge';
 import { Card } from '../ui/Card';
@@ -16,6 +16,7 @@ export const PageVariants: React.FC<PageVariantsProps> = ({
   onSelectPlace,
 }) => {
   const displayPlaces = places.slice(0, 3);
+  const romanNumbers = ['I', 'II', 'III'];
 
   const prompts: Record<string, { title: string; subtitle: string; voiceHint: string }> = {
     kk: {
@@ -42,19 +43,18 @@ export const PageVariants: React.FC<PageVariantsProps> = ({
       {/* Header */}
       <div className="text-center mb-8 max-w-xl">
         <Badge variant="accent" className="mb-3">
-          <Sparkles size={12} className="mr-1 inline text-sky-400" />
-          {lang === 'kk' ? 'Таңдау' : 'Выбор места'}
+          {lang === 'kk' ? 'ТАҢДАУ' : 'ВЫБОР ОБЪЕКТА'}
         </Badge>
         <h1 className="clean-hero-heading text-3xl">{text.title}</h1>
         <p className="clean-sub-heading mt-2">{text.subtitle}</p>
 
         <div className="clean-voice-hint-pill mt-4">
-          <Mic size={14} className="text-sky-400 animate-pulse" />
+          <Mic size={13} className="text-zinc-300" />
           <span>{text.voiceHint}</span>
         </div>
       </div>
 
-      {/* 3 Animate UI Cards */}
+      {/* 3 Architectural Monolith Cards */}
       <div className="clean-variants-grid">
         {displayPlaces.map((place, idx) => (
           <Card
@@ -63,9 +63,9 @@ export const PageVariants: React.FC<PageVariantsProps> = ({
             onClick={() => onSelectPlace(place)}
             className="clean-variant-card"
           >
-            {/* Number Pill */}
+            {/* Roman Numeral */}
             <div className="clean-card-num-badge">
-              <span>{idx + 1}</span>
+              <span>{romanNumbers[idx]}</span>
             </div>
 
             {/* Photo */}
@@ -79,19 +79,19 @@ export const PageVariants: React.FC<PageVariantsProps> = ({
             </div>
 
             {/* Body */}
-            <div className="p-4 flex flex-col flex-1 justify-between">
+            <div className="p-5 flex flex-col flex-1 justify-between">
               <div>
                 <h3 className="clean-card-title">{place.name}</h3>
                 <p className="clean-card-desc">{place.summary}</p>
               </div>
 
-              <div className="mt-4 pt-3 border-t border-zinc-800 flex items-center justify-between text-xs">
+              <div className="mt-4 pt-3 border-t border-zinc-800 flex items-center justify-between text-xs font-mono uppercase">
                 <span className="text-zinc-400 flex items-center gap-1">
-                  <MapPin size={12} className="text-sky-400" />
-                  ~{(idx + 1) * 350 + 400} м от стелы
+                  <MapPin size={11} className="text-zinc-500" />
+                  ~{(idx + 1) * 350 + 400} М
                 </span>
-                <span className="text-sky-400 font-medium flex items-center gap-1">
-                  Выбрать <ArrowRight size={13} />
+                <span className="text-white font-medium flex items-center gap-1">
+                  ВЫБРАТЬ <ArrowRight size={12} />
                 </span>
               </div>
             </div>

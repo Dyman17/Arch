@@ -58,7 +58,7 @@ export const DirectionCompass: React.FC<DirectionCompassProps> = ({
           className="clean-compass-needle"
           style={{ transform: `rotate(${relativeAngle}deg)` }}
         >
-          <Navigation className="clean-needle-arrow text-sky-400" />
+          <Navigation className="clean-needle-arrow text-zinc-100" />
         </div>
       </div>
 

@@ -88,25 +88,16 @@ export const KioskMap: React.FC<KioskMapProps> = ({
 
     places.forEach((place) => {
       const isSelected = selectedPlace?.id === place.id;
-      const catColor =
-        place.category === 'culture'
-          ? '#0284C7'
-          : place.category === 'nature'
-          ? '#10B981'
-          : place.category === 'park'
-          ? '#F59E0B'
-          : '#8B5CF6';
 
       const icon = L.divIcon({
         className: 'bhutan-place-pin-container',
         html: `
           <div class="atlas-pin-wrapper ${isSelected ? 'is-active' : ''}">
-            <div class="atlas-pin-body" style="--pin-accent: ${catColor};">
+            <div class="atlas-pin-body">
               <span class="pin-number">${place.id}</span>
             </div>
             <div class="atlas-pin-label">
               <span class="pin-name">${place.name}</span>
-              ${place.rating ? `<span class="pin-rating">★ ${place.rating}</span>` : ''}
             </div>
           </div>
         `,
@@ -137,12 +128,12 @@ export const KioskMap: React.FC<KioskMapProps> = ({
       );
 
       const polyline = L.polyline(latLngs, {
-        color: '#0284C7',
-        weight: 5,
-        opacity: 0.9,
-        lineCap: 'round',
-        lineJoin: 'round',
-        dashArray: '10, 10',
+        color: '#F5F2EB',
+        weight: 4,
+        opacity: 0.95,
+        lineCap: 'square',
+        lineJoin: 'miter',
+        dashArray: '8, 8',
         className: 'bhutan-route-animated-path',
       }).addTo(mapRef.current);
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
-import { Sparkles, Compass } from 'lucide-react';
+import { Compass } from 'lucide-react';
 
 interface PageFarewellProps {
   lang: string;
@@ -27,19 +27,19 @@ export const PageFarewell: React.FC<PageFarewellProps> = ({ lang, onFinishFarewe
 
   const farewellTexts: Record<string, { title: string; subtitle: string; blessing: string }> = {
     kk: {
-      title: 'Рахмет! Көріскенше!',
-      subtitle: 'Ақтау қаласы мен Каспий жағалауында демалысыңыз жақсы өтсін!',
+      title: 'Рахмет. Көріскенше.',
+      subtitle: 'Маңғыстау мен Каспий жағалауында сапарыңыз сәтті өтсін.',
       blessing: 'Ақ жол! Сапарыңыз сәтті болсын!',
     },
     ru: {
-      title: 'Спасибо! Приятной прогулки!',
-      subtitle: 'Желаем вам отличного дня на побережье Каспия!',
+      title: 'Счастливого пути',
+      subtitle: 'Приятной прогулки по побережью Каспия и земле Мангистау.',
       blessing: 'Ақ жол! Счастливого пути!',
     },
     en: {
-      title: 'Thank you! Enjoy your day!',
-      subtitle: 'Have a wonderful walk along the Caspian Sea!',
-      blessing: 'Safe travels and warm memories!',
+      title: 'Safe Travels',
+      subtitle: 'Have a peaceful journey along the Caspian coast.',
+      blessing: 'Aq zhol! May your voyage be blessed.',
     },
   };
 
@@ -48,14 +48,14 @@ export const PageFarewell: React.FC<PageFarewellProps> = ({ lang, onFinishFarewe
   return (
     <div className="clean-page-root flex-center flex-col p-8">
       <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
+        initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.3 }}
+        transition={{ duration: 0.25 }}
         className="clean-farewell-card text-center"
       >
         <div className="flex-center mb-5">
           <div className="clean-farewell-icon-box">
-            <Compass size={36} className="text-sky-400" />
+            <Compass size={32} className="text-stone-300" />
           </div>
         </div>
 
@@ -63,12 +63,11 @@ export const PageFarewell: React.FC<PageFarewellProps> = ({ lang, onFinishFarewe
         <p className="clean-sub-heading mt-2">{text.subtitle}</p>
 
         <div className="clean-blessing-pill mt-6">
-          <Sparkles size={14} className="text-amber-400" />
           <span>«{text.blessing}»</span>
         </div>
 
-        <div className="mt-8 text-xs text-zinc-500">
-          Стела переходит в режим ожидания через {countdown} сек...
+        <div className="mt-8 text-xs font-mono text-zinc-500 uppercase tracking-widest">
+          Режим ожидания через {countdown} сек...
         </div>
       </motion.div>
     </div>

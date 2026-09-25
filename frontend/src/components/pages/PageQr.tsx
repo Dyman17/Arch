@@ -43,7 +43,7 @@ export const PageQr: React.FC<PageQrProps> = ({
 
   const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=320x320&data=${encodeURIComponent(
     qrUrl
-  )}&bgcolor=FFFFFF&color=09090b&margin=1`;
+  )}&bgcolor=FFFFFF&color=030304&margin=1`;
 
   const progressPercent = (secondsLeft / 60) * 100;
 
@@ -55,28 +55,28 @@ export const PageQr: React.FC<PageQrProps> = ({
           variant="ghost"
           size="sm"
           onClick={onBackToRoute}
-          icon={<ArrowLeft size={16} />}
+          icon={<ArrowLeft size={14} />}
         >
           К карте маршрута
         </Button>
 
         <div className="flex items-center gap-2">
           <Badge variant="accent">
-            <Smartphone size={13} className="mr-1 inline text-sky-400" />
-            Маршрут на телефон
+            <Smartphone size={12} className="mr-1 inline text-zinc-300" />
+            СИНХРОНИЗАЦИЯ С ТЕЛЕФОНОМ
           </Badge>
           <Badge variant="neutral">
-            <Timer size={13} className="mr-1 inline text-zinc-400" />
-            {secondsLeft} сек
+            <Timer size={12} className="mr-1 inline text-zinc-400" />
+            ТАЙМЕР: {secondsLeft} СЕК
           </Badge>
         </div>
       </div>
 
       {/* Main QR Card */}
       <motion.div
-        initial={{ opacity: 0, scale: 0.96 }}
+        initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.3 }}
+        transition={{ duration: 0.25 }}
         className="clean-qr-card"
       >
         {/* Left: QR Code in crisp frame */}
@@ -93,7 +93,7 @@ export const PageQr: React.FC<PageQrProps> = ({
         <div className="clean-qr-info">
           <div>
             <Badge variant="neutral" className="mb-2">
-              Пункт назначения
+              ТОЧКА НАЗНАЧЕНИЯ
             </Badge>
             <h2 className="clean-qr-title">{place.name}</h2>
             <p className="clean-qr-summary">{place.summary}</p>
@@ -101,25 +101,25 @@ export const PageQr: React.FC<PageQrProps> = ({
 
           <div className="clean-qr-steps">
             <div className="clean-qr-step">
-              <span className="clean-step-dot">1</span>
-              <p>Откройте камеру на смартфоне</p>
+              <span className="clean-step-dot">I</span>
+              <p>Откройте штатную камеру на смартфоне</p>
             </div>
             <div className="clean-qr-step">
-              <span className="clean-step-dot">2</span>
-              <p>Наведите на QR-код на экране</p>
+              <span className="clean-step-dot">II</span>
+              <p>Наведите объектив на QR-код на экране</p>
             </div>
             <div className="clean-qr-step">
               <span className="clean-step-dot">
-                <Check size={12} />
+                <Check size={11} />
               </span>
-              <p>Маршрут откроется в вашем браузере</p>
+              <p>Маршрут откроется в браузере телефона без установки приложений</p>
             </div>
           </div>
 
           {/* Progress bar */}
           <div className="mt-4">
-            <div className="flex justify-between text-xs text-zinc-500 mb-1.5">
-              <span>Автозакрытие</span>
+            <div className="flex justify-between text-xs font-mono text-zinc-500 mb-1.5 uppercase">
+              <span>Автозакрытие сессии</span>
               <span>{secondsLeft} с</span>
             </div>
             <Progress value={progressPercent} />

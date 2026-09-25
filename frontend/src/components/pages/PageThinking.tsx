@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Loader2, MapPin, Footprints } from 'lucide-react';
+import { Loader2, MapPin } from 'lucide-react';
 import { Badge } from '../ui/Badge';
 
 interface PageThinkingProps {
@@ -11,16 +11,16 @@ interface PageThinkingProps {
 export const PageThinking: React.FC<PageThinkingProps> = ({ userSpokenText, lang }) => {
   const statusTexts: Record<string, { main: string; sub: string }> = {
     kk: {
-      main: 'Ыңғайлы жолды қарастырудамын...',
-      sub: 'Ақтау мен жағалаудың бағыттарын тексеремін',
+      main: 'Бағыт есептелуде...',
+      sub: 'Ақтау мен Каспий жағалауының жолдарын сәйкестендіруде',
     },
     ru: {
-      main: 'Подбираю лучший маршрут...',
-      sub: 'Сверяю расстояние и время пешей прогулки',
+      main: 'Вычисление маршрута...',
+      sub: 'Сверяю расстояние, рельеф и азимут движения',
     },
     en: {
-      main: 'Finding the best route...',
-      sub: 'Checking walking paths along the Caspian shoreline',
+      main: 'Computing path...',
+      sub: 'Evaluating walking paths and bearing along the Caspian coast',
     },
   };
 
@@ -29,22 +29,22 @@ export const PageThinking: React.FC<PageThinkingProps> = ({ userSpokenText, lang
   return (
     <div className="clean-page-root flex-center flex-col p-8">
       <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
+        initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.3 }}
+        transition={{ duration: 0.25 }}
         className="clean-thinking-card text-center"
       >
-        {/* Sleek Minimal Spinner */}
+        {/* Monolithic Geometry Spinner */}
         <div className="flex-center mb-6">
           <div className="clean-spinner-wrapper">
-            <Loader2 size={40} className="text-sky-400 animate-spin" />
+            <Loader2 size={32} className="text-stone-300 animate-spin" />
           </div>
         </div>
 
         {userSpokenText && (
           <div className="clean-query-bubble mb-5">
             <span className="clean-query-label">
-              {lang === 'kk' ? 'Сұрағыңыз:' : 'Ваш запрос:'}
+              {lang === 'kk' ? 'СҰРАҒЫҢЫЗ:' : 'ВАШ ЗАПРОС:'}
             </span>
             <p className="clean-query-text">«{userSpokenText}»</p>
           </div>
@@ -55,12 +55,11 @@ export const PageThinking: React.FC<PageThinkingProps> = ({ userSpokenText, lang
 
         <div className="flex-center gap-3 mt-6">
           <Badge variant="neutral">
-            <MapPin size={12} className="mr-1 inline text-sky-400" />
-            Ақтау жағалауы
+            <MapPin size={11} className="mr-1 inline text-zinc-400" />
+            АКТАУ · КАСПИЙ
           </Badge>
           <Badge variant="neutral">
-            <Footprints size={12} className="mr-1 inline text-emerald-400" />
-            Пешком
+            43°39′N 51°09′E
           </Badge>
         </div>
       </motion.div>

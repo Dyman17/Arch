@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { motion } from 'motion/react';
-import { Wind, MessageCircle, MapPin, Sparkles } from 'lucide-react';
+import { Wind, MapPin, Eye } from 'lucide-react';
 import { Badge } from './ui/Badge';
 
 interface SleepScreenProps {
@@ -24,7 +24,7 @@ export const SleepScreen: React.FC<SleepScreenProps> = ({
     return () => clearInterval(timer);
   }, []);
 
-  // Subtle clean ambient wave line
+  // Subtle architectural sea-depth oscillation in bone-ivory hairline
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -42,24 +42,25 @@ export const SleepScreen: React.FC<SleepScreenProps> = ({
     window.addEventListener('resize', resize);
 
     const render = () => {
-      step += 0.01;
+      step += 0.006;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       const w = canvas.width;
       const h = canvas.height;
 
       ctx.save();
-      for (let j = 0; j < 2; j++) {
+      // Architectural horizon hairlines
+      for (let j = 0; j < 3; j++) {
         ctx.beginPath();
-        const opacity = 0.04 + j * 0.03;
-        ctx.strokeStyle = `rgba(56, 189, 248, ${opacity})`;
-        ctx.lineWidth = 1.5;
+        const opacity = 0.03 + j * 0.025;
+        ctx.strokeStyle = `rgba(245, 242, 235, ${opacity})`;
+        ctx.lineWidth = 1;
 
-        for (let x = 0; x < w; x += 16) {
+        for (let x = 0; x < w; x += 24) {
           const y =
-            h * 0.6 +
-            Math.sin(x * 0.002 + step + j * 1.5) * 25 +
-            Math.cos(x * 0.001 - step) * 15;
+            h * 0.58 +
+            Math.sin(x * 0.0018 + step + j * 1.8) * 22 +
+            Math.cos(x * 0.0008 - step * 0.8) * 14;
           if (x === 0) ctx.moveTo(x, y);
           else ctx.lineTo(x, y);
         }
@@ -101,67 +102,66 @@ export const SleepScreen: React.FC<SleepScreenProps> = ({
     <div className="clean-sleep-screen" onClick={onWake}>
       <canvas ref={canvasRef} className="clean-sleep-canvas" />
 
-      {/* Top Bar */}
+      {/* Top Monumental Header */}
       <header className="clean-sleep-header">
         <div className="flex items-center gap-2">
-          <Badge variant="accent" dot>
-            <MapPin size={12} className="mr-1 inline text-sky-400" />
-            Ақтау · 15-ш/а жағалауы
+          <Badge variant="neutral">
+            <MapPin size={11} className="mr-1 inline text-zinc-400" />
+            43°39′11″ N · 51°09′00″ E · АҚТАУ
           </Badge>
         </div>
 
         <div className="clean-sleep-weather">
-          <Wind size={14} className="text-sky-400" />
-          <span>Каспий самалы: 4 м/с</span>
-          <span className="text-zinc-600">·</span>
-          <span>Ауа: +26°C</span>
-          <span className="text-zinc-600">·</span>
-          <span>Теңіз: +21°C</span>
+          <Wind size={13} className="text-zinc-400" />
+          <span>САМАЛ: 4 М/С</span>
+          <span className="text-zinc-700">·</span>
+          <span>АУА: +26°C</span>
+          <span className="text-zinc-700">·</span>
+          <span>КАСПИЙ: +21°C</span>
         </div>
       </header>
 
-      {/* Monumental Clean Center */}
+      {/* Monumental Architectural Center */}
       <main className="clean-sleep-center">
         <div className="clean-brand-tag">
-          <span className="clean-brand-super">SMART CASPIAN GUIDE</span>
+          <span className="clean-brand-super">ARCHIVUM MANĠYSTAÝ · CASPIUM</span>
           <h1 className="clean-brand-logo">BAĠDAR</h1>
           <p className="clean-brand-sub">
             {lang === 'kk'
-              ? 'Ақтау мен Маңғыстаудың интерактивті бағдаршамы'
-              : 'Интерактивный путеводитель по Актау и побережью Каспия'}
+              ? 'Ақтау мен Маңғыстау түбегінің цифрлық стеласы'
+              : 'Интерактивная стела города Актау и побережья Каспия'}
           </p>
         </div>
 
-        {/* Clean Clock */}
+        {/* Monumental Clock */}
         <div className="clean-sleep-clock">
-          <div className="flex items-baseline justify-center gap-2">
+          <div className="flex items-baseline justify-center">
             <span className="clean-clock-main">{timeString}</span>
-            <span className="clean-clock-seconds">{secondsString}</span>
+            <span className="clean-clock-seconds">:{secondsString}</span>
           </div>
           <p className="clean-clock-date">{dateString}</p>
         </div>
 
-        {/* Approach Callout Card */}
+        {/* Approach Callout Monolith */}
         <motion.div
-          whileHover={{ scale: 1.01 }}
+          whileHover={{ y: -2 }}
           className="clean-approach-pill"
         >
           <div className="clean-approach-icon">
-            <MessageCircle size={20} className="text-sky-400" />
+            <Eye size={18} className="text-zinc-300" />
           </div>
-          <div>
-            <div className="text-sm font-semibold text-white flex items-center gap-1.5">
-              <Sparkles size={14} className="text-sky-400" />
+          <div className="text-left">
+            <div className="text-xs font-semibold text-white uppercase tracking-widest flex items-center gap-2">
               <span>
                 {lang === 'kk'
-                  ? 'Стелаға жақындап, сұрағыңызды қойыңыз'
-                  : 'Подойдите к стеле и спросите голосом'}
+                  ? 'Стелаға жақындаңыз немесе экранды түртіңіз'
+                  : 'Подойдите к стеле или коснитесь экрана'}
               </span>
             </div>
             <div className="flex flex-wrap gap-2 mt-2">
-              <span className="clean-mini-chip">«Жартасты соқпақ»</span>
-              <span className="clean-mini-chip">«Ақтау маягы»</span>
-              <span className="clean-mini-chip">«Қайда тамақтануға болады?»</span>
+              <span className="clean-mini-chip">«Скальная тропа»</span>
+              <span className="clean-mini-chip">«Маяк»</span>
+              <span className="clean-mini-chip">«Маршрут»</span>
             </div>
           </div>
         </motion.div>
@@ -174,22 +174,21 @@ export const SleepScreen: React.FC<SleepScreenProps> = ({
               onSimulateApproach();
             }}
           >
-            <Sparkles size={13} className="text-sky-400" />
-            <span>Нажмите, чтобы разбудить стелу</span>
+            <span>[ Нажмите для пробуждения стелы ]</span>
           </button>
         )}
       </main>
 
       {/* Footer */}
       <footer className="clean-sleep-footer">
-        <span className="text-zinc-500 text-xs">
-          15-шағынаудан · Амфитеатр жаны
+        <span className="text-zinc-500 text-xs font-mono tracking-wider uppercase">
+          15-шағынаудан · Амфитеатр жағалауы
         </span>
-        <span className="text-zinc-500 text-xs">
-          Дауыспен немесе қол қимылымен басқарылады
+        <span className="text-zinc-500 text-xs font-mono tracking-wider uppercase">
+          Оптикалық камера &amp; Дауыс датчигі
         </span>
-        <span className="text-zinc-500 text-xs font-mono">
-          ҚАЗАҚША · РУССКИЙ · ENGLISH
+        <span className="text-zinc-500 text-xs font-mono tracking-widest">
+          ҚАЗ · РУС · ENG
         </span>
       </footer>
     </div>

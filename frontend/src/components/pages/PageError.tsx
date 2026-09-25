@@ -18,13 +18,13 @@ export const PageError: React.FC<PageErrorProps> = ({ lang, onRetry, onShowHelp 
       retryBtn: 'Қайтадан айту',
     },
     ru: {
-      title: 'Не совсем расслышал вас',
-      subtitle: 'Шум морского ветра мог помешать. Пожалуйста, повторите вопрос или назовите место.',
+      title: 'Не удалось распознать речь',
+      subtitle: 'Шум морского ветра мог заглушить голос. Пожалуйста, повторите вопрос или выберите объект касанием.',
       retryBtn: 'Повторить вопрос голосом',
     },
     en: {
-      title: 'Could not catch that clearly',
-      subtitle: 'The sea breeze might have interfered. Please speak again or name a destination.',
+      title: 'Could not recognize speech',
+      subtitle: 'The Caspian wind noise may have interfered. Please repeat your query or select by touch.',
       retryBtn: 'Speak again',
     },
   };
@@ -34,19 +34,19 @@ export const PageError: React.FC<PageErrorProps> = ({ lang, onRetry, onShowHelp 
   return (
     <div className="clean-page-root flex-center flex-col p-8">
       <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
+        initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.3 }}
+        transition={{ duration: 0.25 }}
         className="clean-error-card text-center"
       >
         <div className="flex-center mb-5">
           <div className="clean-error-icon-box">
-            <VolumeX size={34} className="text-zinc-400" />
+            <VolumeX size={30} className="text-stone-300" />
           </div>
         </div>
 
-        <Badge variant="warning" className="mb-3">
-          {lang === 'kk' ? 'Дыбыс анықталмады' : 'Шум моря'}
+        <Badge variant="neutral" className="mb-3">
+          {lang === 'kk' ? 'ДЫБЫС КЕДЕРГІСІ' : 'АКУСТИЧЕСКАЯ ПОМЕХА'}
         </Badge>
 
         <h1 className="clean-hero-heading text-2xl">{text.title}</h1>
@@ -57,7 +57,7 @@ export const PageError: React.FC<PageErrorProps> = ({ lang, onRetry, onShowHelp 
             variant="primary"
             size="lg"
             onClick={onRetry}
-            icon={<Mic size={16} />}
+            icon={<Mic size={15} />}
           >
             {text.retryBtn}
           </Button>
@@ -66,9 +66,9 @@ export const PageError: React.FC<PageErrorProps> = ({ lang, onRetry, onShowHelp 
             variant="secondary"
             size="lg"
             onClick={onShowHelp}
-            icon={<RefreshCw size={15} />}
+            icon={<RefreshCw size={14} />}
           >
-            {lang === 'kk' ? 'Көмек' : 'Примеры вопросов'}
+            {lang === 'kk' ? 'Көмек' : 'Подсказки'}
           </Button>
         </div>
       </motion.div>

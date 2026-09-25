@@ -18,8 +18,8 @@ export const PageNearby: React.FC<PageNearbyProps> = ({ places, lang, onSelectPl
       {/* Header */}
       <div className="text-center mb-8 max-w-xl">
         <Badge variant="accent" className="mb-3">
-          <Compass size={12} className="mr-1 inline text-sky-400" />
-          {lang === 'kk' ? 'Жақын жерлер' : 'Рядом со стелой'}
+          <Compass size={11} className="mr-1 inline text-zinc-400" />
+          {lang === 'kk' ? 'ЖАҚЫН АЙМАҚ' : 'ОКРЕСТНОСТИ СТЕЛЫ'}
         </Badge>
         <h1 className="clean-hero-heading text-3xl">
           {lang === 'kk' ? 'Айналадағы қызықты орындар' : 'Что посмотреть поблизости?'}
@@ -27,7 +27,7 @@ export const PageNearby: React.FC<PageNearbyProps> = ({ places, lang, onSelectPl
         <p className="clean-sub-heading mt-2">
           {lang === 'kk'
             ? '15-шағынаудан жағалауынан бірнеше минуттық жаяу қашықтықта'
-            : 'В нескольких минутах пешей прогулки вдоль набережной 15-го микрорайона'}
+            : 'В нескольких минутах пешей прогулки вдоль побережья Каспия'}
         </p>
       </div>
 
@@ -47,18 +47,18 @@ export const PageNearby: React.FC<PageNearbyProps> = ({ places, lang, onSelectPl
 
             <div className="p-4 flex flex-col flex-1 justify-between">
               <div>
-                <div className="flex items-center gap-2 text-xs text-sky-400 font-medium mb-1.5">
-                  <Footprints size={13} />
-                  <span>~{(idx + 1) * 280} м · {(idx + 1) * 3} мин</span>
+                <div className="flex items-center gap-2 text-xs font-mono text-zinc-400 mb-1.5 uppercase">
+                  <Footprints size={12} className="text-zinc-500" />
+                  <span>~{(idx + 1) * 280} М · {(idx + 1) * 3} МИН</span>
                 </div>
                 <h3 className="clean-card-title text-base">{place.name}</h3>
                 <p className="clean-card-desc text-xs mt-1">{place.summary}</p>
               </div>
 
-              <div className="mt-4 pt-2 flex items-center justify-between text-xs text-zinc-400">
-                <span>У моря</span>
-                <span className="text-sky-400 font-medium flex items-center gap-1">
-                  Подробнее <ArrowRight size={12} />
+              <div className="mt-4 pt-2 border-t border-zinc-900 flex items-center justify-between text-xs font-mono uppercase">
+                <span className="text-zinc-500">БЕРЕГОВАЯ ЛИНИЯ</span>
+                <span className="text-white font-medium flex items-center gap-1">
+                  ИНФО <ArrowRight size={11} />
                 </span>
               </div>
             </div>
