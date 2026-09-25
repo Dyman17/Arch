@@ -1,6 +1,8 @@
 import React from 'react';
-import { MapPin, Footprints, ArrowRight, Sun } from 'lucide-react';
+import { Footprints, ArrowRight, Compass } from 'lucide-react';
 import type { Place } from '../../types';
+import { Badge } from '../ui/Badge';
+import { Card } from '../ui/Card';
 
 interface PageNearbyProps {
   places: Place[];
@@ -8,64 +10,60 @@ interface PageNearbyProps {
   onSelectPlace: (place: Place) => void;
 }
 
-export const PageNearby: React.FC<PageNearbyProps> = ({ places, onSelectPlace }) => {
+export const PageNearby: React.FC<PageNearbyProps> = ({ places, lang, onSelectPlace }) => {
   const nearbyPlaces = places.slice(0, 4);
 
   return (
-    <div className="page-stage page-nearby">
-      <div className="nearby-warm-backdrop" />
+    <div className="clean-page-root flex flex-col justify-center items-center p-8">
+      {/* Header */}
+      <div className="text-center mb-8 max-w-xl">
+        <Badge variant="accent" className="mb-3">
+          <Compass size={12} className="mr-1 inline text-sky-400" />
+          {lang === 'kk' ? 'Жақын жерлер' : 'Рядом со стелой'}
+        </Badge>
+        <h1 className="clean-hero-heading text-3xl">
+          {lang === 'kk' ? 'Айналадағы қызықты орындар' : 'Что посмотреть поблизости?'}
+        </h1>
+        <p className="clean-sub-heading mt-2">
+          {lang === 'kk'
+            ? '15-шағынаудан жағалауынан бірнеше минуттық жаяу қашықтықта'
+            : 'В нескольких минутах пешей прогулки вдоль набережной 15-го микрорайона'}
+        </p>
+      </div>
 
-      <div className="nearby-container">
-        {/* Header */}
-        <div className="nearby-header">
-          <div className="nearby-friendly-badge">
-            <Sun size={14} className="text-amber-300" />
-            <span>Набережная 15-го микрорайона</span>
-          </div>
+      {/* Grid of 4 Cards */}
+      <div className="clean-nearby-grid">
+        {nearbyPlaces.map((place, idx) => (
+          <Card
+            key={place.id}
+            hoverable
+            onClick={() => onSelectPlace(place)}
+            className="clean-nearby-card"
+          >
+            <div className="clean-nearby-thumb-wrap">
+              <img src={place.thumb_url} alt={place.name} className="clean-nearby-thumb" />
+              <span className="clean-card-category">{place.category}</span>
+            </div>
 
-          <h1 className="nearby-hero-title">Что посмотреть рядом со стелой?</h1>
-          <p className="nearby-hero-subtitle">
-            Интересные места в нескольких минутах приятной прогулки вдоль Каспийского моря
-          </p>
-        </div>
-
-        {/* Nearby Places Grid */}
-        <div className="nearby-cards-grid">
-          {nearbyPlaces.map((place, idx) => (
-            <div
-              key={place.id}
-              className="nearby-card"
-              onClick={() => onSelectPlace(place)}
-              style={{ animationDelay: `${idx * 80}ms` }}
-            >
-              <div className="nearby-card-thumb">
-                <img src={place.thumb_url} alt={place.name} />
-                <span className="nearby-category-tag">{place.category}</span>
+            <div className="p-4 flex flex-col flex-1 justify-between">
+              <div>
+                <div className="flex items-center gap-2 text-xs text-sky-400 font-medium mb-1.5">
+                  <Footprints size={13} />
+                  <span>~{(idx + 1) * 280} м · {(idx + 1) * 3} мин</span>
+                </div>
+                <h3 className="clean-card-title text-base">{place.name}</h3>
+                <p className="clean-card-desc text-xs mt-1">{place.summary}</p>
               </div>
 
-              <div className="nearby-card-body">
-                <div className="nearby-meta-row">
-                  <span className="nearby-distance">
-                    <Footprints size={14} className="text-cyan-400" />
-                    <span>~{(idx + 1) * 300} м • {(idx + 1) * 4} мин</span>
-                  </span>
-                  <span className="nearby-open">
-                    <MapPin size={13} className="text-amber-300" />
-                    <span>У моря</span>
-                  </span>
-                </div>
-
-                <h3 className="nearby-place-title">{place.name}</h3>
-                <p className="nearby-place-desc">{place.summary}</p>
-
-                <div className="nearby-card-action">
-                  <span>Подробнее</span>
-                  <ArrowRight size={14} />
-                </div>
+              <div className="mt-4 pt-2 flex items-center justify-between text-xs text-zinc-400">
+                <span>У моря</span>
+                <span className="text-sky-400 font-medium flex items-center gap-1">
+                  Подробнее <ArrowRight size={12} />
+                </span>
               </div>
             </div>
-          ))}
-        </div>
+          </Card>
+        ))}
       </div>
     </div>
   );

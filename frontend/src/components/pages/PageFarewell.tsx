@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Sun } from 'lucide-react';
+import { motion } from 'motion/react';
+import { Sparkles, Compass } from 'lucide-react';
 
 interface PageFarewellProps {
   lang: string;
@@ -32,12 +33,12 @@ export const PageFarewell: React.FC<PageFarewellProps> = ({ lang, onFinishFarewe
     },
     ru: {
       title: 'Спасибо! Приятной прогулки!',
-      subtitle: 'Желаем вам теплого дня на побережье Каспийского моря!',
+      subtitle: 'Желаем вам отличного дня на побережье Каспия!',
       blessing: 'Ақ жол! Счастливого пути!',
     },
     en: {
       title: 'Thank you! Enjoy your day!',
-      subtitle: 'Have a wonderful walk along the Caspian Sea in Aktau!',
+      subtitle: 'Have a wonderful walk along the Caspian Sea!',
       blessing: 'Safe travels and warm memories!',
     },
   };
@@ -45,22 +46,31 @@ export const PageFarewell: React.FC<PageFarewellProps> = ({ lang, onFinishFarewe
   const text = farewellTexts[lang] || farewellTexts.ru;
 
   return (
-    <div className="page-stage page-farewell">
-      <div className="farewell-warm-backdrop" />
-
-      <div className="farewell-content">
-        <div className="farewell-icon-box">
-          <Sun size={44} className="text-amber-300 animate-spin-slow" />
+    <div className="clean-page-root flex-center flex-col p-8">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.3 }}
+        className="clean-farewell-card text-center"
+      >
+        <div className="flex-center mb-5">
+          <div className="clean-farewell-icon-box">
+            <Compass size={36} className="text-sky-400" />
+          </div>
         </div>
 
-        <h1 className="farewell-title">{text.title}</h1>
-        <p className="farewell-subtitle">{text.subtitle}</p>
-        <p className="farewell-blessing">«{text.blessing}»</p>
+        <h1 className="clean-hero-heading text-3xl">{text.title}</h1>
+        <p className="clean-sub-heading mt-2">{text.subtitle}</p>
 
-        <div className="farewell-timer-badge">
-          <span>Стелла переходит в режим ожидания через {countdown} сек...</span>
+        <div className="clean-blessing-pill mt-6">
+          <Sparkles size={14} className="text-amber-400" />
+          <span>«{text.blessing}»</span>
         </div>
-      </div>
+
+        <div className="mt-8 text-xs text-zinc-500">
+          Стела переходит в режим ожидания через {countdown} сек...
+        </div>
+      </motion.div>
     </div>
   );
 };

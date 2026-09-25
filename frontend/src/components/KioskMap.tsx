@@ -56,8 +56,8 @@ export const KioskMap: React.FC<KioskMapProps> = ({
             </svg>
           </div>
           <div class="kiosk-pin-tag">
-            <span class="tag-title">СІЗ ОСЫНДАСЫЗ · СТЕЛА</span>
-            <span class="tag-sub">AKTAU-EMB-01</span>
+            <span class="tag-title">СІЗ ОСЫНДАСЫЗ</span>
+            <span class="tag-sub">15-ш/а Амфитеатр</span>
           </div>
         </div>
       `,

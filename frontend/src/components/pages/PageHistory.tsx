@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
+import { motion } from 'motion/react';
 import { History, ArrowLeft, Navigation, QrCode, BookOpen } from 'lucide-react';
 import type { Place, SceneResponse } from '../../types';
+import { Button } from '../ui/Button';
+import { Badge } from '../ui/Badge';
 
 interface PageHistoryProps {
   place: Place;
@@ -23,7 +26,7 @@ export const PageHistory: React.FC<PageHistoryProps> = ({
 
   const texts = scene?.texts?.[lang] || {
     title: 'Тогда и сейчас — Архивы Актау',
-    body: 'В 1968 году город Шевченко (ныне Актау) закладывался на пустынном берегу Каспия. Уникальная архитектура белого ракушечника и каскадные спуски к морю стали визитной карточкой города нефтяников и первопроходцев.',
+    body: 'В 1968 году город Шевченко (ныне Актау) закладывался на побережье Каспия. Уникальная архитектура белого ракушечника и каскадные спуски к морю стали визитной карточкой города первопроходцев.',
   };
 
   const modernUrl = scene?.modern_url || place.thumb_url;
@@ -36,92 +39,104 @@ export const PageHistory: React.FC<PageHistoryProps> = ({
   };
 
   return (
-    <div className="page-stage page-history">
-      {/* Top Warm Header */}
-      <div className="history-top-bar">
-        <button className="history-back-btn" onClick={onBackToPlace}>
-          <ArrowLeft size={18} />
-          <span>{lang === 'kk' ? 'Орынға оралу' : 'К описанию'}</span>
-        </button>
+    <div className="clean-page-root flex flex-col justify-between p-6">
+      {/* Top Header */}
+      <div className="clean-history-top-bar">
+        <Button
+          variant="glass"
+          size="sm"
+          onClick={onBackToPlace}
+          icon={<ArrowLeft size={16} />}
+        >
+          {lang === 'kk' ? 'Орынға қайту' : 'К описанию'}
+        </Button>
 
-        <div className="history-title-badge">
-          <History size={16} className="text-sand" />
-          <span>{lang === 'kk' ? `TarihSky · Тарих пен бүгін · ${place.name}` : `TarihSky · История и современность · ${place.name}`}</span>
-        </div>
-
-        <div className="history-year-pills">
-          <span className="year-pill past">{lang === 'kk' ? '1968 ж. Шевченко қаласы' : '1968 г. Город Шевченко'}</span>
-          <span className="year-separator">⟷</span>
-          <span className="year-pill present">{lang === 'kk' ? '2026 ж. Ақтау қаласы' : '2026 г. Современный Актау'}</span>
+        <div className="flex items-center gap-2">
+          <Badge variant="accent">
+            <History size={13} className="mr-1 inline text-sky-400" />
+            TarihSky · {place.name}
+          </Badge>
+          <Badge variant="neutral">
+            1968 Шевченко ⟷ 2026 Ақтау
+          </Badge>
         </div>
       </div>
 
       {/* Split Comparison Viewport */}
-      <div className="history-split-stage">
-        {/* Modern Image (Background) */}
-        <div className="split-layer modern-layer">
-          <img src={modernUrl} alt="Современный вид" className="split-img" />
-          <div className="split-label modern-tag">
-            {lang === 'kk' ? '2026 ж. Қазіргі көрініс' : '2026 г. Современный вид'}
-          </div>
+      <div className="clean-split-stage">
+        {/* Modern Image */}
+        <div className="clean-split-layer">
+          <img src={modernUrl} alt="2026" className="clean-split-img" />
+          <div className="clean-split-badge right">2026 · Қазіргі көрініс</div>
         </div>
 
-        {/* Historic Image (Clipped Overlay) */}
+        {/* Historic Image */}
         <div
-          className="split-layer historic-layer"
+          className="clean-split-layer historic"
           style={{ clipPath: `inset(0 ${100 - sliderPos}% 0 0)` }}
         >
-          <img src={historicUrl} alt="Исторический архив" className="split-img sepia-toned" />
-          <div className="split-label historic-tag">
-            {lang === 'kk' ? '1968 ж. Тарихи мұрағат' : '1968 г. Архивное фото'}
+          <img src={historicUrl} alt="1968" className="clean-split-img sepia-toned" />
+          <div className="clean-split-badge left">1968 · Мұрағат фотосы</div>
+        </div>
+
+        {/* Split Divider */}
+        <div className="clean-split-divider" style={{ left: `${sliderPos}%` }}>
+          <div className="clean-split-handle">
+            <span>◀ ▶</span>
           </div>
         </div>
 
-        {/* Vertical Divider Line & Handle */}
-        <div className="split-divider-line" style={{ left: `${sliderPos}%` }}>
-          <div className="split-divider-handle">
-            <span className="handle-arrow">◀</span>
-            <span className="handle-dot" />
-            <span className="handle-arrow">▶</span>
-          </div>
-        </div>
-
-        {/* Range Input for Dragging */}
+        {/* Range slider */}
         <input
           type="range"
           min="0"
           max="100"
           value={sliderPos}
           onChange={handleSliderChange}
-          className="split-range-input"
+          className="clean-split-range"
           aria-label="Сравнение исторического и современного вида"
         />
       </div>
 
-      {/* Bottom Historical Information Card */}
-      <div className="history-bottom-card">
-        <div className="history-card-header">
-          <BookOpen size={20} className="text-sand" />
-          <h3 className="history-card-title">{texts.title}</h3>
-          <span className="history-archive-attribution">
-            {scene?.attribution || (lang === 'kk' ? 'Маңғыстау облыстық музейінің мұрағаттық фотоқұжаттары' : 'Архивные фотохроники Мангистауского областного краеведческого музея')}
-          </span>
-        </div>
+      {/* Bottom Information Card */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        className="clean-history-bottom-card"
+      >
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <BookOpen size={16} className="text-sky-400" />
+              <h3 className="font-semibold text-white text-base">{texts.title}</h3>
+            </div>
+            <p className="text-zinc-300 text-sm leading-relaxed max-w-3xl">{texts.body}</p>
+            <span className="text-zinc-500 text-xs block mt-2">
+              {scene?.attribution || 'Архивные фотохроники Мангистауского областного музея'}
+            </span>
+          </div>
 
-        <p className="history-card-body">{texts.body}</p>
-
-        {/* Navigation Handover */}
-        <div className="history-actions-row">
-          <button className="history-action-btn" onClick={onGoToRoute}>
-            <Navigation size={18} />
-            <span>{lang === 'kk' ? 'Қазір қалай баруға болады?' : 'Как пройти туда сейчас?'}</span>
-          </button>
-          <button className="history-action-btn" onClick={onGoToQr}>
-            <QrCode size={18} />
-            <span>{lang === 'kk' ? 'Телефонға жіберу (QR)' : 'Отправить на телефон (QR)'}</span>
-          </button>
+          <div className="flex gap-2 shrink-0">
+            <Button
+              variant="primary"
+              size="md"
+              onClick={onGoToRoute}
+              icon={<Navigation size={16} />}
+            >
+              {lang === 'kk' ? 'Қазір бару' : 'Как пройти?'}
+            </Button>
+            <Button
+              variant="outline"
+              size="md"
+              onClick={onGoToQr}
+              icon={<QrCode size={16} />}
+            >
+              {lang === 'kk' ? 'QR' : 'QR на телефон'}
+            </Button>
+          </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };

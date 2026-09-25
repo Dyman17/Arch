@@ -7,6 +7,9 @@ import {
   ArrowLeft,
   Camera,
 } from 'lucide-react';
+import { Button } from '../ui/Button';
+import { Badge } from '../ui/Badge';
+import { Card } from '../ui/Card';
 
 interface PageGesturesProps {
   onSelectGesture: (gestureName: string) => void;
@@ -23,116 +26,116 @@ export const PageGestures: React.FC<PageGesturesProps> = ({
       name: 'Большой палец вверх (👍)',
       meaning: '«Да, показать подробнее»',
       icon: ThumbsUp,
-      color: 'text-amber-300',
+      color: 'text-amber-400',
     },
     {
       id: 'gesture-palm',
       name: 'Открытая ладонь (✋)',
       meaning: '«Стоп / Вернуться назад»',
       icon: Hand,
-      color: 'text-rose-300',
+      color: 'text-rose-400',
     },
     {
       id: 'gesture-one',
       name: 'Один палец (☝️)',
       meaning: '«Выбрать первое место»',
       icon: CheckCircle,
-      color: 'text-cyan-300',
+      color: 'text-sky-400',
     },
     {
       id: 'gesture-two',
       name: 'Два пальца (✌️)',
       meaning: '«Выбрать второе место»',
       icon: CheckCircle,
-      color: 'text-emerald-300',
+      color: 'text-emerald-400',
     },
     {
       id: 'gesture-route',
       name: 'Жест пути (🤙)',
       meaning: '«Показать пеший маршрут»',
       icon: Navigation,
-      color: 'text-amber-200',
+      color: 'text-amber-300',
     },
   ];
 
   return (
-    <div className="page-stage page-gestures">
-      {/* Warm Ambient Backdrop */}
-      <div className="gestures-warm-backdrop" />
-
+    <div className="clean-page-root flex flex-col justify-between p-8">
       {/* Top Header */}
-      <div className="gestures-top-bar">
-        <button className="friendly-back-btn" onClick={onReturnToVoice}>
-          <ArrowLeft size={16} />
-          <span>Вернуться к голосу</span>
-        </button>
+      <div className="clean-page-header">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onReturnToVoice}
+          icon={<ArrowLeft size={16} />}
+        >
+          Вернуться к голосу
+        </Button>
 
-        <div className="gestures-header-badge">
-          <Hand size={15} className="text-amber-300" />
-          <span>Управление жестами рук</span>
-        </div>
+        <Badge variant="accent">
+          <Hand size={13} className="mr-1 inline text-sky-400" />
+          Жестовое управление
+        </Badge>
       </div>
 
-      <div className="gestures-content-container">
-        {/* User Required Alert Text: Exact specification */}
-        <div className="gestures-alert-card">
-          <div className="alert-hand-icon-wrap">
-            <Hand size={36} className="text-amber-300 animate-bounce" />
+      {/* Main Container */}
+      <div className="max-w-4xl mx-auto w-full my-auto">
+        {/* Exact Alert Requirement */}
+        <div className="clean-gestures-alert mb-8">
+          <div className="clean-gesture-alert-icon">
+            <Hand size={32} className="text-sky-400 animate-bounce" />
           </div>
-          <div className="alert-text-block">
-            <h1 className="alert-hero-title">Вы общаетесь жестами? Показывайте!</h1>
-            <p className="alert-hero-sub">
-              Камера стелы считывает движения рук. Покажите нужный жест на расстоянии шага от экрана.
+          <div>
+            <h1 className="clean-hero-heading text-2xl">Вы общаетесь жестами? Показывайте!</h1>
+            <p className="clean-sub-heading mt-1 text-sm">
+              Камера стелы считывает движения рук. Покажите жест на расстоянии 1 метра от экрана.
             </p>
           </div>
         </div>
 
-        {/* Center Stage: Friendly Camera Frame + Gestures List */}
-        <div className="gestures-friendly-layout">
-          {/* Left: Clean Friendly Camera Box */}
-          <div className="gesture-camera-box">
-            <div className="camera-view-window">
-              <div className="camera-soft-illustration">
-                <Hand size={90} className="text-amber-200/50 stroke-1 animate-pulse" />
-              </div>
-
-              <div className="camera-bottom-badge">
-                <Camera size={13} className="text-emerald-400" />
-                <span>Камера активна • Держите руку перед экраном</span>
-              </div>
+        {/* 2-Column Clean Layout */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+          {/* Camera Frame */}
+          <div className="clean-camera-view">
+            <div className="clean-camera-inner">
+              <Hand size={80} className="text-zinc-600 stroke-1 animate-pulse" />
             </div>
-            <p className="camera-guide-text">
-              Удобно на расстоянии 0.5 – 1.5 метра от стелы
-            </p>
+            <div className="clean-camera-status">
+              <Camera size={13} className="text-emerald-400" />
+              <span>Камера активна · Держите руку перед экраном</span>
+            </div>
           </div>
 
-          {/* Right: Gesture Cards */}
-          <div className="gesture-options-panel">
-            <h3 className="options-headline">Понятные жесты для управления:</h3>
-            <div className="options-list">
-              {gestures.map((g) => {
-                const Icon = g.icon;
-                return (
-                  <button
-                    key={g.id}
-                    className="gesture-choice-btn"
-                    onClick={() => onSelectGesture(g.meaning)}
-                  >
-                    <div className="choice-icon-wrap">
-                      <Icon size={22} className={g.color} />
-                    </div>
-                    <div className="choice-text-wrap">
-                      <span className="choice-title">{g.name}</span>
-                      <span className="choice-meaning">{g.meaning}</span>
-                    </div>
-                    <span className="choice-tap-hint">Выбрать</span>
-                  </button>
-                );
-              })}
-            </div>
+          {/* Gestures List */}
+          <div className="space-y-2.5">
+            <span className="text-xs text-zinc-400 font-medium uppercase tracking-wider block mb-2">
+              Доступные жесты:
+            </span>
+
+            {gestures.map((g) => {
+              const Icon = g.icon;
+              return (
+                <Card
+                  key={g.id}
+                  hoverable
+                  onClick={() => onSelectGesture(g.name)}
+                  className="clean-gesture-row"
+                >
+                  <div className="clean-gesture-icon-wrap">
+                    <Icon size={18} className={g.color} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-semibold text-white">{g.name}</div>
+                    <div className="text-xs text-zinc-400">{g.meaning}</div>
+                  </div>
+                  <span className="text-xs text-zinc-500 font-mono">Выбрать</span>
+                </Card>
+              );
+            })}
           </div>
         </div>
       </div>
+
+      <div />
     </div>
   );
 };

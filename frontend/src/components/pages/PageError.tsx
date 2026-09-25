@@ -1,5 +1,8 @@
 import React from 'react';
-import { Mic, RefreshCw, Volume2 } from 'lucide-react';
+import { motion } from 'motion/react';
+import { Mic, RefreshCw, VolumeX } from 'lucide-react';
+import { Button } from '../ui/Button';
+import { Badge } from '../ui/Badge';
 
 interface PageErrorProps {
   lang: string;
@@ -16,12 +19,12 @@ export const PageError: React.FC<PageErrorProps> = ({ lang, onRetry, onShowHelp 
     },
     ru: {
       title: 'Не совсем расслышал вас',
-      subtitle: 'Возможно, помешал шум морского ветра. Пожалуйста, повторите громче или назовите место.',
+      subtitle: 'Шум морского ветра мог помешать. Пожалуйста, повторите вопрос или назовите место.',
       retryBtn: 'Повторить вопрос голосом',
     },
     en: {
       title: 'Could not catch that clearly',
-      subtitle: 'The sea breeze might have interfered. Please speak a bit louder or name a place.',
+      subtitle: 'The sea breeze might have interfered. Please speak again or name a destination.',
       retryBtn: 'Speak again',
     },
   };
@@ -29,38 +32,46 @@ export const PageError: React.FC<PageErrorProps> = ({ lang, onRetry, onShowHelp 
   const text = errorTexts[lang] || errorTexts.ru;
 
   return (
-    <div className="page-stage page-error">
-      <div className="error-warm-backdrop" />
-
-      <div className="error-center-card">
-        <div className="error-icon-box">
-          <Volume2 size={44} className="text-amber-300" />
-        </div>
-
-        <h1 className="error-title">{text.title}</h1>
-        <p className="error-subtitle">{text.subtitle}</p>
-
-        <div className="error-sample-hints">
-          <span className="sample-hint-label">Например, можно сказать:</span>
-          <div className="sample-chips">
-            <span className="sample-chip">«Скальная тропа»</span>
-            <span className="sample-chip">«Набережная»</span>
-            <span className="sample-chip">«Что есть рядом?»</span>
+    <div className="clean-page-root flex-center flex-col p-8">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.3 }}
+        className="clean-error-card text-center"
+      >
+        <div className="flex-center mb-5">
+          <div className="clean-error-icon-box">
+            <VolumeX size={34} className="text-zinc-400" />
           </div>
         </div>
 
-        <div className="error-actions-group">
-          <button className="error-retry-btn" onClick={onRetry}>
-            <Mic size={18} className="animate-pulse" />
-            <span>{text.retryBtn}</span>
-          </button>
+        <Badge variant="warning" className="mb-3">
+          {lang === 'kk' ? 'Дыбыс анықталмады' : 'Шум моря'}
+        </Badge>
 
-          <button className="error-help-btn" onClick={onShowHelp}>
-            <RefreshCw size={16} />
-            <span>Примеры вопросов</span>
-          </button>
+        <h1 className="clean-hero-heading text-2xl">{text.title}</h1>
+        <p className="clean-sub-heading mt-2 max-w-md">{text.subtitle}</p>
+
+        <div className="flex-center gap-3 mt-8">
+          <Button
+            variant="primary"
+            size="lg"
+            onClick={onRetry}
+            icon={<Mic size={16} />}
+          >
+            {text.retryBtn}
+          </Button>
+
+          <Button
+            variant="secondary"
+            size="lg"
+            onClick={onShowHelp}
+            icon={<RefreshCw size={15} />}
+          >
+            {lang === 'kk' ? 'Көмек' : 'Примеры вопросов'}
+          </Button>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };

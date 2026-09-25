@@ -1,5 +1,7 @@
 import React from 'react';
-import { Compass, MapPin, Footprints } from 'lucide-react';
+import { motion } from 'motion/react';
+import { Loader2, MapPin, Footprints } from 'lucide-react';
+import { Badge } from '../ui/Badge';
 
 interface PageThinkingProps {
   userSpokenText: string;
@@ -9,15 +11,15 @@ interface PageThinkingProps {
 export const PageThinking: React.FC<PageThinkingProps> = ({ userSpokenText, lang }) => {
   const statusTexts: Record<string, { main: string; sub: string }> = {
     kk: {
-      main: 'Бір сәт, ең ыңғайлы жолды қарастырудамын...',
-      sub: 'Ақтау мен Маңғыстаудың нақты бағыттарын тексеремін',
+      main: 'Ыңғайлы жолды қарастырудамын...',
+      sub: 'Ақтау мен жағалаудың бағыттарын тексеремін',
     },
     ru: {
-      main: 'Секунду, подбираю для вас лучший маршрут...',
-      sub: 'Сверяю расстояние по набережной и время пешей прогулки',
+      main: 'Подбираю лучший маршрут...',
+      sub: 'Сверяю расстояние и время пешей прогулки',
     },
     en: {
-      main: 'One moment, finding the best route for you...',
+      main: 'Finding the best route...',
       sub: 'Checking walking paths along the Caspian shoreline',
     },
   };
@@ -25,45 +27,43 @@ export const PageThinking: React.FC<PageThinkingProps> = ({ userSpokenText, lang
   const status = statusTexts[lang] || statusTexts.ru;
 
   return (
-    <div className="page-stage page-thinking">
-      <div className="thinking-warm-radiance" />
-
-      <div className="thinking-center-stage">
-        {/* Warm lighthouse beacon pulse */}
-        <div className="thinking-beacon-wrapper">
-          <div className="beacon-breathing-ring r1" />
-          <div className="beacon-breathing-ring r2" />
-          <div className="thinking-compass-center">
-            <Compass size={48} className="text-amber-200 animate-spin-slow" />
+    <div className="clean-page-root flex-center flex-col p-8">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.3 }}
+        className="clean-thinking-card text-center"
+      >
+        {/* Sleek Minimal Spinner */}
+        <div className="flex-center mb-6">
+          <div className="clean-spinner-wrapper">
+            <Loader2 size={40} className="text-sky-400 animate-spin" />
           </div>
         </div>
 
-        {/* User query card */}
         {userSpokenText && (
-          <div className="thinking-query-bubble">
-            <span className="query-subtext">Ваш вопрос:</span>
-            <p className="query-text">«{userSpokenText}»</p>
+          <div className="clean-query-bubble mb-5">
+            <span className="clean-query-label">
+              {lang === 'kk' ? 'Сұрағыңыз:' : 'Ваш запрос:'}
+            </span>
+            <p className="clean-query-text">«{userSpokenText}»</p>
           </div>
         )}
 
-        {/* Status text */}
-        <div className="thinking-status-block">
-          <h2 className="thinking-title">{status.main}</h2>
-          <p className="thinking-subtitle">{status.sub}</p>
-        </div>
+        <h2 className="clean-hero-heading text-2xl">{status.main}</h2>
+        <p className="clean-sub-heading mt-2">{status.sub}</p>
 
-        {/* Natural friendly tags */}
-        <div className="thinking-friendly-badges">
-          <span className="friendly-badge">
-            <MapPin size={13} className="text-amber-300" />
-            <span>Побережье Актау</span>
-          </span>
-          <span className="friendly-badge">
-            <Footprints size={13} className="text-cyan-300" />
-            <span>Пешая доступность</span>
-          </span>
+        <div className="flex-center gap-3 mt-6">
+          <Badge variant="neutral">
+            <MapPin size={12} className="mr-1 inline text-sky-400" />
+            Ақтау жағалауы
+          </Badge>
+          <Badge variant="neutral">
+            <Footprints size={12} className="mr-1 inline text-emerald-400" />
+            Пешком
+          </Badge>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };

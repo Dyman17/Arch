@@ -1,5 +1,8 @@
 import React from 'react';
-import { HelpCircle, Mic, Globe, Navigation, History, QrCode, ArrowLeft } from 'lucide-react';
+import { HelpCircle, Mic, ArrowLeft, Navigation, History, QrCode } from 'lucide-react';
+import { Button } from '../ui/Button';
+import { Badge } from '../ui/Badge';
+import { Card } from '../ui/Card';
 
 interface PageHelpProps {
   lang: string;
@@ -9,118 +12,129 @@ interface PageHelpProps {
 
 export const PageHelp: React.FC<PageHelpProps> = ({ lang, onBack, onStartListening }) => {
   return (
-    <div className="page-stage page-help">
-      <div className="help-warm-backdrop" />
+    <div className="clean-page-root flex flex-col justify-between p-8">
+      {/* Top Header */}
+      <div className="clean-page-header">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onBack}
+          icon={<ArrowLeft size={16} />}
+        >
+          {lang === 'kk' ? 'Артқа' : 'Назад'}
+        </Button>
 
-      <div className="help-top-bar">
-        <button className="friendly-back-btn" onClick={onBack}>
-          <ArrowLeft size={16} />
-          <span>Назад</span>
-        </button>
-
-        <div className="help-friendly-badge">
-          <HelpCircle size={15} className="text-amber-300" />
-          <span>Подсказки для гостей стелы</span>
+        <div className="flex items-center gap-2">
+          <Badge variant="accent">
+            <HelpCircle size={13} className="mr-1 inline text-sky-400" />
+            Подсказки и команды
+          </Badge>
         </div>
       </div>
 
-      <div className="help-content-container">
-        <div className="help-hero-block">
-          <h1 className="help-title">Как общаться со стелой?</h1>
-          <p className="help-subtitle">
-            Стела понимает обычную человеческую речь на любом языке. Просто подойдите и спросите о городе.
+      {/* Main Content */}
+      <div className="max-w-4xl mx-auto w-full my-auto">
+        <div className="text-center mb-8">
+          <h1 className="clean-hero-heading text-3xl">Как общаться со стелой?</h1>
+          <p className="clean-sub-heading mt-2">
+            Стела понимает живую речь на казахском, русском и английском языках.
           </p>
         </div>
 
-        {/* 3 Language Command Columns */}
-        <div className="help-columns-grid">
+        {/* 3 Columns */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Kazakh */}
-          <div className={`help-col ${lang === 'kk' ? 'highlight' : ''}`}>
-            <div className="help-col-header">
-              <span className="lang-flag">🇰🇿</span>
-              <h3>Қазақ тілінде</h3>
+          <Card className="p-5 border-zinc-800">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="text-xl">🇰🇿</span>
+              <h3 className="font-semibold text-white text-sm">Қазақ тілінде</h3>
             </div>
-            <div className="help-chips-list">
-              <div className="help-chip">
-                <Mic size={14} className="text-amber-300" />
-                <span>«Жартасты соқпаққа қалай барады?»</span>
+            <div className="space-y-2.5 text-xs text-zinc-300">
+              <div className="clean-help-pill">
+                <Mic size={13} className="text-sky-400 shrink-0" />
+                <span>«Жартасты соқпақ қайда?»</span>
               </div>
-              <div className="help-chip">
-                <History size={14} className="text-cyan-300" />
-                <span>«Осы жердің тарихын көрсетші»</span>
+              <div className="clean-help-pill">
+                <Navigation size={13} className="text-emerald-400 shrink-0" />
+                <span>«Жақын маңда не бар?»</span>
               </div>
-              <div className="help-chip">
-                <QrCode size={14} className="text-emerald-300" />
-                <span>«Маршрутты телефоныма жібер»</span>
+              <div className="clean-help-pill">
+                <History size={13} className="text-amber-400 shrink-0" />
+                <span>«Тарихын көрсетші»</span>
               </div>
-              <div className="help-chip">
-                <Navigation size={14} className="text-amber-200" />
-                <span>«Жақын маңда қандай орындар бар?»</span>
+              <div className="clean-help-pill">
+                <QrCode size={13} className="text-purple-400 shrink-0" />
+                <span>«Телефонға жібер»</span>
               </div>
             </div>
-          </div>
+          </Card>
 
           {/* Russian */}
-          <div className={`help-col ${lang === 'ru' ? 'highlight' : ''}`}>
-            <div className="help-col-header">
-              <span className="lang-flag">🇷🇺</span>
-              <h3>На русском языке</h3>
+          <Card className="p-5 border-zinc-800">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="text-xl">🇷🇺</span>
+              <h3 className="font-semibold text-white text-sm">На русском</h3>
             </div>
-            <div className="help-chips-list">
-              <div className="help-chip">
-                <Mic size={14} className="text-amber-300" />
+            <div className="space-y-2.5 text-xs text-zinc-300">
+              <div className="clean-help-pill">
+                <Mic size={13} className="text-sky-400 shrink-0" />
                 <span>«Как пройти к Скальной тропе?»</span>
               </div>
-              <div className="help-chip">
-                <Navigation size={14} className="text-cyan-300" />
-                <span>«Где находится маяк на крыше?»</span>
+              <div className="clean-help-pill">
+                <Navigation size={13} className="text-emerald-400 shrink-0" />
+                <span>«Где маяк на крыше?»</span>
               </div>
-              <div className="help-chip">
-                <History size={14} className="text-amber-300" />
-                <span>«Покажи как это место выглядело раньше»</span>
+              <div className="clean-help-pill">
+                <History size={13} className="text-amber-400 shrink-0" />
+                <span>«Покажи историю места»</span>
               </div>
-              <div className="help-chip">
-                <QrCode size={14} className="text-emerald-300" />
-                <span>«Отправь маршрут на телефон»</span>
+              <div className="clean-help-pill">
+                <QrCode size={13} className="text-purple-400 shrink-0" />
+                <span>«Отправь на телефон»</span>
               </div>
             </div>
-          </div>
+          </Card>
 
           {/* English */}
-          <div className={`help-col ${lang === 'en' ? 'highlight' : ''}`}>
-            <div className="help-col-header">
-              <span className="lang-flag">🇬🇧</span>
-              <h3>In English</h3>
+          <Card className="p-5 border-zinc-800">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="text-xl">🇬🇧</span>
+              <h3 className="font-semibold text-white text-sm">In English</h3>
             </div>
-            <div className="help-chips-list">
-              <div className="help-chip">
-                <Mic size={14} className="text-amber-300" />
-                <span>"How do I walk to the Rock Trail?"</span>
+            <div className="space-y-2.5 text-xs text-zinc-300">
+              <div className="clean-help-pill">
+                <Mic size={13} className="text-sky-400 shrink-0" />
+                <span>"Where is the Rock Trail?"</span>
               </div>
-              <div className="help-chip">
-                <History size={14} className="text-cyan-300" />
-                <span>"Show historic photos"</span>
-              </div>
-              <div className="help-chip">
-                <QrCode size={14} className="text-emerald-300" />
-                <span>"Send the route to my phone"</span>
-              </div>
-              <div className="help-chip">
-                <Globe size={14} className="text-amber-200" />
+              <div className="clean-help-pill">
+                <Navigation size={13} className="text-emerald-400 shrink-0" />
                 <span>"What places are nearby?"</span>
               </div>
+              <div className="clean-help-pill">
+                <History size={13} className="text-amber-400 shrink-0" />
+                <span>"Show historic photos"</span>
+              </div>
+              <div className="clean-help-pill">
+                <QrCode size={13} className="text-purple-400 shrink-0" />
+                <span>"Send route to mobile"</span>
+              </div>
             </div>
-          </div>
+          </Card>
         </div>
 
-        {/* CTA to start speaking */}
-        <div className="help-bottom-cta">
-          <button className="help-listen-btn" onClick={onStartListening}>
-            <Mic size={18} className="animate-pulse" />
-            <span>Начать говорить</span>
-          </button>
+        <div className="flex justify-center mt-8">
+          <Button
+            variant="primary"
+            size="lg"
+            onClick={onStartListening}
+            icon={<Mic size={16} />}
+          >
+            {lang === 'kk' ? 'Дауыспен бастау' : 'Начать голосовой диалог'}
+          </Button>
         </div>
       </div>
+
+      <div />
     </div>
   );
 };

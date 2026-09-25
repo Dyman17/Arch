@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Timer,
-  ArrowLeft,
-  Smartphone,
-} from 'lucide-react';
+import { motion } from 'motion/react';
+import { Timer, ArrowLeft, Smartphone, Check } from 'lucide-react';
 import type { Place, QrResponse } from '../../types';
+import { Button } from '../ui/Button';
+import { Badge } from '../ui/Badge';
+import { Progress } from '../ui/Progress';
 
 interface PageQrProps {
   place: Place;
@@ -21,7 +21,6 @@ export const PageQr: React.FC<PageQrProps> = ({
 }) => {
   const [secondsLeft, setSecondsLeft] = useState<number>(60);
 
-  // 60-second countdown timer
   useEffect(() => {
     setSecondsLeft(60);
     const interval = setInterval(() => {
@@ -42,88 +41,91 @@ export const PageQr: React.FC<PageQrProps> = ({
     qrData?.url ||
     `https://bagdar.kz/route/${place.id}?origin=amphitheater&lat=${place.lat}&lng=${place.lng}`;
 
-  const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=340x340&data=${encodeURIComponent(
+  const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=320x320&data=${encodeURIComponent(
     qrUrl
-  )}&bgcolor=FFFFFF&color=1E293B&margin=1`;
+  )}&bgcolor=FFFFFF&color=09090b&margin=1`;
 
   const progressPercent = (secondsLeft / 60) * 100;
 
   return (
-    <div className="page-stage page-qr">
-      <div className="qr-warm-backdrop" />
-
+    <div className="clean-page-root flex-center flex-col p-8">
       {/* Top Header */}
-      <div className="qr-top-bar">
-        <button className="friendly-back-btn" onClick={onBackToRoute}>
-          <ArrowLeft size={16} />
-          <span>К карте маршрута</span>
-        </button>
+      <div className="clean-page-header">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onBackToRoute}
+          icon={<ArrowLeft size={16} />}
+        >
+          К карте маршрута
+        </Button>
 
-        <div className="qr-header-badge">
-          <Smartphone size={15} className="text-amber-300" />
-          <span>Маршрут с собой на телефон</span>
-        </div>
-
-        {/* Timer */}
-        <div className="qr-timer-badge">
-          <Timer size={14} className="text-amber-300" />
-          <span>{secondsLeft} сек</span>
-        </div>
-      </div>
-
-      {/* Main QR Presentation Stage */}
-      <div className="qr-center-container">
-        <div className="qr-friendly-card">
-          {/* Left Side: Clean Crisp QR Code */}
-          <div className="qr-box-frame">
-            <div className="qr-image-wrapper">
-              <img
-                src={qrImageUrl}
-                alt={`QR код для ${place.name}`}
-                className="qr-image"
-              />
-            </div>
-            <p className="qr-box-hint">Наведите камеру смартфона</p>
-          </div>
-
-          {/* Right Side: Simple Tourist Steps */}
-          <div className="qr-info-frame">
-            <div className="qr-destination-header">
-              <span className="qr-dest-tag">Место назначения:</span>
-              <h2 className="qr-dest-title">{place.name}</h2>
-              <p className="qr-dest-summary">{place.summary}</p>
-            </div>
-
-            <div className="qr-friendly-steps">
-              <div className="friendly-step">
-                <span className="step-circle">1</span>
-                <p>Откройте фотокамеру на вашем смартфоне</p>
-              </div>
-              <div className="friendly-step">
-                <span className="step-circle">2</span>
-                <p>Направьте на QR-код с расстояния 1–2 метров</p>
-              </div>
-              <div className="friendly-step">
-                <span className="step-circle">3</span>
-                <p>Маршрут и подсказки откроются в браузере телефона</p>
-              </div>
-            </div>
-
-            {/* Bottom Progress */}
-            <div className="qr-timer-progress-block">
-              <div className="progress-labels">
-                <span>Экран закроется через {secondsLeft} сек</span>
-              </div>
-              <div className="progress-track">
-                <div
-                  className="progress-fill"
-                  style={{ width: `${progressPercent}%` }}
-                />
-              </div>
-            </div>
-          </div>
+        <div className="flex items-center gap-2">
+          <Badge variant="accent">
+            <Smartphone size={13} className="mr-1 inline text-sky-400" />
+            Маршрут на телефон
+          </Badge>
+          <Badge variant="neutral">
+            <Timer size={13} className="mr-1 inline text-zinc-400" />
+            {secondsLeft} сек
+          </Badge>
         </div>
       </div>
+
+      {/* Main QR Card */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.96 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.3 }}
+        className="clean-qr-card"
+      >
+        {/* Left: QR Code in crisp frame */}
+        <div className="clean-qr-image-box">
+          <img
+            src={qrImageUrl}
+            alt={`QR код для ${place.name}`}
+            className="clean-qr-img"
+          />
+          <span className="clean-qr-caption">Наведите камеру смартфона</span>
+        </div>
+
+        {/* Right: Instructions & Destination */}
+        <div className="clean-qr-info">
+          <div>
+            <Badge variant="neutral" className="mb-2">
+              Пункт назначения
+            </Badge>
+            <h2 className="clean-qr-title">{place.name}</h2>
+            <p className="clean-qr-summary">{place.summary}</p>
+          </div>
+
+          <div className="clean-qr-steps">
+            <div className="clean-qr-step">
+              <span className="clean-step-dot">1</span>
+              <p>Откройте камеру на смартфоне</p>
+            </div>
+            <div className="clean-qr-step">
+              <span className="clean-step-dot">2</span>
+              <p>Наведите на QR-код на экране</p>
+            </div>
+            <div className="clean-qr-step">
+              <span className="clean-step-dot">
+                <Check size={12} />
+              </span>
+              <p>Маршрут откроется в вашем браузере</p>
+            </div>
+          </div>
+
+          {/* Progress bar */}
+          <div className="mt-4">
+            <div className="flex justify-between text-xs text-zinc-500 mb-1.5">
+              <span>Автозакрытие</span>
+              <span>{secondsLeft} с</span>
+            </div>
+            <Progress value={progressPercent} />
+          </div>
+        </div>
+      </motion.div>
     </div>
   );
 };

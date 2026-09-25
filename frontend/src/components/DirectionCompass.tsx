@@ -18,72 +18,60 @@ export const DirectionCompass: React.FC<DirectionCompassProps> = ({
   durationMin,
   lang,
 }) => {
-  // Relative angle compared to the physical kiosk front
   const relativeAngle = (bearingDeg - kioskHeadingDeg + 360) % 360;
 
   let relativeDescription = '';
   if (relativeAngle >= 340 || relativeAngle <= 20) {
     relativeDescription = lang === 'kk' ? 'Тура алға' : lang === 'en' ? 'Straight ahead' : 'Прямо перед вами';
   } else if (relativeAngle > 20 && relativeAngle < 70) {
-    relativeDescription = lang === 'kk' ? 'Алға оңға қарай' : lang === 'en' ? 'Slightly to your right' : 'Впереди правее';
+    relativeDescription = lang === 'kk' ? 'Алға оңға қарай' : lang === 'en' ? 'Slightly right' : 'Впереди правее';
   } else if (relativeAngle >= 70 && relativeAngle <= 110) {
     relativeDescription = lang === 'kk' ? 'Оң жаққа бұрылыңыз' : lang === 'en' ? 'Turn right' : 'Направо от экрана';
   } else if (relativeAngle > 110 && relativeAngle < 160) {
-    relativeDescription = lang === 'kk' ? 'Артқа оңға' : lang === 'en' ? 'Back to your right' : 'Сзади справа';
+    relativeDescription = lang === 'kk' ? 'Артқа оңға' : lang === 'en' ? 'Back right' : 'Сзади справа';
   } else if (relativeAngle >= 160 && relativeAngle <= 200) {
-    relativeDescription = lang === 'kk' ? 'Артқа қарай жүріңіз' : lang === 'en' ? 'Behind the kiosk' : 'Позади стелы';
+    relativeDescription = lang === 'kk' ? 'Артқа қарай' : lang === 'en' ? 'Behind you' : 'Позади стелы';
   } else if (relativeAngle > 200 && relativeAngle < 250) {
-    relativeDescription = lang === 'kk' ? 'Артқа солға' : lang === 'en' ? 'Back to your left' : 'Сзади слева';
+    relativeDescription = lang === 'kk' ? 'Артқа солға' : lang === 'en' ? 'Back left' : 'Сзади слева';
   } else if (relativeAngle >= 250 && relativeAngle <= 290) {
     relativeDescription = lang === 'kk' ? 'Сол жаққа бұрылыңыз' : lang === 'en' ? 'Turn left' : 'Налево от экрана';
   } else {
-    relativeDescription = lang === 'kk' ? 'Алға солға қарай' : lang === 'en' ? 'Slightly to your left' : 'Впереди левее';
+    relativeDescription = lang === 'kk' ? 'Алға солға қарай' : lang === 'en' ? 'Slightly left' : 'Впереди левее';
   }
 
   return (
-    <div className="editorial-compass-card">
-      <div className="compass-rotor-cell">
-        <div className="compass-dial-ring">
-          <div className="compass-tick-marks">
-            <span className="c-tick n">0°</span>
-            <span className="c-tick e">90°</span>
-            <span className="c-tick s">180°</span>
-            <span className="c-tick w">270°</span>
-          </div>
+    <div className="clean-compass-layout">
+      {/* Compass Dial */}
+      <div className="clean-compass-dial">
+        <div className="clean-compass-ticks">
+          <span className="clean-tick n">0°</span>
+          <span className="clean-tick e">90°</span>
+          <span className="clean-tick s">180°</span>
+          <span className="clean-tick w">270°</span>
+        </div>
 
-          <div className="kiosk-screen-marker">
-            <span>{lang === 'kk' ? 'Сіз осындасыз' : 'Вы здесь'}</span>
-          </div>
+        <div className="clean-compass-center-label">
+          <span>{lang === 'kk' ? 'Сіз' : 'Вы'}</span>
+        </div>
 
-          <div
-            className="compass-needle-rotor"
-            style={{ transform: `rotate(${relativeAngle}deg)` }}
-          >
-            <div className="needle-head">
-              <Navigation className="needle-icon" />
-            </div>
-          </div>
+        <div
+          className="clean-compass-needle"
+          style={{ transform: `rotate(${relativeAngle}deg)` }}
+        >
+          <Navigation className="clean-needle-arrow text-sky-400" />
         </div>
       </div>
 
-      <div className="compass-narrative-cell">
-        <div className="compass-relative-callout">
-          {relativeDescription}
+      {/* Compass Text Guidance */}
+      <div className="clean-compass-info">
+        <span className="clean-compass-rel-heading">{relativeDescription}</span>
+        <div className="flex items-center gap-2 mt-1 text-xs text-zinc-400">
+          <span className="font-semibold text-white">{distanceM} м</span>
+          <span>·</span>
+          <span className="font-semibold text-white">~{durationMin} мин</span>
+          <span>пешком</span>
         </div>
-
-        <div className="compass-metrics-row">
-          <div className="metric-unit">
-            <span className="unit-number">{distanceM} м</span>
-            <span className="unit-label">{lang === 'kk' ? 'Қашықтық' : lang === 'en' ? 'Distance' : 'Расстояние'}</span>
-          </div>
-          <div className="metric-separator" />
-          <div className="metric-unit">
-            <span className="unit-number">{durationMin} мин</span>
-            <span className="unit-label">{lang === 'kk' ? 'Жаяу' : lang === 'en' ? 'Walking' : 'Пешком'}</span>
-          </div>
-        </div>
-
-        <p className="compass-step-guidance">{directionText}</p>
+        <p className="clean-compass-sub-step mt-2">{directionText}</p>
       </div>
     </div>
   );

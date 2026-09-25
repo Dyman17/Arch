@@ -1,8 +1,6 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import {
-  UserCheck,
-  UserX,
-} from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { UserCheck, UserX } from 'lucide-react';
 
 import type {
   KioskConfig,
@@ -25,6 +23,9 @@ import { speakText, stopSpeaking } from './utils/tts';
 import { useVoiceListener } from './hooks/useVoiceListener';
 import { useCameraPresence } from './hooks/useCameraPresence';
 
+// Clean UI Components
+import { Tabs, type TabItem } from './components/ui/Tabs';
+
 // The 14 Dedicated Presentation Pages
 import { PageSleep } from './components/pages/PageSleep';
 import { PageGreeting } from './components/pages/PageGreeting';
@@ -45,13 +46,10 @@ export const App: React.FC = () => {
   // Config & Session
   const [config, setConfig] = useState<KioskConfig | null>(null);
   const [sessionId, setSessionId] = useState<string>(() => 'sess-' + Math.random().toString(36).substring(2, 10));
-  const [lang, setLang] = useState<string>('kk'); // Default to Kazakh
+  const [lang, setLang] = useState<string>('kk');
 
   // 14-Page State Machine
   const [currentPage, setCurrentPage] = useState<KioskPage>('sleep');
-
-  // Presentation Storyboard Bar Toggle
-  const [showStoryboard] = useState<boolean>(true);
 
   // Data Store
   const [places, setPlaces] = useState<Place[]>([]);
@@ -60,10 +58,23 @@ export const App: React.FC = () => {
   const [scene, setScene] = useState<SceneResponse | null>(null);
   const [qrData, setQrData] = useState<QrResponse | null>(null);
 
-  // Dialogue & Speech Recognition
+  const currentPlace: Place = selectedPlace || places[0] || {
+    id: 1,
+    name: 'Скальная тропа',
+    category: 'walking',
+    lat: 43.642,
+    lng: 51.155,
+    thumb_url: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80',
+    summary: 'Пешеходная освещенная тропа вдоль скального берега Каспия протяженностью 1.5 км.',
+    has_scene: true,
+    access: 'walk',
+    hours: null,
+  };
+
+  // Dialogue & Speech
   const [userSpokenText, setUserSpokenText] = useState<string>('');
 
-  // Timers
+  // Activity timer
   const idleTimerRef = useRef<number>(0);
 
   // 1. Initial Load
@@ -99,7 +110,7 @@ export const App: React.FC = () => {
     idleTimerRef.current = 0;
   }, []);
 
-  // Wake up action (triggered when camera detects person arriving)
+  // Wake up action
   const handleWakeUp = useCallback(() => {
     touchActivity();
     setCurrentPage('greeting');
@@ -127,240 +138,209 @@ export const App: React.FC = () => {
     idleTimerRef.current = 0;
   }, [sessionId]);
 
-  // 2. Camera Presence Hook (Optical Person Detection)
-  // RULE 1: Presence is strictly determined by camera. Main screen shows when person is in frame.
+  // Camera Presence
   const {
     isPersonPresent,
     simulatePersonApproach,
     simulatePersonDeparture,
   } = useCameraPresence({
     onPersonArrived: () => {
-      // Camera sees person -> wake up to greeting!
       if (currentPage === 'sleep') {
         handleWakeUp();
       }
     },
     onPersonDeparted: () => {
-      // Person left camera view -> farewell and then sleep!
       if (currentPage !== 'sleep') {
         setCurrentPage('farewell');
       }
     },
-    enabled: true,
   });
 
-  // Load Route for a Place
+  // Load Route helper
   const loadRouteForPlace = useCallback(
     async (place: Place) => {
-      setSelectedPlace(place);
+      touchActivity();
       try {
-        const routeData = await fetchRoute(place.id, lang);
-        setRoute(routeData);
+        const r = await fetchRoute(place.id, lang);
+        setRoute(r);
+        return r;
       } catch (err) {
-        console.warn('Could not fetch route:', err);
+        console.error('Failed to load route', err);
+        return null;
       }
     },
-    [lang]
+    [lang, touchActivity]
   );
 
-  // Load Scene (TarihSky) for a Place
+  // Load Scene helper
   const loadSceneForPlace = useCallback(
     async (place: Place) => {
-      setSelectedPlace(place);
+      touchActivity();
       try {
-        const sceneData = await fetchScene(place.id);
-        setScene(sceneData);
+        const s = await fetchScene(place.id);
+        setScene(s);
+        return s;
       } catch (err) {
-        console.warn('Could not fetch scene:', err);
+        console.error('Failed to load scene', err);
+        return null;
       }
     },
-    []
+    [touchActivity]
   );
 
-  // Load QR for a Place
+  // Load QR helper
   const loadQrForPlace = useCallback(
     async (place: Place) => {
-      setSelectedPlace(place);
+      touchActivity();
       try {
-        const qrRes = await fetchQr(place.id, lang, sessionId);
-        setQrData(qrRes);
+        const q = await fetchQr(place.id, lang, sessionId);
+        setQrData(q);
+        return q;
       } catch (err) {
-        console.warn('Could not fetch QR:', err);
+        console.error('Failed to load qr', err);
+        return null;
       }
     },
-    [lang, sessionId]
+    [lang, sessionId, touchActivity]
   );
 
-  // Core Voice Dialogue Turn
-  const handleVoiceUtterance = useCallback(
-    async (rawText: string) => {
-      const text = rawText.trim();
-      if (!text) return;
+  // Place selection
+  const handleSelectAndShowPlace = useCallback(
+    (place: Place) => {
+      touchActivity();
+      setSelectedPlace(place);
+      setCurrentPage('place');
+    },
+    [touchActivity]
+  );
 
+  // Voice Turn Handover
+  const handleVoiceUtterance = useCallback(
+    async (text: string) => {
       touchActivity();
       setUserSpokenText(text);
       setCurrentPage('thinking');
-      stopSpeaking();
-
-      // Language Switch Command detection
-      if (/қазақ|қазақша/i.test(text)) {
-        setLang('kk');
-      } else if (/english/i.test(text)) {
-        setLang('en');
-      } else if (/русский|по-русски/i.test(text)) {
-        setLang('ru');
-      }
 
       try {
-        const response = await sendDialogTurn({
+        const res = await sendDialogTurn({
           session_id: sessionId,
-          lang: 'auto',
           text,
+          lang,
           context: {
             screen: currentPage,
-            last_place_id: selectedPlace?.id || null,
+            last_place_id: currentPlace.id,
           },
         });
 
-        if (response.lang && ['kk', 'ru', 'en'].includes(response.lang) && response.lang !== lang) {
-          setLang(response.lang);
-        }
-
-        speakText(response.say, response.lang || lang);
-
-        // Check for unrecognized speech / fallback
-        if (response.debug?.via === 'fallback_prompt' || response.intent === 'speech_unrecognized') {
-          // RULE 2: Sound was present, but speech was not recognized.
-          setCurrentPage((prev) => (prev === 'error' ? 'gestures' : 'error'));
-          return;
-        }
-
-        // Execute actions returned by AI brain
-        if (response.actions && response.actions.length > 0) {
-          const primaryAction = response.actions[0];
-          const targetPlaceId = primaryAction.place_id || response.place_id || selectedPlace?.id || 1;
-          const targetPlace = places.find((p) => p.id === targetPlaceId) || selectedPlace || places[0];
-
-          if (primaryAction.show === 'route') {
-            await loadRouteForPlace(targetPlace);
-            setCurrentPage('route');
-          } else if (primaryAction.show === 'scene') {
-            await loadSceneForPlace(targetPlace);
-            setCurrentPage('history');
-          } else if (primaryAction.show === 'qr') {
-            await loadQrForPlace(targetPlace);
-            setCurrentPage('qr');
-          } else if (primaryAction.show === 'sleep') {
-            setCurrentPage('farewell');
-          } else {
-            setSelectedPlace(targetPlace);
-            setCurrentPage('place');
-          }
-          return;
-        }
-
-        // If suggestions are returned (multiple places found)
-        if (response.suggestions && response.suggestions.length > 1) {
+        const primaryAction = res.actions?.[0];
+        if (primaryAction?.show === 'route') {
+          const targetPlace =
+            places.find((p) => p.id === primaryAction.place_id) || selectedPlace || places[0];
+          setSelectedPlace(targetPlace);
+          await loadRouteForPlace(targetPlace);
+          setCurrentPage('route');
+        } else if (primaryAction?.show === 'scene') {
+          const targetPlace =
+            places.find((p) => p.id === primaryAction.place_id) || selectedPlace || places[0];
+          setSelectedPlace(targetPlace);
+          await loadSceneForPlace(targetPlace);
+          setCurrentPage('history');
+        } else if (primaryAction?.show === 'qr') {
+          const targetPlace =
+            places.find((p) => p.id === primaryAction.place_id) || selectedPlace || places[0];
+          setSelectedPlace(targetPlace);
+          await loadQrForPlace(targetPlace);
+          setCurrentPage('qr');
+        } else if (primaryAction?.show === 'sleep') {
+          setCurrentPage('sleep');
+        } else if (res.intent === 'clarify' || (res.suggestions && res.suggestions.length > 1)) {
           setCurrentPage('variants');
-          return;
-        }
-
-        // Intent-based fallback routing
-        if (response.intent === 'nearby') {
+        } else if (res.intent === 'nearby') {
           setCurrentPage('nearby');
-        } else if (response.intent === 'help') {
+        } else if (res.intent === 'help') {
           setCurrentPage('help');
-        } else if (response.intent === 'farewell') {
-          setCurrentPage('farewell');
-        } else if (response.place_id) {
-          const targetPlace = places.find((p) => p.id === response.place_id) || selectedPlace || places[0];
+        } else if (res.intent === 'error_retry') {
+          setCurrentPage('error');
+        } else if (primaryAction?.show === 'map' && primaryAction.place_id) {
+          const targetPlace = places.find((p) => p.id === primaryAction.place_id) || places[0];
           setSelectedPlace(targetPlace);
           setCurrentPage('place');
         } else {
-          if (selectedPlace) {
-            setCurrentPage('place');
-          } else {
-            setCurrentPage('variants');
+          if (places.length > 0) {
+            setSelectedPlace(places[0]);
           }
+          setCurrentPage('place');
+        }
+
+        if (res.say) {
+          speakText(res.say, res.lang || lang);
         }
       } catch (err) {
-        console.error('Dialog turn failed:', err);
+        console.error('Dialog turn failed', err);
         setCurrentPage('error');
       }
     },
-    [sessionId, currentPage, selectedPlace, lang, places, loadRouteForPlace, loadSceneForPlace, loadQrForPlace, touchActivity]
+    [
+      sessionId,
+      lang,
+      places,
+      selectedPlace,
+      currentPlace.id,
+      currentPage,
+      touchActivity,
+      loadRouteForPlace,
+      loadSceneForPlace,
+      loadQrForPlace,
+    ]
   );
 
-  // 3. Voice Listener Hook (Web Audio API Level + Web Speech STT)
-  const {
-    interimTranscript,
-    volumeLevel,
-  } = useVoiceListener({
+  // Voice listener hook
+  const { volumeLevel } = useVoiceListener({
     lang,
-    onSpeechFinal: (text: string) => {
-      handleVoiceUtterance(text);
+    onSpeechFinal: (transcript: string) => {
+      if (currentPage === 'listening') {
+        handleVoiceUtterance(transcript);
+      }
     },
     onUnrecognizedSound: () => {
-      // Sound heard, but speech not recognized
-      if (currentPage === 'sleep' && isPersonPresent) {
-        setCurrentPage('listening');
+      if (currentPage === 'listening') {
+        setCurrentPage('gestures');
       }
     },
-    enabled: true,
   });
 
-  // Sync interim transcript to UI
-  useEffect(() => {
-    if (interimTranscript) {
-      setUserSpokenText(interimTranscript);
+  // Storyboard Tabs Configuration (14 Pages)
+  const storyboardTabs: TabItem[] = [
+    { id: 'sleep', num: '01', label: 'Сон' },
+    { id: 'greeting', num: '02', label: 'Привет' },
+    { id: 'listening', num: '03', label: 'Слушаю' },
+    { id: 'thinking', num: '04', label: 'Думаю' },
+    { id: 'place', num: '05', label: 'Место' },
+    { id: 'route', num: '06', label: 'Маршрут' },
+    { id: 'history', num: '07', label: 'История' },
+    { id: 'qr', num: '08', label: 'QR' },
+    { id: 'variants', num: '09', label: 'Варианты' },
+    { id: 'nearby', num: '10', label: 'Рядом' },
+    { id: 'help', num: '11', label: 'Помощь' },
+    { id: 'farewell', num: '12', label: 'Прощание' },
+    { id: 'error', num: '13', label: 'Ошибка' },
+    { id: 'gestures', num: '14', label: 'Жесты' },
+  ];
+
+  const handleTabChange = (pageId: string) => {
+    touchActivity();
+    const id = pageId as KioskPage;
+    if (id === 'route') {
+      loadRouteForPlace(currentPlace).then(() => setCurrentPage('route'));
+    } else if (id === 'history') {
+      loadSceneForPlace(currentPlace).then(() => setCurrentPage('history'));
+    } else if (id === 'qr') {
+      loadQrForPlace(currentPlace).then(() => setCurrentPage('qr'));
+    } else {
+      setCurrentPage(id);
     }
-  }, [interimTranscript]);
-
-  // Session idle timer (90 seconds)
-  useEffect(() => {
-    if (currentPage === 'sleep') return;
-
-    const interval = setInterval(() => {
-      idleTimerRef.current += 1;
-      const timeoutSec = config?.session?.idle_timeout_sec || 90;
-      if (idleTimerRef.current >= timeoutSec) {
-        handleResetSession();
-      }
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [currentPage, config, handleResetSession]);
-
-  // Helper for selecting a place from variants / nearby
-  const handleSelectAndShowPlace = useCallback(
-    async (place: Place) => {
-      setSelectedPlace(place);
-      await loadRouteForPlace(place);
-      setCurrentPage('place');
-    },
-    [loadRouteForPlace]
-  );
-
-  // Fallback default place if none loaded
-  const currentPlace: Place = selectedPlace || places[0] || {
-    id: 1,
-    name: 'Набережная Актау и Скальная тропа',
-    summary: 'Уникальная пешеходная тропа вдоль скал и лазурного побережья Каспия.',
-    description: 'Один из главных символов Актау.',
-    category: 'nature',
-    lat: 43.642,
-    lng: 51.172,
-    address: 'г. Актау, побережье Каспия, 15 микрорайон',
-    thumb_url: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80',
-    has_scene: true,
-    hours: null,
-    access: 'walk',
   };
 
-  // Convert volumeLevel (0-100) to approximate dBFS (-60 to 0)
-  const approxDb = Math.round((volumeLevel / 100) * 60 - 60);
-
-  // 14 Pages Presentation Map
   const renderCurrentPage = () => {
     switch (currentPage) {
       case 'sleep':
@@ -386,7 +366,7 @@ export const App: React.FC = () => {
           <PageListening
             lang={lang}
             userSpokenText={userSpokenText}
-            audioDbLevel={approxDb}
+            audioDbLevel={volumeLevel}
             onSimulateUtterance={handleVoiceUtterance}
             onCancel={() => setCurrentPage('place')}
           />
@@ -545,76 +525,59 @@ export const App: React.FC = () => {
     }
   };
 
-  const pagesList: { id: KioskPage; label: string; num: string }[] = [
-    { id: 'sleep', label: 'Сон', num: '01' },
-    { id: 'greeting', label: 'Приветствие', num: '02' },
-    { id: 'listening', label: 'Слушаю', num: '03' },
-    { id: 'thinking', label: 'Думаю', num: '04' },
-    { id: 'place', label: 'Место', num: '05' },
-    { id: 'route', label: 'Маршрут', num: '06' },
-    { id: 'history', label: 'История', num: '07' },
-    { id: 'qr', label: 'QR', num: '08' },
-    { id: 'variants', label: 'Варианты', num: '09' },
-    { id: 'nearby', label: 'Рядом', num: '10' },
-    { id: 'help', label: 'Помощь', num: '11' },
-    { id: 'farewell', label: 'Прощание', num: '12' },
-    { id: 'error', label: 'Ошибка', num: '13' },
-    { id: 'gestures', label: 'Жесты', num: '14' },
-  ];
-
   return (
-    <div className="presentation-stage-root">
-      {/* Active Page Viewport with Cinematic Transitions */}
-      {renderCurrentPage()}
+    <div className="clean-app-shell">
+      {/* Animated Page Stage */}
+      <div className="clean-app-stage">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentPage}
+            initial={{ opacity: 0, scale: 0.99 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1.01 }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
+            className="w-full h-full"
+          >
+            {renderCurrentPage()}
+          </motion.div>
+        </AnimatePresence>
+      </div>
 
-      {/* Floating Storyboard Controller Toolbar */}
-      {showStoryboard && (
-        <div className="storyboard-toolbar" role="navigation" aria-label="Презентация 14 экранов">
-          <span className="storyboard-label">14 Экранов BaGdar:</span>
+      {/* Animate UI Tabs Floating Dock at Bottom */}
+      <footer className="clean-app-dock" role="navigation" aria-label="14 Экранов BaGdar">
+        <div className="clean-dock-inner">
+          <div className="clean-dock-brand">
+            <span className="clean-dock-logo">BaGdar</span>
+            <span className="clean-dock-version">14 screens</span>
+          </div>
 
-          {pagesList.map((p) => (
-            <button
-              key={p.id}
-              className={`storyboard-btn ${currentPage === p.id ? 'active' : ''}`}
-              onClick={() => {
-                touchActivity();
-                if (p.id === 'route') {
-                  loadRouteForPlace(currentPlace).then(() => setCurrentPage('route'));
-                } else if (p.id === 'history') {
-                  loadSceneForPlace(currentPlace).then(() => setCurrentPage('history'));
-                } else if (p.id === 'qr') {
-                  loadQrForPlace(currentPlace).then(() => setCurrentPage('qr'));
-                } else {
-                  setCurrentPage(p.id);
-                }
-              }}
-              title={`Перейти на экран ${p.num}: ${p.label}`}
-            >
-              <span className="btn-num">{p.num}</span>
-              <span>{p.label}</span>
-            </button>
-          ))}
+          <Tabs
+            items={storyboardTabs}
+            activeId={currentPage}
+            onChange={handleTabChange}
+          />
 
-          {/* Quick Sensor Simulator Toggles */}
+          {/* Quick Camera Simulator */}
           <button
-            className="storyboard-btn sensor-toggle"
+            className="clean-dock-sim-btn"
             onClick={isPersonPresent ? simulatePersonDeparture : simulatePersonApproach}
-            title="Камера: симуляция присутствия человека"
+            title="Симуляция присутствия перед камерой"
+            type="button"
           >
             {isPersonPresent ? (
               <>
-                <UserCheck size={12} className="text-emerald-400" />
+                <UserCheck size={13} className="text-emerald-400" />
                 <span>Человек в кадре</span>
               </>
             ) : (
               <>
-                <UserX size={12} className="text-slate-400" />
+                <UserX size={13} className="text-zinc-500" />
                 <span>Кадр пуст</span>
               </>
             )}
           </button>
         </div>
-      )}
+      </footer>
     </div>
   );
 };

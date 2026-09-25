@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'motion/react';
 import {
   Clock,
   Footprints,
@@ -9,6 +10,8 @@ import {
 import type { Place, RouteResponse, KioskConfig } from '../../types';
 import { KioskMap } from '../KioskMap';
 import { DirectionCompass } from '../DirectionCompass';
+import { Button } from '../ui/Button';
+import { Badge } from '../ui/Badge';
 
 interface PageRouteProps {
   place: Place;
@@ -38,9 +41,9 @@ export const PageRoute: React.FC<PageRouteProps> = ({
   const directionText = route?.direction_text ?? 'Идите на северо-восток вдоль набережной';
 
   return (
-    <div className="page-stage page-route">
-      {/* Full Screen Interactive Map Background */}
-      <div className="route-map-viewport">
+    <div className="clean-page-root relative overflow-hidden">
+      {/* Interactive Map Viewport */}
+      <div className="absolute inset-0 z-0">
         <KioskMap
           places={places}
           selectedPlace={place}
@@ -49,28 +52,36 @@ export const PageRoute: React.FC<PageRouteProps> = ({
         />
       </div>
 
-      {/* Warm Floating Navigation Header */}
-      <div className="route-nav-header">
-        <button className="route-back-btn" onClick={onGoToPlace}>
-          <ArrowLeft size={18} />
-          <span>{lang === 'kk' ? 'Орынға оралу' : 'К описанию'}</span>
-        </button>
+      {/* Floating Top Nav */}
+      <div className="clean-route-top-bar">
+        <Button
+          variant="glass"
+          size="sm"
+          onClick={onGoToPlace}
+          icon={<ArrowLeft size={16} />}
+        >
+          {lang === 'kk' ? 'Орынға қайту' : 'К описанию'}
+        </Button>
 
-        <div className="route-destination-tag">
-          <span className="dest-dot" />
-          <span className="dest-label">{lang === 'kk' ? 'БАҒЫТ:' : 'МАРШРУТ:'}</span>
-          <span className="dest-title">{place.name}</span>
-        </div>
-
-        <div className="route-origin-tag">
-          <span>{lang === 'kk' ? 'Басталуы: 15-ш/а Амфитеатр' : 'Старт: 15 мкр (Амфитеатр)'}</span>
+        <div className="flex items-center gap-2">
+          <Badge variant="accent">
+            {lang === 'kk' ? 'БАҒЫТ:' : 'МАРШРУТ:'} {place.name}
+          </Badge>
+          <Badge variant="neutral">
+            15-ш/а Амфитеатр
+          </Badge>
         </div>
       </div>
 
-      {/* Floating Side Guide: Compass & Turn-by-Turn Card */}
-      <div className="route-floating-guide">
-        {/* Direction Compass */}
-        <div className="guide-compass-box">
+      {/* Floating Guidance Card */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        className="clean-route-floating-panel"
+      >
+        {/* Minimal Compass */}
+        <div className="clean-compass-card">
           <DirectionCompass
             bearingDeg={bearingDeg}
             kioskHeadingDeg={origin.heading_deg}
@@ -81,56 +92,58 @@ export const PageRoute: React.FC<PageRouteProps> = ({
           />
         </div>
 
-        {/* Turn-by-Turn Card */}
-        <div className="guide-summary-card">
-          <div className="guide-metrics-row">
-            <div className="metric-pill">
-              <Footprints size={18} className="text-sand" />
-              <div className="metric-texts">
-                <span className="metric-num">{distanceM} м</span>
-                <span className="metric-desc">{lang === 'kk' ? 'жаяу' : 'пешком'}</span>
-              </div>
+        {/* Turn-by-turn guidance card */}
+        <div className="clean-guide-card">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="clean-metric-badge">
+              <Footprints size={15} className="text-sky-400" />
+              <span className="font-semibold text-white">{distanceM} м</span>
+              <span className="text-zinc-400 text-xs">пешком</span>
             </div>
-
-            <div className="metric-pill">
-              <Clock size={18} className="text-sand" />
-              <div className="metric-texts">
-                <span className="metric-num">~{durationMin} мин</span>
-                <span className="metric-desc">{lang === 'kk' ? 'уақыт' : 'в пути'}</span>
-              </div>
+            <div className="clean-metric-badge">
+              <Clock size={15} className="text-emerald-400" />
+              <span className="font-semibold text-white">~{durationMin} мин</span>
+              <span className="text-zinc-400 text-xs">в пути</span>
             </div>
           </div>
 
-          {/* Steps */}
-          <div className="guide-steps-list">
-            <div className="step-item active">
-              <span className="step-num">1</span>
-              <p className="step-text">{directionText}</p>
+          <div className="clean-steps-box mb-4">
+            <div className="clean-step-item">
+              <span className="clean-step-index">1</span>
+              <p className="clean-step-instruction">{directionText}</p>
             </div>
             {route?.steps && route.steps.length > 0 && (
-              <div className="step-item">
-                <span className="step-num">2</span>
-                <p className="step-text">{route.steps[0].instruction}</p>
+              <div className="clean-step-item">
+                <span className="clean-step-index">2</span>
+                <p className="clean-step-instruction">{route.steps[0].instruction}</p>
               </div>
             )}
           </div>
 
-          {/* Voice Prompt Buttons */}
-          <div className="guide-action-buttons">
-            <button className="guide-btn qr-btn" onClick={onGoToQr}>
-              <QrCode size={18} />
-              <span>{lang === 'kk' ? 'Телефонға жүктеу' : 'Отправить на телефон'}</span>
-            </button>
+          <div className="flex gap-2">
+            <Button
+              variant="primary"
+              size="md"
+              onClick={onGoToQr}
+              icon={<QrCode size={16} />}
+              className="flex-1"
+            >
+              {lang === 'kk' ? 'Телефонға алу' : 'Маршрут на телефон'}
+            </Button>
 
             {place.has_scene && (
-              <button className="guide-btn scene-btn" onClick={onGoToHistory}>
-                <History size={18} />
-                <span>{lang === 'kk' ? 'Тарихын көру' : 'Показать историю'}</span>
-              </button>
+              <Button
+                variant="secondary"
+                size="md"
+                onClick={onGoToHistory}
+                icon={<History size={16} />}
+              >
+                {lang === 'kk' ? 'Тарихы' : 'История'}
+              </Button>
             )}
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };
