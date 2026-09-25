@@ -32,7 +32,7 @@
 | B1 | Модели + seed: 10–20 places, hours, access, языки | `feature/seed` | 🔄 |
 | B1.1 | `local_text`: фолбэк на ru для zh/любого другого (сейчас KeyError) | `fix/catalog-fallback` | ⬜ |
 | B1.2 | Каталоги: город (10, ids 1–10) + регион (ids 101+, Форт/Божыра…), без коллизий | `feature/seed-region` | ⬜ |
-| B2 | `GET config`, `GET places`, `GET places/{id}`, `GET route` (+ fallback) | `feature/api-places` | ⬜ |
+| B2 | `GET config`, `GET places`, `GET places/{id}`, `GET route` (+ fallback) | `feature/api-places` | 🔄 |
 | B3 | `POST voice`: STT, lang auto, intent → place_id / suggestions, mode scene | `feature/api-voice` | ⬜ |
 | B4 | `GET scene`, `POST qr`, `POST session/end`, `GET health` | `feature/api-scene-qr` | ⬜ |
 | B5 | Seed 2–3 scenes + тексты + sources | `feature/seed-scenes` | ⬜ |
