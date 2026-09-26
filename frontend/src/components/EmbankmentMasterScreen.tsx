@@ -262,7 +262,7 @@ export const EmbankmentMasterScreen: React.FC<EmbankmentMasterScreenProps> = ({
 
       {/* 2. PROMENADE PLACES SELECTOR (Architectural Plate with Dark Contours) */}
       <nav className="embankment-places-strip" aria-label="Орындар тізімі">
-        {places.slice(0, 6).map((p) => {
+        {places.map((p) => {
           const isSelected = p.id === activePlace.id;
           const pName = p.texts?.[currentLang]?.name || p.name;
           return (
