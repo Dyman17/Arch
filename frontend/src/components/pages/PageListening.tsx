@@ -1,111 +1,52 @@
-import React from 'react';
-import { motion } from 'motion/react';
-import { Mic, ArrowLeft } from 'lucide-react';
-import { VoiceWave } from '../ui/VoiceWave';
-import { Badge } from '../ui/Badge';
-import { Button } from '../ui/Button';
+import { VoiceHalo } from '../VoiceHalo'
+import type { Copy } from '../../i18n'
 
-interface PageListeningProps {
-  lang: string;
-  userSpokenText: string;
-  audioDbLevel?: number;
-  onSimulateUtterance: (text: string) => void;
-  onCancel?: () => void;
+interface Props {
+  copy: Copy
+  db: number
+  transcript: string
+  lang: string
 }
 
-export const PageListening: React.FC<PageListeningProps> = ({
-  lang,
-  userSpokenText,
-  onSimulateUtterance,
-  onCancel,
-}) => {
-  const quickPrompts: Record<string, string[]> = {
-    kk: [
-      'Жартасты соқпақ қайда?',
-      'Маякты көрсетші',
-      'Жақын маңда не бар?',
-    ],
-    ru: [
-      'Как пройти к Скальной тропе?',
-      'Где находится маяк?',
-      'Что интересного есть рядом?',
-    ],
-    en: [
-      'How to get to the Rock Trail?',
-      'Where is the Lighthouse?',
-      'What places are nearby?',
-    ],
-  };
-
-  const sampleChips = quickPrompts[lang] || quickPrompts.ru;
-
+export function PageListening({ copy, db, transcript, lang }: Props) {
   return (
-    <div className="clean-page-root flex-center flex-col p-8">
-      {/* Top Header */}
-      <div className="clean-page-header">
-        {onCancel ? (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onCancel}
-            icon={<ArrowLeft size={15} />}
-          >
-            {lang === 'kk' ? 'Артқа' : 'Назад'}
-          </Button>
-        ) : (
-          <div />
-        )}
+    <main className="kiosk-fullscreen-stage listening-screen screen-enter">
+      <div className="listening-aura-box">
+        <span className="eyebrow" style={{ marginBottom: 0 }}>
+          <i />
+          {copy.listening}
+          <i />
+        </span>
 
-        <Badge variant="accent">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block mr-1.5 animate-pulse" />
-          {lang === 'kk' ? 'Тыңдаудамын...' : lang === 'en' ? 'Listening...' : 'Слушаю вас...'}
-        </Badge>
+        <VoiceHalo
+          phase="recording"
+          db={db}
+          label={copy.listening}
+          transcript={transcript}
+        />
+
+        <div className="live-transcript-box glass-panel">
+          {transcript ? (
+            `«${transcript}»`
+          ) : (
+            <span style={{ color: 'rgba(255, 255, 255, 0.4)', fontStyle: 'normal', fontSize: '18px' }}>
+              {copy.prompt}
+            </span>
+          )}
+        </div>
+
+        <div className="listening-lang-badges">
+          {['KK', 'RU', 'EN'].map((code) => (
+            <span
+              key={code}
+              className={`lang-badge ${lang.toUpperCase() === code ? 'is-current' : ''}`}
+            >
+              {code}
+            </span>
+          ))}
+          <span className="lang-badge">AUTO DETECT</span>
+        </div>
       </div>
-
-      {/* Main Voice Centerpiece */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.98 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.25 }}
-        className="clean-listening-box"
-      >
-        <div className="clean-mic-circle">
-          <Mic size={32} className="text-zinc-800" />
-        </div>
-
-        {/* Soft Waveform */}
-        <div className="my-6">
-          <VoiceWave active={true} bars={24} />
-        </div>
-
-        {/* Live Speech Caption Box */}
-        <div className="clean-caption-card">
-          <span className="clean-caption-label">
-            {userSpokenText
-              ? (lang === 'kk' ? 'Сіз айттыңыз:' : 'Вы говорите:')
-              : (lang === 'kk' ? 'Сөйлеңіз:' : 'Говорите:')}
-          </span>
-          <p className={`clean-caption-text ${userSpokenText ? 'active' : 'placeholder'}`}>
-            {userSpokenText ? `«${userSpokenText}»` : '«Как пройти к Скальной тропе?»'}
-          </p>
-        </div>
-
-        {/* Quick Suggestion Chips */}
-        <div className="clean-suggestions-block mt-8">
-          <div className="clean-chips-wrap">
-            {sampleChips.map((chip, i) => (
-              <button
-                key={i}
-                type="button"
-                onClick={() => onSimulateUtterance(chip)}
-                className="clean-prompt-chip"
-              >
-                <span>{chip}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      </motion.div>
-    </div>
-  );
-};
+    </main>
+  )
+}

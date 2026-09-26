@@ -1,72 +1,55 @@
-import React from 'react';
-import { motion } from 'motion/react';
-import { Mic, RefreshCw, Volume2 } from 'lucide-react';
-import { Button } from '../ui/Button';
+import type { Copy } from '../../i18n'
 
-interface PageErrorProps {
-  lang: string;
-  onRetry: () => void;
-  onShowHelp: () => void;
+interface Props {
+  copy: Copy
+  retryCount?: number
+  onRetry?: () => void
+  onSelectPlace?: (placeId: number) => void
 }
 
-export const PageError: React.FC<PageErrorProps> = ({ lang, onRetry, onShowHelp }) => {
-  const errorTexts: Record<string, { title: string; subtitle: string; retryBtn: string }> = {
-    kk: {
-      title: 'Сөзіңіз анық естілмеді',
-      subtitle: 'Желдің немесе теңіз толқынының дыбысы кедергі келтірді. Сұрағыңызды қайталаңызшы.',
-      retryBtn: 'Қайтадан айту',
-    },
-    ru: {
-      title: 'Не удалось расслышать',
-      subtitle: 'Шум морского ветра мог заглушить голос. Пожалуйста, повторите вопрос или выберите место касанием.',
-      retryBtn: 'Повторить голосом',
-    },
-    en: {
-      title: 'Could not catch that clearly',
-      subtitle: 'The sea breeze might have interfered. Please speak again or select by touch.',
-      retryBtn: 'Speak again',
-    },
-  };
-
-  const text = errorTexts[lang] || errorTexts.ru;
+export function PageError({ copy, retryCount = 1, onRetry, onSelectPlace }: Props) {
+  const quickOptions = [
+    { id: 1, name: 'Амфитеатр' },
+    { id: 2, name: 'Набережная 15-го мкр' },
+    { id: 3, name: 'Смотровая площадка' },
+  ]
 
   return (
-    <div className="clean-page-root flex-center flex-col p-8">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.98 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.25 }}
-        className="clean-error-card text-center"
-      >
-        <div className="flex-center mb-5">
-          <div className="clean-error-icon-box">
-            <Volume2 size={28} className="text-zinc-700" />
-          </div>
-        </div>
+    <main className="kiosk-fullscreen-stage error-screen screen-enter">
+      <div className="error-halo" onClick={onRetry} style={{ cursor: 'pointer' }}>
+        <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="1" y1="1" x2="23" y2="23" />
+          <path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V5a3 3 0 0 0-5.94-.6" />
+          <path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23" />
+          <line x1="12" y1="19" x2="12" y2="22" />
+          <line x1="8" y1="22" x2="16" y2="22" />
+        </svg>
+      </div>
 
-        <h1 className="clean-hero-heading text-2xl">{text.title}</h1>
-        <p className="clean-sub-heading mt-2 max-w-md mx-auto">{text.subtitle}</p>
+      <div className="error-retry-badge">
+        <span>Попытка {retryCount} из 2</span>
+      </div>
 
-        <div className="flex-center gap-3 mt-8">
-          <Button
-            variant="primary"
-            size="lg"
-            onClick={onRetry}
-            icon={<Mic size={16} />}
+      <div className="hero-copy" style={{ textAlign: 'center' }}>
+        <h1 className="screen-headline" style={{ fontSize: 'clamp(46px, 4.2vw, 72px)' }}>
+          {copy.errorTitle}
+        </h1>
+        <p style={{ maxWidth: '620px', margin: '18px auto 0', color: 'var(--muted)' }}>
+          {copy.errorSubtitle}
+        </p>
+      </div>
+
+      <div className="greeting-suggestions" style={{ marginTop: '34px' }}>
+        {quickOptions.map((opt) => (
+          <button
+            key={opt.id}
+            className="suggestion-pill glass-panel"
+            onClick={() => onSelectPlace?.(opt.id)}
           >
-            {text.retryBtn}
-          </Button>
-
-          <Button
-            variant="secondary"
-            size="lg"
-            onClick={onShowHelp}
-            icon={<RefreshCw size={15} />}
-          >
-            {lang === 'kk' ? 'Көмек' : 'Подсказки'}
-          </Button>
-        </div>
-      </motion.div>
-    </div>
-  );
-};
+            {opt.name}
+          </button>
+        ))}
+      </div>
+    </main>
+  )
+}

@@ -1,88 +1,54 @@
-import React from 'react';
-import { ArrowRight } from 'lucide-react';
-import type { Place } from '../../types';
-import { Card } from '../ui/Card';
+import type { PlaceSummary } from '../../types'
+import type { Copy } from '../../i18n'
 
-interface PageVariantsProps {
-  places: Place[];
-  lang: string;
-  onSelectPlace: (place: Place) => void;
+interface Props {
+  places: PlaceSummary[]
+  copy: Copy
+  onSelectPlace?: (placeId: number) => void
 }
 
-export const PageVariants: React.FC<PageVariantsProps> = ({
-  places,
-  lang,
-  onSelectPlace,
-}) => {
-  const displayPlaces = places.slice(0, 3);
-
-  const prompts: Record<string, { title: string; subtitle: string }> = {
-    kk: {
-      title: 'Қай орынды таңдайсыз?',
-      subtitle: 'Атауын немесе нөмірін айтыңыз, немесе басып таңдаңыз',
-    },
-    ru: {
-      title: 'Какое место вас интересует?',
-      subtitle: 'Назовите нужное место или выберите касанием',
-    },
-    en: {
-      title: 'Which place would you like to explore?',
-      subtitle: 'Say the name or tap to select',
-    },
-  };
-
-  const text = prompts[lang] || prompts.ru;
+export function PageVariants({ places, copy, onSelectPlace }: Props) {
+  const displayPlaces = places.slice(0, 3)
 
   return (
-    <div className="clean-page-root flex flex-col justify-center items-center p-8">
-      {/* Header */}
-      <div className="text-center mb-8 max-w-xl">
-        <h1 className="clean-hero-heading text-3xl">{text.title}</h1>
-        <p className="clean-sub-heading mt-2">{text.subtitle}</p>
+    <main className="kiosk-fullscreen-stage variants-screen screen-enter">
+      <div className="variants-header">
+        <span className="eyebrow" style={{ justifyContent: 'center' }}>
+          <i />
+          {copy.eyebrow}
+          <i />
+        </span>
+        <h1 className="screen-headline" style={{ fontSize: 'clamp(46px, 4.4vw, 76px)' }}>
+          {copy.variantsTitle}
+        </h1>
+        <p style={{ maxWidth: '620px', margin: '18px auto 0', color: 'var(--muted)' }}>
+          {copy.variantsSubtitle}
+        </p>
       </div>
 
-      {/* 3 Soft Cards */}
-      <div className="clean-variants-grid">
-        {displayPlaces.map((place, idx) => (
-          <Card
+      <div className="variants-grid">
+        {displayPlaces.map((place, index) => (
+          <div
             key={place.id}
-            hoverable
-            onClick={() => onSelectPlace(place)}
-            className="clean-variant-card"
+            className="variant-card glass-panel"
+            onClick={() => onSelectPlace?.(place.id)}
           >
-            {/* Number Pill */}
-            <div className="clean-card-num-badge">
-              <span>{idx + 1}</span>
+            <div
+              className="variant-thumb"
+              style={{ backgroundImage: `url(${place.thumb_url})` }}
+            >
+              <span className="variant-badge">{place.category}</span>
             </div>
-
-            {/* Photo */}
-            <div className="clean-card-thumb-wrap">
-              <img
-                src={place.thumb_url}
-                alt={place.name}
-                className="clean-card-thumb"
-              />
+            <span className="variant-num">0{index + 1}</span>
+            <h3>{place.name}</h3>
+            <p>{place.summary}</p>
+            <div className="variant-footer">
+              <span>{place.access === 'transit' ? copy.transit : copy.walk}</span>
+              <span>43°39′ N</span>
             </div>
-
-            {/* Body */}
-            <div className="p-5 flex flex-col flex-1 justify-between">
-              <div>
-                <h3 className="clean-card-title">{place.name}</h3>
-                <p className="clean-card-desc">{place.summary}</p>
-              </div>
-
-              <div className="mt-4 pt-3 border-t border-zinc-100 flex items-center justify-between text-xs">
-                <span className="text-zinc-500">
-                  ~{(idx + 1) * 350 + 400} м от стелы
-                </span>
-                <span className="text-zinc-900 font-medium flex items-center gap-1">
-                  Выбрать <ArrowRight size={13} />
-                </span>
-              </div>
-            </div>
-          </Card>
+          </div>
         ))}
       </div>
-    </div>
-  );
-};
+    </main>
+  )
+}

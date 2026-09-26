@@ -1,30 +1,30 @@
-import React from 'react';
-import { SleepScreen } from '../SleepScreen';
+import { useClock } from '../../hooks/useClock'
+import type { Copy } from '../../i18n'
 
-interface PageSleepProps {
-  onWakeUp: () => void;
-  lang: string;
-  isPersonPresent: boolean;
-  cameraActive?: boolean;
-  onSimulateApproach?: () => void;
+interface Props {
+  copy: Copy
+  onWake?: () => void
 }
 
-export const PageSleep: React.FC<PageSleepProps> = ({
-  onWakeUp,
-  lang,
-  isPersonPresent,
-  cameraActive,
-  onSimulateApproach,
-}) => {
+export function PageSleep({ copy, onWake }: Props) {
+  const now = useClock()
+  const time = new Intl.DateTimeFormat('ru-RU', { hour: '2-digit', minute: '2-digit', hour12: false }).format(now)
+  const date = new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'long', weekday: 'long' }).format(now)
+
   return (
-    <div className="page-stage page-sleep">
-      <SleepScreen
-        onWake={onWakeUp}
-        lang={lang}
-        isPersonPresent={isPersonPresent}
-        cameraActive={cameraActive}
-        onSimulateApproach={onSimulateApproach}
-      />
-    </div>
-  );
-};
+    <main className="sleep-screen screen-enter" onClick={onWake} style={{ cursor: onWake ? 'pointer' : 'default' }}>
+      <div className="sleep-horizon" />
+      <div className="sleep-orbit orbit-one" />
+      <div className="sleep-orbit orbit-two" />
+      <section className="sleep-time">
+        <span>Каспийское время</span>
+        <h1>{time}</h1>
+        <p>{date}</p>
+      </section>
+      <div className="wake-hint glass-panel">
+        <i />
+        <span>{copy.wake}</span>
+      </div>
+    </main>
+  )
+}

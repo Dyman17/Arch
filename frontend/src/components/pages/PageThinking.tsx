@@ -1,53 +1,48 @@
-import React from 'react';
-import { motion } from 'motion/react';
-import { Loader2 } from 'lucide-react';
+import type { Copy } from '../../i18n'
 
-interface PageThinkingProps {
-  userSpokenText: string;
-  lang: string;
+interface Props {
+  copy: Copy
+  query?: string
 }
 
-export const PageThinking: React.FC<PageThinkingProps> = ({ userSpokenText, lang }) => {
-  const statusTexts: Record<string, { main: string; sub: string }> = {
-    kk: {
-      main: 'Бағытты дайындап жатырмын...',
-      sub: 'Ақтау қаласы мен жағалаудың жолдарын тексеремін',
-    },
-    ru: {
-      main: 'Подбираю лучший маршрут...',
-      sub: 'Сверяю расстояние и удобный путь пешком',
-    },
-    en: {
-      main: 'Finding the best route...',
-      sub: 'Checking walking paths along the Caspian shoreline',
-    },
-  };
-
-  const status = statusTexts[lang] || statusTexts.ru;
-
+export function PageThinking({ copy, query }: Props) {
   return (
-    <div className="clean-page-root flex-center flex-col p-8">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.98 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.25 }}
-        className="clean-thinking-card text-center"
-      >
-        <div className="flex-center mb-6">
-          <div className="clean-spinner-wrapper">
-            <Loader2 size={28} className="text-zinc-700 animate-spin" />
-          </div>
-        </div>
+    <main className="kiosk-fullscreen-stage thinking-screen screen-enter">
+      <div className="neural-orbit-wrap">
+        <div className="neural-orbit-ring ring-a" />
+        <div className="neural-orbit-ring ring-b" />
+        <div className="neural-core" />
+      </div>
 
-        {userSpokenText && (
-          <div className="clean-query-bubble mb-5">
-            <p className="clean-query-text">«{userSpokenText}»</p>
+      <div className="hero-copy" style={{ textAlign: 'center' }}>
+        <span className="eyebrow" style={{ justifyContent: 'center' }}>
+          <i />
+          {copy.processing}
+          <i />
+        </span>
+        <h1 className="screen-headline" style={{ fontSize: 'clamp(46px, 4.4vw, 76px)' }}>
+          {copy.thinkingTitle}
+        </h1>
+        <p style={{ maxWidth: '560px', margin: '20px auto 0' }}>
+          {copy.thinkingSubtitle}
+        </p>
+        {query && (
+          <div
+            className="glass-panel"
+            style={{
+              display: 'inline-block',
+              marginTop: '30px',
+              padding: '12px 28px',
+              borderRadius: '999px',
+              color: 'var(--sand)',
+              fontSize: '15px',
+              fontStyle: 'italic',
+            }}
+          >
+            «{query}»
           </div>
         )}
-
-        <h2 className="clean-hero-heading text-2xl">{status.main}</h2>
-        <p className="clean-sub-heading mt-2">{status.sub}</p>
-      </motion.div>
-    </div>
-  );
-};
+      </div>
+    </main>
+  )
+}

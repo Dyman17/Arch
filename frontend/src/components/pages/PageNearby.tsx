@@ -1,64 +1,57 @@
-import React from 'react';
-import { Footprints, ArrowRight } from 'lucide-react';
-import type { Place } from '../../types';
-import { Card } from '../ui/Card';
+import { MapView } from '../MapView'
+import type { Config, PlaceSummary } from '../../types'
+import type { Copy } from '../../i18n'
 
-interface PageNearbyProps {
-  places: Place[];
-  lang: string;
-  onSelectPlace: (place: Place) => void;
+interface Props {
+  config: Config
+  places: PlaceSummary[]
+  copy: Copy
+  onSelectPlace?: (placeId: number) => void
 }
 
-export const PageNearby: React.FC<PageNearbyProps> = ({ places, lang, onSelectPlace }) => {
-  const nearbyPlaces = places.slice(0, 4);
+export function PageNearby({ config, places, copy, onSelectPlace }: Props) {
+  const nearbyPlaces = places.slice(0, 5)
 
   return (
-    <div className="clean-page-root flex flex-col justify-center items-center p-8">
-      {/* Header */}
-      <div className="text-center mb-8 max-w-xl">
-        <h1 className="clean-hero-heading text-3xl">
-          {lang === 'kk' ? 'Айналадағы қызықты орындар' : 'Что посмотреть поблизости?'}
+    <main className="nearby-screen screen-enter">
+      <section className="nearby-left-pane">
+        <span className="eyebrow">
+          <i />
+          {copy.eyebrow}
+        </span>
+        <h1 className="screen-headline" style={{ fontSize: 'clamp(44px, 3.8vw, 68px)' }}>
+          {copy.nearbyTitle}
         </h1>
-        <p className="clean-sub-heading mt-2">
-          {lang === 'kk'
-            ? 'Жаяу бірнеше минуттық қашықтықта орналасқан орындар'
-            : 'В нескольких минутах приятной пешей прогулки'}
+        <p style={{ maxWidth: '540px', margin: '16px 0 0', color: 'var(--muted)', fontSize: '15px' }}>
+          {copy.nearbySubtitle}
         </p>
-      </div>
 
-      {/* Grid of 4 Cards */}
-      <div className="clean-nearby-grid">
-        {nearbyPlaces.map((place, idx) => (
-          <Card
-            key={place.id}
-            hoverable
-            onClick={() => onSelectPlace(place)}
-            className="clean-nearby-card"
-          >
-            <div className="clean-nearby-thumb-wrap">
-              <img src={place.thumb_url} alt={place.name} className="clean-nearby-thumb" />
-            </div>
-
-            <div className="p-4 flex flex-col flex-1 justify-between">
-              <div>
-                <div className="flex items-center gap-1.5 text-xs text-zinc-500 mb-1.5">
-                  <Footprints size={13} />
-                  <span>~{(idx + 1) * 280} м · {(idx + 1) * 3} мин</span>
-                </div>
-                <h3 className="clean-card-title text-base">{place.name}</h3>
-                <p className="clean-card-desc text-xs mt-1">{place.summary}</p>
+        <div className="nearby-cards-stack">
+          {nearbyPlaces.map((place, i) => (
+            <div
+              key={place.id}
+              className="nearby-card-row glass-panel"
+              onClick={() => onSelectPlace?.(place.id)}
+            >
+              <div
+                className="nearby-row-thumb"
+                style={{ backgroundImage: `url(${place.thumb_url})` }}
+              />
+              <div className="nearby-row-info">
+                <h4>{place.name}</h4>
+                <span>{place.summary}</span>
               </div>
-
-              <div className="mt-4 pt-2 border-t border-zinc-100 flex items-center justify-between text-xs">
-                <span className="text-zinc-400">У моря</span>
-                <span className="text-zinc-900 font-medium flex items-center gap-1">
-                  Подробнее <ArrowRight size={12} />
-                </span>
+              <div className="nearby-row-dist">
+                {`${(i + 1) * 120} м`}
               </div>
             </div>
-          </Card>
-        ))}
-      </div>
-    </div>
-  );
-};
+          ))}
+        </div>
+      </section>
+
+      <section className="nearby-right-map">
+        <MapView config={config} places={places} />
+      </section>
+    </main>
+  )
+}

@@ -1,91 +1,82 @@
-import React from 'react';
-import { ArrowLeft, Mic } from 'lucide-react';
-import { Button } from '../ui/Button';
-import { Card } from '../ui/Card';
+import type { Copy } from '../../i18n'
 
-interface PageHelpProps {
-  lang: string;
-  onBack: () => void;
-  onStartListening: () => void;
+interface Props {
+  copy: Copy
+  onSelectPrompt?: (text: string) => void
 }
 
-export const PageHelp: React.FC<PageHelpProps> = ({ lang, onBack, onStartListening }) => {
+export function PageHelp({ copy, onSelectPrompt }: Props) {
+  const languageColumns = [
+    {
+      langCode: 'KK',
+      langTitle: 'Қазақ тілі',
+      phrases: [
+        '«Қайда баруға болады?»',
+        '«Амфитеатр қайда орналасқан?»',
+        '«15-шағынаудан жағалауының тарихын көрсет»',
+        '«Бағытты телефонға жібер»',
+      ],
+    },
+    {
+      langCode: 'RU',
+      langTitle: 'Русский язык',
+      phrases: [
+        '«Как пройти к Скальной тропе?»',
+        '«Что интересного находится рядом?»',
+        '«Покажи историю набережной TarihSky»',
+        '«Отправь маршрут на телефон»',
+      ],
+    },
+    {
+      langCode: 'EN',
+      langTitle: 'English Language',
+      phrases: [
+        '“Where can I take a scenic walk?”',
+        '“Show the history of the Caspian coast”',
+        '“What places are nearby?”',
+        '“Send the route to my phone”',
+      ],
+    },
+  ]
+
   return (
-    <div className="clean-page-root flex flex-col justify-between p-8">
-      {/* Top Header */}
-      <div className="clean-page-header">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onBack}
-          icon={<ArrowLeft size={15} />}
-        >
-          {lang === 'kk' ? 'Артқа' : 'Назад'}
-        </Button>
-
-        <span className="text-sm font-medium text-zinc-600">
-          Подсказки
+    <main className="kiosk-fullscreen-stage help-screen screen-enter">
+      <div className="variants-header">
+        <span className="eyebrow" style={{ justifyContent: 'center' }}>
+          <i />
+          {copy.eyebrow}
+          <i />
         </span>
+        <h1 className="screen-headline" style={{ fontSize: 'clamp(46px, 4.4vw, 76px)' }}>
+          {copy.helpTitle}
+        </h1>
+        <p style={{ maxWidth: '620px', margin: '18px auto 0', color: 'var(--muted)' }}>
+          {copy.helpSubtitle}
+        </p>
       </div>
 
-      {/* Main Content */}
-      <div className="max-w-4xl mx-auto w-full my-auto">
-        <div className="text-center mb-8">
-          <h1 className="clean-hero-heading text-3xl">Как общаться со стелой?</h1>
-          <p className="clean-sub-heading mt-2">
-            Стела понимает живую речь на казахском, русском и английском языках.
-          </p>
-        </div>
-
-        {/* 3 Columns */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {/* Kazakh */}
-          <Card className="p-6">
-            <h3 className="font-serif text-zinc-900 text-lg mb-3">Қазақ тілінде</h3>
-            <div className="space-y-2.5 text-xs text-zinc-600">
-              <div className="clean-help-pill">«Жартасты соқпақ қайда?»</div>
-              <div className="clean-help-pill">«Жақын маңда не бар?»</div>
-              <div className="clean-help-pill">«Тарихын көрсетші»</div>
-              <div className="clean-help-pill">«Телефонға жібер»</div>
+      <div className="help-grid">
+        {languageColumns.map((col) => (
+          <div key={col.langCode} className="help-col glass-panel">
+            <div className="help-col-head">
+              <span>{col.langCode}</span>
+              <h3>{col.langTitle}</h3>
             </div>
-          </Card>
-
-          {/* Russian */}
-          <Card className="p-6">
-            <h3 className="font-serif text-zinc-900 text-lg mb-3">На русском</h3>
-            <div className="space-y-2.5 text-xs text-zinc-600">
-              <div className="clean-help-pill">«Как пройти к Скальной тропе?»</div>
-              <div className="clean-help-pill">«Где находится маяк?»</div>
-              <div className="clean-help-pill">«Покажи историю места»</div>
-              <div className="clean-help-pill">«Отправь на телефон»</div>
+            <div className="help-phrase-list">
+              {col.phrases.map((phrase, i) => (
+                <div
+                  key={i}
+                  className="help-phrase-item"
+                  onClick={() => onSelectPrompt?.(phrase.replace(/[«»“”]/g, ''))}
+                  style={{ cursor: 'pointer' }}
+                >
+                  {phrase}
+                </div>
+              ))}
             </div>
-          </Card>
-
-          {/* English */}
-          <Card className="p-6">
-            <h3 className="font-serif text-zinc-900 text-lg mb-3">In English</h3>
-            <div className="space-y-2.5 text-xs text-zinc-600">
-              <div className="clean-help-pill">"Where is the Rock Trail?"</div>
-              <div className="clean-help-pill">"What places are nearby?"</div>
-              <div className="clean-help-pill">"Show historic photos"</div>
-              <div className="clean-help-pill">"Send route to mobile"</div>
-            </div>
-          </Card>
-        </div>
-
-        <div className="flex justify-center mt-8">
-          <Button
-            variant="primary"
-            size="lg"
-            onClick={onStartListening}
-            icon={<Mic size={16} />}
-          >
-            {lang === 'kk' ? 'Дауыспен бастау' : 'Начать голосовой диалог'}
-          </Button>
-        </div>
+          </div>
+        ))}
       </div>
-
-      <div />
-    </div>
-  );
-};
+    </main>
+  )
+}

@@ -1,75 +1,39 @@
-import React, { useEffect, useState } from 'react';
-import { motion } from 'motion/react';
-import { Compass } from 'lucide-react';
+import { useEffect } from 'react'
+import type { Copy } from '../../i18n'
 
-interface PageFarewellProps {
-  lang: string;
-  onFinishFarewell: () => void;
+interface Props {
+  copy: Copy
+  onReturnToSleep?: () => void
 }
 
-export const PageFarewell: React.FC<PageFarewellProps> = ({ lang, onFinishFarewell }) => {
-  const [countdown, setCountdown] = useState<number>(3);
-
+export function PageFarewell({ copy, onReturnToSleep }: Props) {
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          onFinishFarewell();
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [onFinishFarewell]);
-
-  const farewellTexts: Record<string, { title: string; subtitle: string; blessing: string }> = {
-    kk: {
-      title: 'Рахмет! Көріскенше!',
-      subtitle: 'Ақтау қаласы мен Каспий жағалауында демалысыңыз жақсы өтсін!',
-      blessing: 'Ақ жол! Сапарыңыз сәтті болсын!',
-    },
-    ru: {
-      title: 'Приятной прогулки!',
-      subtitle: 'Желаем отличного отдыха на побережье Каспия.',
-      blessing: 'Ақ жол! Счастливого пути!',
-    },
-    en: {
-      title: 'Enjoy your walk!',
-      subtitle: 'Have a peaceful and pleasant day by the Caspian Sea.',
-      blessing: 'Safe travels and warm memories!',
-    },
-  };
-
-  const text = farewellTexts[lang] || farewellTexts.ru;
+    if (!onReturnToSleep) return
+    const timer = window.setTimeout(onReturnToSleep, 3500)
+    return () => window.clearTimeout(timer)
+  }, [onReturnToSleep])
 
   return (
-    <div className="clean-page-root flex-center flex-col p-8">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.98 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.25 }}
-        className="clean-farewell-card text-center"
-      >
-        <div className="flex-center mb-5">
-          <div className="clean-farewell-icon-box">
-            <Compass size={28} className="text-zinc-700" />
-          </div>
-        </div>
+    <main className="kiosk-fullscreen-stage farewell-screen screen-enter">
+      <div className="farewell-beacon">
+        <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="var(--sand)" strokeWidth="1.5">
+          <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364-.707-.707M6.343 6.343l-.707-.707m12.728 0-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z" />
+        </svg>
+      </div>
 
-        <h1 className="clean-hero-heading text-3xl">{text.title}</h1>
-        <p className="clean-sub-heading mt-2">{text.subtitle}</p>
-
-        <div className="clean-blessing-pill mt-6">
-          <span>«{text.blessing}»</span>
-        </div>
-
-        <div className="mt-8 text-xs text-zinc-400">
-          Стела переходит в режим ожидания через {countdown} сек...
-        </div>
-      </motion.div>
-    </div>
-  );
-};
+      <div className="hero-copy" style={{ textAlign: 'center' }}>
+        <span className="eyebrow" style={{ justifyContent: 'center' }}>
+          <i />
+          Ақтау · Каспий теңізі
+          <i />
+        </span>
+        <h1 className="screen-headline" style={{ fontSize: 'clamp(52px, 5vw, 84px)' }}>
+          {copy.farewellTitle}
+        </h1>
+        <p style={{ maxWidth: '600px', margin: '22px auto 0', color: 'var(--muted)' }}>
+          {copy.farewellSubtitle}
+        </p>
+      </div>
+    </main>
+  )
+}
