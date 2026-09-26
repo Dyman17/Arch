@@ -1,32 +1,36 @@
-# React + TypeScript + Vite
+# BaGdar Frontend — Kiosk Web Application
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Клиентское веб-приложение для интерактивной туристической стелы **BaGdar** (Актау / Каспийское побережье).
 
-Currently, two official plugins are available:
+## 🚀 Особенности
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Интерфейс стелы (Liquid Glass UI)**: 14 бесшовных экранов, адаптированных под вертикальный и широкоформатный киоск.
+- **Голосовое управление**: Web Audio API (детектор dB) + Web Speech API (распознавание речи) + SpeechSynthesis (TTS) на 3 языках (`kk`, `ru`, `en`).
+- **Таймеры активности**:
+  - 15 секунд молчания → предложение режима языка жестов (`gestures`) с голосовым запросом.
+  - 25 секунд молчания → автоматический переход в спящий режим (`sleep`) с заставкой каспийского времени.
+  - Любое касание / голос → мгновенный сброс таймеров.
+- **Интерактивная навигация**: MapLibre GL с отрисовкой пешеходного маршрута от стелы, расстояния, времени и стрелки азимута (bearing).
+- **TarihSky («Тогда и сейчас»)**: интерактивная шторка сравнения исторического и современного облика города.
+- **QR-экран**: генерация мобильной ссылки с TTL 60 секунд для продолжения прогулки по смартфону.
+- **Автономность и деградация**: при отсутствии сети приложение переключается на встроенный кэш `localStorage` и автономный контрактный слой.
 
-## React Compiler
+## 🛠 Запуск в разработке
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+# Установка зависимостей
+npm install
 
-## Expanding the Oxlint configuration
+# Запуск dev-сервера (по умолчанию подключается к живому FastAPI бэкенду на :8000)
+npm run dev
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+# Для принудительного автономного мок-режима без бэкенда:
+VITE_USE_MOCKS=true npm run dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## 📦 Сборка для продакшена
+
+```bash
+npm run build
+```
+Сборка компилируется в каталог `dist/`.

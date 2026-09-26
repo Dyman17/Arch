@@ -29,27 +29,27 @@
 
 | # | Задача | Ветка | Статус |
 |---|--------|-------|--------|
-| B1 | Модели + seed: 10–20 places, hours, access, языки | `feature/seed` | 🔄 |
-| B1.1 | `local_text`: фолбэк на ru для zh/любого другого (сейчас KeyError) | `fix/catalog-fallback` | ⬜ |
-| B1.2 | Каталоги: город (10, ids 1–10) + регион (ids 101+, Форт/Божыра…), без коллизий | `feature/seed-region` | ⬜ |
-| B2 | `GET config`, `GET places`, `GET places/{id}`, `GET route` (+ fallback) | `feature/api-places` | ⬜ |
-| B3 | `POST voice`: STT, lang auto, intent → place_id / suggestions, mode scene | `feature/api-voice` | ⬜ |
-| B4 | `GET scene`, `POST qr`, `POST session/end`, `GET health` | `feature/api-scene-qr` | ⬜ |
-| B5 | Seed 2–3 scenes + тексты + sources | `feature/seed-scenes` | ⬜ |
-| B6 | .env, ключи, rate-limit, единый error-format | `feature/ops-api` | ⬜ |
-| B7 | LLM: вставить ключ в `backend/.env` (`LLM_PROVIDER` + `GEMINI_API_KEY` / `OPENAI_API_KEY`), перезапустить, `GET health` → `"ai": true` | `feature/llm-key` | ⬜ |
-| B8 | LLM: проверить голос на 4 языках (kk/ru/en + китайский), каталог на неродном языке, фоллбэк без ключа | `feature/llm-i18n` | ⬜ |
-| B11 | TTS через OpenAI (ответ вслух на языке туриста): `POST /api/tts` → аудио; фронт проигрывает | `feature/api-tts` | ⬜ |
-| B9 | `GET /api/stats`: популярные места, языки, сессии (цифры для питча + акимат) | `feature/api-stats` | ⬜ |
-| B10 | `POST /api/feedback`: 👍/👎 на ответ (петля обучения) | `feature/api-feedback` | ⬜ |
-| B12 | Память диалога: контекст сессии (turns, места, prefs), местоимения («рядом с ним»), сброс при end/timeout/сне | `feature/dialog-memory` | ⬜ |
+| B1 | Модели + seed: 29 places (город + регион), hours, access, языки | `Dyman17` | ✅ |
+| B1.1 | `local_text`: фолбэк на ru для zh/любого другого | `Dyman17` | ✅ |
+| B1.2 | Каталоги: город (1–10) + регион (101+, Форт/Бозжыра/Торыш…), без коллизий | `Dyman17` | ✅ |
+| B2 | `GET config`, `GET places`, `GET places/{id}`, `GET route` (+ fallback) | `Dyman17` | ✅ |
+| B3 | `POST dialog/turn` / `POST voice`: STT/правила, lang auto, intent → place_id | `Dyman17` | ✅ |
+| B4 | `GET scene`, `POST qr`, `POST session/end`, `GET health` | `Dyman17` | ✅ |
+| B5 | Seed сцен TarihSky + тексты + sources | `Dyman17` | ✅ |
+| B6 | .env, ключи, rate-limit, единый error-format | `Dyman17` | ✅ |
+| B7 | LLM: поддержка ключей в `backend/.env` (Gemini / OpenAI), `GET health` → `"ai": true` | `feature/llm-key` | 🔄 |
+| B8 | LLM: мультиязычный свободный диалог (kk/ru/en/zh) | `feature/llm-i18n` | ⬜ |
+| B11 | TTS (OpenAI/Web Speech API синтез): фронт озвучивает реплики | `Dyman17` | ✅ |
+| B9 | `GET /api/stats`: популярные места, языки, сессии, by_hour (для питча и акимата) | `Dyman17` | ✅ |
+| B10 | `POST /api/feedback`: 👍/👎 на ответ + сбор отзывов | `Dyman17` | ✅ |
+| B12 | Память диалога: контекст сессии (turns, места, prefs), местоимения («рядом с ним») | `Dyman17` | ✅ |
 
 ## Интеграция / общее
 
 | # | Задача | Ветка | Кто | Статус |
 |---|--------|-------|-----|--------|
-| I1 | Сквозной сценарий: голос → маршрут → QR на девайсе | `feature/integration` | все | ⬜ |
-| I2 | Деградация: нет STT → текстовый фолбэк техлида; нет routing → прямая | `feature/fallbacks` | оба | ⬜ |
+| I1 | Сквозной сценарий: голос → маршрут → QR на девайсе | `Dyman17` | все | ✅ |
+| I2 | Деградация: нет STT → текстовый выбор; нет routing → прямая | `Dyman17` | оба | ✅ |
 
 ## Железо — hardware (обычная работа, отдельно от софта)
 
