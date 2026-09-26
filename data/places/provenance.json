@@ -66,6 +66,20 @@
       "urls": [
         "https://www.openstreetmap.org/node/5253708718"
       ]
+    },
+    {
+      "id": 101,
+      "urls": [
+        "https://www.openstreetmap.org/search?query=Fort%20Shevchenko%20Kazakhstan",
+        "https://yandex.kz/maps/ru/search/fort%20shevchenko/"
+      ]
+    },
+    {
+      "id": 102,
+      "urls": [
+        "https://www.openstreetmap.org/search?query=Bozjyra%20Mangystau",
+        "https://yandex.kz/maps/ru/search/божыра/"
+      ]
     }
   ]
 }

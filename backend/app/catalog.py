@@ -67,7 +67,31 @@ def load_places() -> list[Place]:
 
 
 def local_text(place: Place, lang: str) -> LocalizedText:
-    return place.texts[lang]
+    # B1.1: fallback на ru для zh/любого другого — без KeyError
+    if lang in place.texts:
+        return place.texts[lang]
+    for fallback in ('ru', 'kk', 'en'):
+        if fallback in place.texts:
+            return place.texts[fallback]
+    return next(iter(place.texts.values()))
+
+
+def scene_text(place: Place, lang: str) -> SceneText | None:
+    if place.scene is None:
+        return None
+    if lang in place.scene.texts:
+        return place.scene.texts[lang]
+    for fallback in ('ru', 'kk', 'en'):
+        if fallback in place.scene.texts:
+            return place.scene.texts[fallback]
+    return next(iter(place.scene.texts.values()))
+
+
+def get_place(places: list[Place], place_id: int) -> Place | None:
+    for place in places:
+        if place.id == place_id:
+            return place
+    return None
 
 
 def opening_state(hours: Hours | None, now: datetime | None = None) -> tuple[bool, str | None]:
